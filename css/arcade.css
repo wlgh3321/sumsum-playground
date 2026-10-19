@@ -1,0 +1,512 @@
+/*
+ * 레트로 아케이드 테마
+ * style.css 뒤에 불러와서 색·글꼴·모양만 덮어써요. 게임 기능은 그대로예요.
+ * 예전 스티커 디자인으로 돌아가려면 index.html에서 arcade.css 줄만 지우면 돼요.
+ */
+:root {
+  --sky: #0d0a1c;             /* 화면 바탕 (오락실 화면) */
+  --sky-deep: #4de1ff;
+  --grid: rgba(106, 77, 255, 0.16);
+  --paper: #1a1438;           /* 카드·버튼 바탕 */
+  --overlay: rgba(5, 3, 15, 0.78);
+  --ink: #3d2f86;             /* 테두리와 입체 그림자 */
+  --line: #6a4dff;            /* 밝은 네온 테두리 */
+  --text: #f2eeff;            /* 글자 */
+  --text-dim: #9d93c9;        /* 보조 글자 */
+  --on-bright: #0d0a1c;       /* 밝은 바탕 위 글자 */
+
+  --sun: #ffe14d;             /* 네온 노랑 */
+  --mint: #4de1ff;            /* 네온 하늘 */
+  --pink: #ff4da6;            /* 네온 분홍 */
+  --lilac: #b08cff;           /* 네온 보라 */
+  --peach: #ff9a4d;           /* 네온 주황 */
+  --ok: #5dff9d;
+  --bad: #ff4d6d;
+
+  --radius-lg: 4px;
+  --radius: 2px;
+  --border: 3px;
+  --shadow: 5px;
+
+  --font-title: "Do Hyeon", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: "Do Hyeon", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-pixel: "Press Start 2P", "Galmuri11", "Do Hyeon", monospace;  /* 숫자·점수용 픽셀 글꼴 */
+  color-scheme: dark;
+}
+
+body {
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+/* 오락실 화면 주사선 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 4px);
+}
+
+/* 모서리를 각지게 */
+.btn, .chip, .card, .mode-card, .glyph, .key, .choice, .ox-btn, .answer-box,
+.score-cell, .stat, .miss, .badge, .tag, .note, .lv-flash, .banner, .toast,
+.play-field, .balloon-field, .modal-card, .op-btn, .clock, .range-out, .miss-tag {
+  border-radius: 2px;
+}
+
+.card, .mode-card, .modal-card, .play-field, .balloon-field {
+  border-color: var(--line);
+}
+
+/* ---------- 로고 ---------- */
+.logo {
+  font-family: var(--font-pixel);
+  font-size: clamp(20px, 6vw, 34px);
+  line-height: 1.4;
+  color: var(--sun);
+  text-shadow: 3px 3px 0 var(--pink), 6px 6px 0 var(--mint);
+}
+
+.tagline,
+.weak-hint,
+.mode-info p,
+.result-label,
+.hint,
+.stat-label,
+.score-label {
+  color: var(--text-dim);
+}
+
+.section-title {
+  color: var(--mint);
+  letter-spacing: 0.06em;
+}
+
+/* ---------- 버튼 ---------- */
+.btn-primary {
+  background: var(--sun);
+  border-color: var(--sun);
+  color: var(--on-bright);
+  box-shadow: 0 0 0 0 transparent, 0 0 18px rgba(255, 225, 77, 0.35);
+}
+
+.btn-quit {
+  background: transparent;
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--mint);
+  border-color: var(--mint);
+  color: var(--on-bright);
+}
+
+.op-btn[aria-pressed="true"] {
+  color: var(--on-bright);
+}
+
+.note,
+.range-out,
+.lv-flash,
+.badge {
+  color: var(--on-bright);
+}
+
+.badge-best {
+  background: transparent;
+  border-color: var(--sun);
+  color: var(--sun);
+}
+
+/* ---------- 모드 카드 ---------- */
+.mode-card:focus-visible,
+.mode-card:hover {
+  outline: 3px solid var(--sun);
+  outline-offset: 2px;
+}
+
+.glyph {
+  color: var(--on-bright);
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  border-color: var(--accent);
+}
+
+.mode-info h3 {
+  font-size: 22px;
+}
+
+.tag {
+  color: var(--text-dim);
+  border-color: var(--ink);
+}
+
+.best {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--sun);
+}
+
+/* ---------- 점수판 ---------- */
+.score-value {
+  font-family: var(--font-pixel);
+  font-size: clamp(13px, 3.6vw, 18px);
+  line-height: 1.8;
+  color: var(--sun);
+}
+
+.heart {
+  color: var(--pink);
+}
+
+/* ---------- 문제 ---------- */
+.prompt,
+.equation {
+  font-family: var(--font-pixel);
+  color: var(--text);
+  text-shadow: 0 0 14px rgba(77, 225, 255, 0.45);
+}
+
+.prompt {
+  font-size: clamp(22px, 6.5vw, 38px);
+  line-height: 1.6;
+}
+
+.equation {
+  font-size: clamp(24px, 7vw, 42px);
+}
+
+/* 떨어지는 문제: 네온 테두리 상자 */
+.play-field,
+.balloon-field {
+  background-color: #120d2b;
+  box-shadow: 0 0 0 3px var(--sky), 0 0 0 6px var(--ink);
+}
+
+.play-field::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  background: var(--pink);
+  box-shadow: 0 0 14px var(--pink);
+}
+
+.fall-card {
+  --c: var(--mint);
+  padding: 8px 12px;
+  background: rgba(13, 10, 28, 0.85) !important;
+  border: 2px solid var(--c);
+  border-radius: 2px;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--c) 55%, transparent);
+  color: var(--c);
+  font-family: var(--font-pixel);
+  font-size: clamp(13px, 3.8vw, 17px);
+  line-height: 1.5;
+}
+
+.fall-card[data-op="+"] { --c: var(--mint); }
+.fall-card[data-op="-"] { --c: var(--pink); }
+.fall-card[data-op="*"] { --c: var(--sun); }
+.fall-card[data-op="/"] { --c: var(--lilac); }
+
+/* 풍선 */
+.balloon {
+  color: var(--on-bright);
+  border-color: var(--on-bright);
+  font-family: var(--font-pixel);
+  font-size: clamp(15px, 4.2vw, 19px);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
+}
+
+.balloon::after {
+  background: var(--text-dim);
+}
+
+/* 보기 버튼 */
+.choice {
+  font-family: var(--font-pixel);
+  font-size: clamp(15px, 4.4vw, 22px);
+  border-color: var(--ink);
+}
+
+.choice:disabled {
+  background: transparent;
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+/* 참 거짓 */
+.ox-btn {
+  color: var(--on-bright);
+}
+
+.ox-o { background: var(--mint); border-color: var(--mint); }
+.ox-x { background: var(--pink); border-color: var(--pink); }
+
+.ox-mark {
+  font-family: var(--font-pixel);
+  font-size: clamp(48px, 14vw, 84px);
+  text-shadow: none;
+}
+
+/* 시간 게이지 */
+.clock {
+  border-color: var(--line);
+}
+
+.clock-fill {
+  background: var(--mint);
+  box-shadow: 0 0 10px var(--mint);
+}
+
+/* ---------- 숫자패드 ---------- */
+.answer-box {
+  border-color: var(--mint);
+  box-shadow: 0 0 14px rgba(77, 225, 255, 0.25);
+  font-family: var(--font-pixel);
+  font-size: 26px;
+}
+
+#game .answer-box {
+  font-size: clamp(20px, 3.6dvh, 28px);
+}
+
+.answer-val:empty::before {
+  content: "_";
+  color: var(--mint);
+  opacity: 1;
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.key {
+  background: var(--paper);
+  border-color: var(--ink);
+  font-family: var(--font-pixel);
+  font-size: 20px;
+}
+
+.key-util {
+  background: transparent;
+  border-color: var(--pink);
+  color: var(--pink);
+  font-family: var(--font-title);
+  font-size: 19px;
+}
+
+.key-ok {
+  background: var(--sun);
+  border-color: var(--sun);
+  color: var(--on-bright);
+  font-family: var(--font-title);
+  font-size: 21px;
+}
+
+/* ---------- 결과 화면 ---------- */
+.result-mode {
+  color: var(--mint);
+}
+
+.result-big {
+  font-family: var(--font-pixel);
+  font-size: clamp(34px, 10vw, 60px);
+  line-height: 1.5;
+  color: var(--sun);
+  text-shadow: 4px 4px 0 var(--pink);
+}
+
+.stat-value {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  line-height: 2;
+  color: var(--sun);
+}
+
+.miss {
+  border-color: var(--ink);
+}
+
+.miss-q {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.miss-tag {
+  color: var(--on-bright);
+}
+
+/* ---------- 카운트다운·알림 ---------- */
+#countNum {
+  font-family: var(--font-pixel);
+  font-size: clamp(72px, 26vw, 140px);
+  color: var(--sun);
+  text-shadow: 6px 6px 0 var(--pink), 12px 12px 0 var(--mint);
+}
+
+.banner {
+  color: var(--on-bright);
+  border-color: var(--sun);
+  box-shadow: 0 0 16px rgba(255, 225, 77, 0.4);
+}
+
+.float {
+  font-family: var(--font-pixel);
+  font-size: 22px;
+  text-shadow: 0 0 12px currentColor;
+}
+
+.float.good { color: var(--ok); }
+.float.bad { color: var(--bad); }
+
+.toast {
+  background: var(--paper);
+  border: 2px solid var(--line);
+  color: var(--text);
+}
+
+.modal-head {
+  background: var(--paper);
+}
+
+input[type="range"] {
+  accent-color: var(--mint);
+}
+
+
+/* ================= 2차 다듬기 ================= */
+
+/* ---------- 로고: 셈셈 [픽셀 마크] 놀이터 ---------- */
+.logo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35em;
+}
+
+.logo-mark {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2015%2015%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2212%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2213%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2214%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%220%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2212%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2213%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2214%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%220%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2212%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2213%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2214%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%220%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2210%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2211%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2212%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2213%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2214%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2212%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2213%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2214%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%220%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2212%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2213%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2214%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2212%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2213%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2214%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%220%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2212%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2213%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2214%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%220%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%221%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2212%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2213%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2214%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%220%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%221%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2213%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%220%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%221%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2211%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2213%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%220%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%221%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2213%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%220%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%221%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2213%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%220%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%221%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2212%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2213%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2214%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3C/svg%3E") center / contain no-repeat;
+  image-rendering: pixelated;
+  filter: drop-shadow(3px 3px 0 var(--ink));
+}
+
+/* 한글 제목: 픽셀 글꼴 갈무리(Galmuri11 굵게).
+ * 한글 글자 높이가 영어 픽셀 제목과 같아 보이도록 크기를 조금 키웠어요.
+ * 줄 높이와 마크 크기는 영어 제목과 같은 비율이에요. */
+html[lang="ko"] .logo {
+  font-family: "Galmuri11", "Do Hyeon", sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 6.9vw, 38px);
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-shadow: 2px 2px 0 var(--pink), 4px 4px 0 var(--mint);
+}
+
+html[lang="ko"] .logo-mark {
+  width: 1.15em;
+  height: 1.15em;
+}
+
+/* ---------- 게임 고르기 카드 아이콘 ---------- */
+.mode-card[data-mode="fall"] .glyph,
+.mode-card[data-mode="minute"] .glyph,
+.mode-card[data-mode="beat"] .glyph,
+.mode-card[data-mode="balloon"] .glyph {
+  font-size: 0;
+  color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  image-rendering: pixelated;
+}
+
+.mode-card[data-mode="fall"] .glyph {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2010%2010%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%223%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%220%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3C/svg%3E");
+  background-size: 64%;
+  background-color: var(--accent);
+}
+
+/* 시간 도전: 픽셀 스톱워치 */
+.mode-card[data-mode="minute"] .glyph {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2011%2011%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%2210%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3C/svg%3E");
+  background-size: 66%;
+  background-color: var(--accent);
+}
+
+/* 시간 버티기: 픽셀 모래시계 */
+.mode-card[data-mode="beat"] .glyph {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2011%2011%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%221%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3C/svg%3E");
+  background-size: 62%;
+  background-color: var(--accent);
+}
+
+.mode-card[data-mode="balloon"] .glyph {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2011%2011%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%223%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%228%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%225%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%230d0a1c%22/%3E%3C/svg%3E");
+  background-size: 62%;
+  background-color: var(--accent);
+}
+
+/* ---------- 픽셀 풍선 ---------- */
+.balloon {
+  width: 84px;
+  height: 112px;
+  margin-left: -42px;
+  padding-bottom: 34px;
+  box-sizing: border-box;
+  isolation: isolate;
+  background: none !important;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--on-bright);
+  image-rendering: pixelated;
+}
+
+.balloon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+}
+
+.balloon::after {
+  display: none;
+}
+
+.balloon.c0::before { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2012%2016%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%225%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%227%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%224%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%227%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%220%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%227%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%220%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%221%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%222%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%229%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%227%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%229%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%221%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%222%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%226%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%227%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%229%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%234de1ff%22/%3E%3Crect%20x%3D%225%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%229%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%223%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%225%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%226%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%227%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%2336b9d6%22/%3E%3Crect%20x%3D%228%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%225%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%227%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%225%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%226%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%231d7f96%22/%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239d93c9%22/%3E%3Crect%20x%3D%225%22%20y%3D%2215%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239d93c9%22/%3E%3C/svg%3E"); }
+.balloon.c1::before { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2012%2016%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%225%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%227%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%224%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%227%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%2210%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%229%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%2210%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%229%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%2210%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%2211%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%220%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%2210%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%2211%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%227%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%2210%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%2211%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%220%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%221%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%222%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%229%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%2210%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%2211%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%227%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%229%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%2210%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%221%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%222%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%226%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%227%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%229%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%2210%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffe14d%22/%3E%3Crect%20x%3D%225%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%229%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%223%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%225%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%226%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%227%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0bd2a%22/%3E%3Crect%20x%3D%228%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%225%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%227%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%225%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%226%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239c7f0c%22/%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239d93c9%22/%3E%3Crect%20x%3D%225%22%20y%3D%2215%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239d93c9%22/%3E%3C/svg%3E"); }
+.balloon.c2::before { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2012%2016%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%225%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%227%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%224%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%227%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%228%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%220%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%224%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%226%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%228%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%2210%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%227%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%228%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%2210%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%220%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%221%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%222%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%224%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%226%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%229%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%2210%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%2211%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%227%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%229%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%2210%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%221%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%222%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%226%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%227%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%229%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%2210%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ff4da6%22/%3E%3Crect%20x%3D%225%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%229%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%223%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%225%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%226%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%227%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23e0348b%22/%3E%3Crect%20x%3D%228%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%225%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%227%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%225%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%226%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239e1f5f%22/%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239d93c9%22/%3E%3Crect%20x%3D%225%22%20y%3D%2215%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239d93c9%22/%3E%3C/svg%3E"); }
+.balloon.c3::before { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2012%2016%22%20shape-rendering%3D%22crispEdges%22%3E%3Crect%20x%3D%224%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%225%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%226%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%227%22%20y%3D%220%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%222%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%224%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%225%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%227%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%228%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%229%22%20y%3D%221%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%221%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%224%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%226%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%228%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%222%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%221%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23ffffff%22/%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%224%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%226%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%227%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%228%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%223%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%220%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%223%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%226%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%227%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%228%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2210%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%224%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%220%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%221%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%222%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%224%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%226%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%227%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%228%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%225%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%220%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%222%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%223%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%224%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%227%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%228%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%229%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%226%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%220%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%221%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%222%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%224%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%226%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%229%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%2211%22%20y%3D%227%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%221%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%223%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%224%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%227%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%229%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%228%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%221%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%222%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%226%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%227%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%228%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%229%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%2210%22%20y%3D%229%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%222%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%223%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%224%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%23b08cff%22/%3E%3Crect%20x%3D%225%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%227%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%228%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%229%22%20y%3D%2210%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%223%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%224%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%225%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%226%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%227%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239070e6%22/%3E%3Crect%20x%3D%228%22%20y%3D%2211%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%224%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%225%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%227%22%20y%3D%2212%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%225%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%226%22%20y%3D%2213%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%235f42b0%22/%3E%3Crect%20x%3D%226%22%20y%3D%2214%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239d93c9%22/%3E%3Crect%20x%3D%225%22%20y%3D%2215%22%20width%3D%221%22%20height%3D%221%22%20fill%3D%22%239d93c9%22/%3E%3C/svg%3E"); }
+
+/* ---------- 문제를 화면 가운데쯤에 ----------
+ * 문제 비·풍선 팡팡을 뺀 게임은 문제와 보기가 위에 붙어 있었어요.
+ * 위아래에 같은 크기의 빈 공간을 둬서 가운데로 내려요. (넘치면 빈 공간이 0이 돼서 잘리지 않아요) */
+#game .stage:not(:has(.play-field, .balloon-field))::before,
+#game .stage:not(:has(.play-field, .balloon-field))::after {
+  content: "";
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+#game .stage:not(:has(.play-field, .balloon-field))::after {
+  flex-grow: 1.4;
+}
+
+/* ---------- 결과 창을 살짝 아래로 ---------- */
+#result.screen.active .result-card {
+  margin-top: clamp(16px, 7vh, 72px);
+}

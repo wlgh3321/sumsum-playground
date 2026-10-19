@@ -6,6 +6,8 @@
 const DICT = {
   ko: {
     appName: '셈셈 놀이터',
+    logoA: '셈셈',
+    logoB: '놀이터',
     tagline: '사칙연산을 게임으로 연습해요',
     soundOn: '🔊 소리 켜짐',
     soundOff: '🔇 소리 꺼짐',
@@ -93,6 +95,8 @@ const DICT = {
   },
   en: {
     appName: 'SumSum Playground',
+    logoA: 'SumSum',
+    logoB: 'Playground',
     tagline: 'Practice arithmetic through games',
     soundOn: '🔊 Sound on',
     soundOff: '🔇 Sound off',
