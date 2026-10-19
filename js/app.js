@@ -26,7 +26,7 @@ const App = (() => {
     { id: 'tf', glyph: 'OX', accent: 'var(--sky-deep)', desc: 'modeTfDesc' },
   ];
 
-  let cfg = { sound: true, modes: {} }; // 전체 설정: 소리 + 게임별 설정
+  let cfg = { sound: true, music: true, modes: {} }; // 전체 설정: 소리 + 게임별 설정
   let lang = 'ko';
   let lastMode = 'fall';
   let pendingMode = null; // 설정 팝업에서 시작하려는 게임
@@ -57,7 +57,11 @@ const App = (() => {
       const own = r.modes && typeof r.modes === 'object' ? r.modes[id] : null;
       modes[id] = sanitizeMode(own && typeof own === 'object' ? own : r);
     }
-    return { sound: typeof r.sound === 'boolean' ? r.sound : true, modes };
+    return {
+      sound: typeof r.sound === 'boolean' ? r.sound : true,
+      music: typeof r.music === 'boolean' ? r.music : true,
+      modes,
+    };
   }
 
   function snapshot(id) {
@@ -107,6 +111,8 @@ const App = (() => {
       setPressed(b, b.dataset.lang === lang));
     $('soundBtn').textContent = cfg.sound ? t('soundOn') : t('soundOff');
     setPressed($('soundBtn'), cfg.sound);
+    $('musicBtn').textContent = cfg.music ? t('musicOn') : t('musicOff');
+    setPressed($('musicBtn'), cfg.music);
   }
 
   // 팝업: 지금 고른 게임의 설정만 보여 줘요.
@@ -309,6 +315,22 @@ const App = (() => {
       Sound.setEnabled(cfg.sound);
       changed();
     });
+
+    // 배경음악 켜기/끄기
+    press($('musicBtn'), () => {
+      cfg.music = !cfg.music;
+      if (cfg.music) Music.start(); else Music.stop();
+      changed();
+    });
+
+    // 브라우저 정책상 음악은 첫 터치/클릭 뒤에 시작할 수 있어요.
+    const firstTouch = () => {
+      if (cfg.music) Music.start();
+      window.removeEventListener('pointerdown', firstTouch, true);
+      window.removeEventListener('keydown', firstTouch, true);
+    };
+    window.addEventListener('pointerdown', firstTouch, true);
+    window.addEventListener('keydown', firstTouch, true);
 
     document.querySelectorAll('[data-lang]').forEach(b =>
       press(b, () => setLanguage(b.dataset.lang)));
