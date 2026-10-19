@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="셈셈 놀이터 · SumSum Playground: 사칙연산을 게임으로 연습하는 웹사이트">
+  <title>셈셈 놀이터 · SumSum Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== 홈 ===== -->
+  <section id="home" class="screen active">
+    <header class="top">
+      <div class="brand">
+        <h1 class="logo" data-i18n="appName">셈셈 놀이터</h1>
+        <p class="tagline" data-i18n="tagline">사칙연산을 게임으로 연습해요</p>
+      </div>
+      <div class="top-tools">
+        <button type="button" class="chip" id="soundBtn" aria-pressed="true">🔊 소리 켜짐</button>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" class="chip" data-lang="ko">한국어</button>
+          <button type="button" class="chip" data-lang="en">English</button>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h2 class="section-title" data-i18n="modesTitle">게임 고르기</h2>
+      <div class="mode-grid" id="modeGrid"></div>
+    </section>
+
+    <section class="card weak">
+      <div>
+        <div class="weak-title" id="weakCount"></div>
+        <p class="weak-hint" data-i18n="weakHint">틀린 문제는 가끔 다시 나와요</p>
+      </div>
+      <button type="button" class="btn btn-small" id="weakClear" data-i18n="weakClear">목록 비우기</button>
+    </section>
+  </section>
+
+  <!-- ===== 게임 ===== -->
+  <section id="game" class="screen">
+    <div class="game-top">
+      <button type="button" class="btn btn-small btn-quit" id="quitBtn" data-i18n="quit">그만하기</button>
+      <div class="game-title" id="gameTitle"></div>
+    </div>
+    <div class="scoreboard" id="scoreboard"></div>
+    <div class="game-body">
+      <div class="stage" id="stage"></div>
+      <div class="pad-wrap" id="padWrap" hidden>
+        <div class="answer-box" id="answerBox"><span class="answer-val" id="answerVal"></span></div>
+        <div class="numpad" id="numpad">
+          <button type="button" class="key" data-key="1">1</button>
+          <button type="button" class="key" data-key="2">2</button>
+          <button type="button" class="key" data-key="3">3</button>
+          <button type="button" class="key" data-key="4">4</button>
+          <button type="button" class="key" data-key="5">5</button>
+          <button type="button" class="key" data-key="6">6</button>
+          <button type="button" class="key" data-key="7">7</button>
+          <button type="button" class="key" data-key="8">8</button>
+          <button type="button" class="key" data-key="9">9</button>
+          <button type="button" class="key key-util" data-key="clear" data-i18n="padClear">지우기</button>
+          <button type="button" class="key" data-key="0">0</button>
+          <button type="button" class="key key-ok" data-key="ok" data-i18n="padOk">확인</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 결과 ===== -->
+  <section id="result" class="screen">
+    <div class="card result-card">
+      <div class="result-mode" id="resMode"></div>
+      <div class="result-label" id="resLabel"></div>
+      <div class="result-big" id="resBig"></div>
+      <div class="badge" id="resBadge"></div>
+      <p class="result-note" id="resNote" hidden></p>
+      <div class="stats" id="resStats"></div>
+      <h3 class="section-title small" data-i18n="wrongTitle">틀린 문제</h3>
+      <ul class="wrong-list" id="wrongList"></ul>
+      <div class="result-actions">
+        <button type="button" class="btn btn-primary" id="againBtn" data-i18n="again">다시 하기</button>
+        <button type="button" class="btn" id="homeBtn" data-i18n="backToGames">게임 고르기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 게임 시작 전 설정 팝업 (게임 카드를 누르면 열려요) ===== -->
+  <div id="setup" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+      <div class="modal-head">
+        <h2 class="card-title" id="setupTitle"></h2>
+        <button type="button" class="btn btn-small" id="setupClose" aria-label="Close">✕</button>
+      </div>
+
+      <div class="field">
+        <div class="label" data-i18n="opsLabel">연산 고르기</div>
+        <div class="op-grid" id="opGrid">
+          <button type="button" class="op-btn" data-op="+"><span class="sym">+</span><span data-i18n="opAdd">덧셈</span></button>
+          <button type="button" class="op-btn" data-op="-"><span class="sym">−</span><span data-i18n="opSub">뺄셈</span></button>
+          <button type="button" class="op-btn" data-op="*"><span class="sym">×</span><span data-i18n="opMul">곱셈</span></button>
+          <button type="button" class="op-btn" data-op="/"><span class="sym">÷</span><span data-i18n="opDiv">나눗셈</span></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span data-i18n="presetLabel">난이도</span> <span class="note" id="presetNote"></span></div>
+        <div class="seg" id="presetGrid">
+          <button type="button" class="chip" data-preset="easy" data-i18n="presetEasy">쉬움</button>
+          <button type="button" class="chip" data-preset="normal" data-i18n="presetNormal">보통</button>
+          <button type="button" class="chip" data-preset="hard" data-i18n="presetHard">어려움</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="addMax"><span data-i18n="addMaxLabel">덧셈·뺄셈 최대 숫자</span><output class="range-out" id="addMaxOut" for="addMax"></output></label>
+        <input type="range" id="addMax" min="5" max="100" step="5">
+      </div>
+      <div class="field">
+        <label class="label" for="mulMax"><span data-i18n="mulMaxLabel">곱셈·나눗셈 최대 단</span><output class="range-out" id="mulMaxOut" for="mulMax"></output></label>
+        <input type="range" id="mulMax" min="2" max="15" step="1">
+      </div>
+
+      <div class="field" id="speedField">
+        <div class="label" data-i18n="speedLabel">속도</div>
+        <div class="seg" id="speedGrid">
+          <button type="button" class="chip" data-speed="vslow" data-i18n="speedVslow">아주 느리게</button>
+          <button type="button" class="chip" data-speed="slow" data-i18n="speedSlow">느리게</button>
+          <button type="button" class="chip" data-speed="normal" data-i18n="speedNormal">보통</button>
+          <button type="button" class="chip" data-speed="fast" data-i18n="speedFast">빠르게</button>
+          <button type="button" class="chip" data-speed="vfast" data-i18n="speedVfast">아주 빠르게</button>
+        </div>
+      </div>
+
+      <div class="field" id="timeField">
+        <div class="label" data-i18n="timeLabel">제한 시간</div>
+        <div class="seg" id="timeGrid">
+          <button type="button" class="chip" data-time="30">30초</button>
+          <button type="button" class="chip" data-time="60">1분</button>
+          <button type="button" class="chip" data-time="90">1분 30초</button>
+          <button type="button" class="chip" data-time="120">2분</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="startBtn" data-i18n="startGame">시작하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공통 레이어 -->
+  <div id="countdown" class="overlay" hidden><div id="countNum"></div></div>
+  <div id="banner" class="banner" hidden></div>
+  <div id="fxLayer" class="fx-layer"></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+</div>
+
+<script src="js/i18n.js"></script>
+<script src="js/store.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/problems.js"></script>
+<script src="js/game.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

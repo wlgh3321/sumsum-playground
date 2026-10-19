@@ -1,0 +1,222 @@
+/*
+ * 화면 글자 단어장: 화면에 나오는 모든 글자는 여기서 관리해요. (한국어 / English)
+ * 키를 바꾸면 해당 글자가 모든 화면에 반영돼요.
+ * {n} 같은 자리표시자는 t(키, { n: 값 })으로 채워요.
+ */
+const DICT = {
+  ko: {
+    appName: '셈셈 놀이터',
+    tagline: '사칙연산을 게임으로 연습해요',
+    soundOn: '🔊 소리 켜짐',
+    soundOff: '🔇 소리 꺼짐',
+    startGame: '시작하기',
+    opsLabel: '연산 고르기',
+    opAdd: '덧셈',
+    opSub: '뺄셈',
+    opMul: '곱셈',
+    opDiv: '나눗셈',
+    presetLabel: '난이도',
+    presetEasy: '쉬움',
+    presetNormal: '보통',
+    presetHard: '어려움',
+    presetCustom: '직접 설정',
+    addMaxLabel: '덧셈·뺄셈 최대 숫자',
+    mulMaxLabel: '곱셈·나눗셈 최대 단',
+    rangeAdd: '1~{n}',
+    rangeMul: '1~{n}단',
+    speedLabel: '속도',
+    speedVslow: '아주 느리게',
+    speedSlow: '느리게',
+    speedNormal: '보통',
+    speedFast: '빠르게',
+    speedVfast: '아주 빠르게',
+    timeLabel: '제한 시간',
+    modesTitle: '게임 고르기',
+    modeFallName: '문제 비',
+    modeFallDesc: '떨어지기 전에 답을 입력해요',
+    modeMinuteName: '{time} 도전',
+    modeMinuteDesc: '제한 시간 동안 많이 맞혀요',
+    modeRaceName: '60문제 타임어택',
+    modeRaceDesc: '60문제를 가장 빨리 맞혀요',
+    modeBalloonName: '풍선 팡팡',
+    modeBalloonDesc: '정답 풍선을 터뜨려요',
+    modeBeatName: '시간 버티기',
+    modeBeatDesc: '맞히면 시간이 늘어나요',
+    modeTfName: '참 거짓 스피드',
+    modeTfDesc: '식이 맞는지 빨리 골라요',
+    bestNone: '아직 기록이 없어요',
+    bestLabel: '최고',
+    ptsUnit: '점',
+    secUnit: '초',
+    minUnit: '분',
+    weakHint: '틀린 문제는 가끔 다시 나와요',
+    weakClear: '목록 비우기',
+    weakCount: '다시 연습할 문제 {n}개',
+    weakNone: '아직 틀린 문제가 없어요',
+    weakCleared: '목록을 비웠어요',
+    needOp: '연산은 최소 하나는 켜 두어야 해요',
+    quit: '그만하기',
+    countdownGo: '시작!',
+    sbScore: '점수',
+    sbLevel: '레벨',
+    sbLives: '목숨',
+    sbTime: '시간',
+    sbCombo: '콤보',
+    sbProgress: '진행',
+    sbWrong: '틀린 수',
+    levelUp: '레벨 {n}!',
+    race10: '{n}문제 통과!',
+    combo: '{n}연속 정답!',
+    tfQuestion: '이 식이 맞나요?',
+    tfTrue: '맞아요',
+    tfFalse: '틀려요',
+    tfHint: '← 또는 O: 맞아요 · → 또는 X: 틀려요',
+    padClear: '지우기',
+    padOk: '확인',
+    beatHint: '키보드 1~4로도 고를 수 있어요',
+    resLabelScore: '점수',
+    resLabelTime: '걸린 시간',
+    badgeNew: '새 최고 기록!',
+    badgeFirst: '첫 기록!',
+    badgeBest: '최고 기록 {v}',
+    statCorrect: '맞힌 문제',
+    statAcc: '정확도',
+    statStreak: '최대 연속',
+    wrongTitle: '틀린 문제',
+    wrongNone: '틀린 문제가 없어요! 완벽해요 🎉',
+    wrongAns: '정답',
+    wrongMine: '내 답',
+    missed: '놓쳤어요',
+    again: '다시 하기',
+    backToGames: '게임 고르기',
+    quitNote: '그만해서 이번 기록은 저장되지 않았어요',
+  },
+  en: {
+    appName: 'SumSum Playground',
+    tagline: 'Practice arithmetic through games',
+    soundOn: '🔊 Sound on',
+    soundOff: '🔇 Sound off',
+    startGame: 'Start',
+    opsLabel: 'Operations',
+    opAdd: 'Addition',
+    opSub: 'Subtraction',
+    opMul: 'Multiplication',
+    opDiv: 'Division',
+    presetLabel: 'Level',
+    presetEasy: 'Easy',
+    presetNormal: 'Normal',
+    presetHard: 'Hard',
+    presetCustom: 'Custom',
+    addMaxLabel: 'Max number (+ and −)',
+    mulMaxLabel: 'Max table (× and ÷)',
+    rangeAdd: '1–{n}',
+    rangeMul: '1–{n}',
+    speedLabel: 'Speed',
+    speedVslow: 'Very slow',
+    speedSlow: 'Slow',
+    speedNormal: 'Normal',
+    speedFast: 'Fast',
+    speedVfast: 'Very fast',
+    timeLabel: 'Time limit',
+    modesTitle: 'Choose a game',
+    modeFallName: 'Falling Problems',
+    modeFallDesc: 'Type answers before they land',
+    modeMinuteName: '{time} Challenge',
+    modeMinuteDesc: 'Solve as many as you can in time',
+    modeRaceName: '60-Question Race',
+    modeRaceDesc: 'Solve 60 problems as fast as you can',
+    modeBalloonName: 'Balloon Pop',
+    modeBalloonDesc: 'Pop the balloon with the answer',
+    modeBeatName: 'Beat the Clock',
+    modeBeatDesc: 'Right answers add time',
+    modeTfName: 'True or False',
+    modeTfDesc: 'Decide if the equation is right',
+    bestNone: 'No record yet',
+    bestLabel: 'Best',
+    ptsUnit: 'pts',
+    secUnit: 's',
+    minUnit: 'min',
+    weakHint: 'Missed problems come back now and then',
+    weakClear: 'Clear list',
+    weakCount: '{n} problems to review',
+    weakNone: 'No missed problems yet',
+    weakCleared: 'List cleared',
+    needOp: 'Keep at least one operation on',
+    quit: 'Quit',
+    countdownGo: 'Go!',
+    sbScore: 'Score',
+    sbLevel: 'Level',
+    sbLives: 'Lives',
+    sbTime: 'Time',
+    sbCombo: 'Combo',
+    sbProgress: 'Progress',
+    sbWrong: 'Mistakes',
+    levelUp: 'Level {n}!',
+    race10: '{n} solved!',
+    combo: '{n} in a row!',
+    tfQuestion: 'Is this equation right?',
+    tfTrue: 'True',
+    tfFalse: 'False',
+    tfHint: '← or O: True · → or X: False',
+    padClear: 'Clear',
+    padOk: 'OK',
+    beatHint: 'Keys 1–4 also work',
+    resLabelScore: 'Score',
+    resLabelTime: 'Time',
+    badgeNew: 'New best!',
+    badgeFirst: 'First record!',
+    badgeBest: 'Best {v}',
+    statCorrect: 'Solved',
+    statAcc: 'Accuracy',
+    statStreak: 'Best streak',
+    wrongTitle: 'Mistakes',
+    wrongNone: 'No mistakes! Perfect 🎉',
+    wrongAns: 'Answer',
+    wrongMine: 'Yours',
+    missed: 'Missed',
+    again: 'Play again',
+    backToGames: 'Choose a game',
+    quitNote: 'You quit early, so this run was not saved',
+  },
+};
+
+let LANG = 'ko';
+
+function setLang(l) {
+  LANG = DICT[l] ? l : 'ko';
+}
+
+function t(key, vars) {
+  let s = (DICT[LANG] && DICT[LANG][key]) || DICT.ko[key] || key;
+  if (vars) {
+    for (const k of Object.keys(vars)) s = s.split(`{${k}}`).join(String(vars[k]));
+  }
+  return s;
+}
+
+// 초를 읽기 좋게: 30초 / 1분 / 1분 30초 (영어: 30 sec / 1 min / 1 min 30 sec)
+function duration(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  if (LANG === 'en') {
+    if (m === 0) return `${s} sec`;
+    return s === 0 ? `${m} min` : `${m} min ${s} sec`;
+  }
+  if (m === 0) return `${s}${t('secUnit')}`;
+  return s === 0 ? `${m}${t('minUnit')}` : `${m}${t('minUnit')} ${s}${t('secUnit')}`;
+}
+
+const MODE_NAME_KEY = {
+  fall: 'modeFallName',
+  minute: 'modeMinuteName',
+  race: 'modeRaceName',
+  balloon: 'modeBalloonName',
+  beat: 'modeBeatName',
+  tf: 'modeTfName',
+};
+
+// 게임 이름. 1분 도전은 제한 시간에 따라 "2분 도전", "30초 도전"처럼 바뀌어요.
+function modeName(id, s) {
+  if (id === 'minute') return t('modeMinuteName', { time: duration(s.time) });
+  return t(MODE_NAME_KEY[id]);
+}
