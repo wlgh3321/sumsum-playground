@@ -205,7 +205,9 @@ const App = (() => {
     pendingMode = id;
     $('setup').hidden = false;
     renderSetup();
-    $('startBtn').focus();
+    // 맨 위(게임 방식)부터 보이게. 시작 버튼에 포커스를 줘도 아래로 내려가지 않아요.
+    $('setup').querySelector('.modal-card').scrollTop = 0;
+    $('startBtn').focus({ preventScroll: true });
   }
 
   function closeSetup() {

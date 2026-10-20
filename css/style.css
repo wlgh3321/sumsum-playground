@@ -1354,3 +1354,29 @@ input[type="range"] {
   text-overflow: clip;
   word-break: keep-all;
 }
+
+/* ---------- 설정 팝업 간격 다듬기 ---------- */
+.play-note {
+  white-space: pre-line;
+}
+
+#setup .field {
+  margin-bottom: 12px;
+}
+
+#setup .label {
+  margin-bottom: 6px;
+}
+
+/* 슬라이더 칸이 너무 넓어서 줄였어요 (최대 숫자 → 최대 단 → 속도 사이) */
+#setup input[type="range"] {
+  height: 26px;
+}
+
+#setup .field:has(input[type="range"]) {
+  margin-bottom: 4px;
+}
+
+#setup .field:has(input[type="range"]) .label {
+  margin-bottom: 0;
+}
