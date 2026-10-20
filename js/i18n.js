@@ -232,7 +232,7 @@ const DICT = {
     tfTrue: 'True',
     tfFalse: 'False',
     tfHint: '← or O: True · → or X: False',
-    padClear: 'Clear',
+    padClear: 'Delete',
     padOk: 'OK',
     beatHint: 'Keys 1–4 also work',
     resLabelScore: 'Score',

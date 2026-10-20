@@ -496,10 +496,13 @@ const Game = (() => {
       node.textContent = v;
       node.style.left = `${12.5 + i * 25}%`;
       field.appendChild(node);
-      // 풍선 속도: 레벨(10문제)마다 더 빨리 올라가요. 최대 기본의 3배.
-      const lvBoost = Math.min(3, 1 + 0.2 * (G.level - 1));
-      const vel = H * 0.09 * lvBoost * G.sp * (0.85 + Math.random() * 0.3);
-      G.balls.push({ v, node, y: 0, vel, gone: false });
+      // 풍선 속도: 기본이 예전보다 빠르고, 레벨(8문제)마다 25%씩 더 빨라져요. 최대 기본의 3.5배.
+      // 풍선마다 출발 위치와 속도를 다르게 해서, 정답 풍선이 먼저 날아가 버릴 수도 있어요.
+      const lvBoost = Math.min(3.5, 1 + 0.25 * (G.level - 1));
+      const vel = H * 0.12 * lvBoost * G.sp * (0.8 + Math.random() * 0.4);
+      const startY = -Math.random() * H * 0.25;
+      node.style.transform = `translateY(${-startY}px)`;
+      G.balls.push({ v, node, y: startY, vel, gone: false });
     });
   }
 
@@ -512,7 +515,7 @@ const Game = (() => {
       node.classList.add('popped');
       setTimeout(() => node.remove(), 300);
       hit(p, POINTS * G.level);
-      checkLevel(10);
+      checkLevel(8);
       balloonNext();
       return;
     }
@@ -542,8 +545,10 @@ const Game = (() => {
     const v = Number(btn.dataset.v);
     const p = G.cur;
     if (v === p.ans) {
-      G.timeLeft += 2;
-      hit(p, POINTS, `+${POINTS} · +2${t('secUnit')}`);
+      // 맞히면 늘어나는 시간: 레벨(10문제)마다 줄어요. 2초 → 최소 0.5초. 최대 30초까지만 쌓여요.
+      const bonus = Math.max(0.5, 2 - 0.25 * (G.level - 1));
+      G.timeLeft = Math.min(G.timeMax, G.timeLeft + bonus);
+      hit(p, POINTS, `+${POINTS} · +${bonus}${t('secUnit')}`);
       if (G.streak >= 3) banner(t('combo', { n: G.streak }));
     } else {
       G.timeLeft -= 3;
@@ -725,7 +730,8 @@ const Game = (() => {
 
     beat: {
       timed: true,
-      drain: () => 1,
+      // 시간이 갈수록 시계가 빨리 줄어요: 30초 뒤 1.45배, 1분 뒤 1.9배, 최대 3배
+      drain: () => Math.min(3, 1 + 0.015 * G.elapsed),
       build() {
         $('stage').innerHTML =
           `<div class="clock"><div class="clock-fill" id="clockFill"></div></div>` +

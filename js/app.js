@@ -427,8 +427,10 @@ const App = (() => {
 
     // 설정 팝업
     press($('startBtn'), startPending);
-    press($('setupClose'), closeSetup);
-    $('setup').addEventListener('pointerdown', e => {
+    // 닫기는 손을 뗄 때(click) 처리해요. 누르는 순간(pointerdown) 닫으면 손을 떼는 순간의 클릭이
+    // 뒤에 있던 게임 카드에 떨어져서 팝업이 다시 열렸어요(휴대폰에서 X가 안 눌리는 것처럼 보이던 문제).
+    $('setupClose').addEventListener('click', closeSetup);
+    $('setup').addEventListener('click', e => {
       if (e.target === $('setup')) closeSetup();
     });
 
