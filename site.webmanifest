@@ -1,0 +1,12 @@
+{
+  "name": "셈셈 놀이터 · SumSum Playground",
+  "short_name": "셈셈 놀이터",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0a1c",
+  "theme_color": "#0d0a1c",
+  "icons": [
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
