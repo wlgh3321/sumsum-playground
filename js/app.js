@@ -31,6 +31,7 @@ const App = (() => {
   let cfg = { sound: true, music: true, modes: {} }; // 전체 설정: 소리 + 게임별 설정
   let lang = 'ko';
   let lastMode = 'fall';
+  let lastResult = null; // 공유하기에 쓰는 마지막 결과
   let pendingMode = null; // 설정 팝업에서 시작하려는 게임
   let toastTimer = 0;
 
@@ -83,6 +84,36 @@ const App = (() => {
     } catch (e) {}
   }
   window.track = track;
+
+  // 결과 공유: 휴대폰은 공유 창(카톡·인스타 등)을 띄우고, 안 되면 문구와 링크를 복사해요.
+  async function shareResult() {
+    const r = lastResult;
+    if (!r) return;
+    const url = location.protocol.startsWith('http')
+      ? location.origin + location.pathname
+      : 'https://wlgh3321.github.io/sumsum-playground/';
+    const game = modeName(r.mode, r.settings);
+    const v = fmtValue(r.mode, r.value);
+    const n = Ranking.placeFor(r);
+    const line = n ? t('shareRanked', { game, n, v }) : t('shareScore', { game, v });
+    const text = `${line}\n${t('shareInvite')}`;
+    track(`share-${r.mode}`, '결과 공유');
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: t('appName'), text, url });
+        return;
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // 공유 창을 닫은 경우
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      toast(t('shareCopied'));
+    } catch (e) {
+      toast(t('shareFail'));
+    }
+  }
 
   function save() {
     Store.setSettings(cfg);
@@ -237,6 +268,8 @@ const App = (() => {
   // 결과 화면. Game이 한 판이 끝났을 때 호출해요.
   function showResult(r) {
     lastMode = r.mode;
+    lastResult = r;
+    $('shareBtn').hidden = r.badge.kind === 'quit'; // 그만한 판은 공유 버튼을 숨겨요
     const b = r.badge;
     const badge = $('resBadge');
 
@@ -401,6 +434,8 @@ const App = (() => {
       press(b, () => Game.key(b.dataset.key)));
 
     press($('quitBtn'), () => Game.quit());
+    // 공유 창은 브라우저 정책상 터치를 뗄 때(click) 열어야 아이폰에서도 떠요.
+    $('shareBtn').addEventListener('click', shareResult);
     press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode)));
     press($('homeBtn'), () => showHome());
 

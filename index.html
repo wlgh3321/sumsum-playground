@@ -6,14 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="셈셈 놀이터 · SumSum Playground: 사칙연산을 게임으로 연습하는 웹사이트">
   <title>셈셈 놀이터 · SumSum Playground</title>
+  <!-- 카톡·인스타 등에 링크를 보낼 때 뜨는 미리보기 (도메인을 바꾸면 주소도 바꿔요) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="셈셈 놀이터">
+  <meta property="og:title" content="셈셈 놀이터 · SumSum Playground">
+  <meta property="og:description" content="사칙연산 아케이드 게임 6종! 랭킹전에서 명예의 전당에 이름을 올려 보세요.">
+  <meta property="og:url" content="https://wlgh3321.github.io/sumsum-playground/">
+  <meta property="og:image" content="https://wlgh3321.github.io/sumsum-playground/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=Do+Hyeon&family=Press+Start+2P&display=swap" rel="stylesheet">
   <!-- 파일 버전(?v=…): 고칠 때마다 바꿔야 휴대폰이 예전 파일을 쓰지 않아요 -->
-  <link rel="stylesheet" href="css/theme.css?v=20261020d">
+  <link rel="stylesheet" href="css/theme.css?v=20261020e">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
-  <link rel="stylesheet" href="css/style.css?v=20261020d">
-  <link rel="stylesheet" href="css/arcade.css?v=20261020d">
+  <link rel="stylesheet" href="css/style.css?v=20261020e">
+  <link rel="stylesheet" href="css/arcade.css?v=20261020e">
 </head>
 <body>
 <div id="app">
@@ -100,6 +110,7 @@
       <h3 class="section-title small" data-i18n="wrongTitle">틀린 문제</h3>
       <ul class="wrong-list" id="wrongList"></ul>
       <div class="result-actions">
+        <button type="button" class="btn btn-share" id="shareBtn" data-i18n="shareBtn">📤 결과 공유하기</button>
         <button type="button" class="btn btn-primary" id="againBtn" data-i18n="again">다시 하기</button>
         <button type="button" class="btn" id="homeBtn" data-i18n="backToGames">게임 고르기</button>
       </div>
@@ -189,17 +200,17 @@
   <div id="toast" class="toast" role="status" hidden></div>
 </div>
 
-<script src="js/i18n.js?v=20261020d"></script>
-<script src="js/store.js?v=20261020d"></script>
-<script src="js/audio.js?v=20261020d"></script>
-<script src="js/music.js?v=20261020d"></script>
-<script src="js/problems.js?v=20261020d"></script>
-<script src="js/game.js?v=20261020d"></script>
+<script src="js/i18n.js?v=20261020e"></script>
+<script src="js/store.js?v=20261020e"></script>
+<script src="js/audio.js?v=20261020e"></script>
+<script src="js/music.js?v=20261020e"></script>
+<script src="js/problems.js?v=20261020e"></script>
+<script src="js/game.js?v=20261020e"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase.js?v=20261020d"></script>
-<script src="js/ranking.js?v=20261020d"></script>
-<script src="js/app.js?v=20261020d"></script>
+<script src="js/firebase.js?v=20261020e"></script>
+<script src="js/ranking.js?v=20261020e"></script>
+<script src="js/app.js?v=20261020e"></script>
 <!-- 방문자 수 (GoatCounter): 인터넷 주소로 열었을 때만 세요. 맥에서 파일로 열 때는 안 세요. -->
 <script>
   if (location.protocol.startsWith('http')) {

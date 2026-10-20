@@ -577,3 +577,10 @@ html[lang="ko"] .logo-mark {
 .play-note {
   color: var(--text-dim);
 }
+
+.btn-share {
+  background: transparent;
+  border-color: var(--mint);
+  color: var(--mint);
+  box-shadow: 0 0 14px rgba(77, 225, 255, 0.3);
+}

@@ -1380,3 +1380,8 @@ input[type="range"] {
 #setup .field:has(input[type="range"]) .label {
   margin-bottom: 0;
 }
+
+/* 결과 공유 버튼 */
+.btn-share {
+  background: var(--mint);
+}

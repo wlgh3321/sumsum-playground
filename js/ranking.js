@@ -13,6 +13,7 @@ const Ranking = (() => {
   const BAD = ['시발', '씨발', 'ㅅㅂ', '병신', 'ㅂㅅ', '개새', '좆', '존나', '니미', '느금', '섹스', 'fuck', 'shit', 'bitch', 'sex', 'dick'];
 
   let tab = 'fall';
+  let lastPlace = null; // 방금 등록한 순위 { mode, value, n } — 공유 문구에 써요
   const cache = {}; // mode -> { at, rows }
 
   /* ---------- Firebase 준비 기다리기 ---------- */
@@ -137,6 +138,7 @@ const Ranking = (() => {
     if (!box) return;
     box.hidden = true;
     box.textContent = '';
+    lastPlace = null;
     if (r.badge.kind === 'quit' || !(r.value > 0)) return;
 
     if (!isRanked(r.mode, r.settings)) {
@@ -213,6 +215,7 @@ const Ranking = (() => {
         if (window.track) window.track(`rank-${r.mode}`, '명예의 전당 등록');
         const fresh = await top(r.mode, true);
         const place = fresh.findIndex(x => x.id === id);
+        if (place >= 0) lastPlace = { mode: r.mode, value: r.value, n: place + 1 };
         box.textContent = '';
         const done = document.createElement('div');
         done.className = 'rank-hi';
@@ -231,5 +234,10 @@ const Ranking = (() => {
     });
   }
 
-  return { renderHome, onResult, setTab: m => { tab = m; } };
+  // 공유 문구용: 이 결과로 명예의 전당에 등록했으면 몇 위인지
+  function placeFor(r) {
+    return lastPlace && lastPlace.mode === r.mode && lastPlace.value === r.value ? lastPlace.n : null;
+  }
+
+  return { renderHome, onResult, placeFor, setTab: m => { tab = m; } };
 })();
