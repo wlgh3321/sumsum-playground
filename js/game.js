@@ -6,9 +6,11 @@
 // 속도 배율: 문제 비 · 풍선 팡팡에만 적용돼요.
 const SPEED = { vslow: 0.6, slow: 0.8, normal: 1, fast: 1.35, vfast: 2 };
 
-// 문제 비(보통 이상): 처음에는 기준 속도의 80%로 시작해서 1초마다 0.01배씩 빨라지고, 최대 2배에서 멈춰요.
+// 문제 비(보통 이상): 처음에는 기준 속도의 80%로 시작해서 1초마다 0.02배씩 빨라져요. 최대 4배.
+// (예전에는 최대 2배라서 잘하는 사람은 게임이 끝나지 않았어요.)
+//  30초 → 1.4배, 1분 → 2배, 2분 → 3.2배, 2분 40초부터 4배
 function fallRamp(sec) {
-  return Math.min(2, 0.8 + 0.01 * sec);
+  return Math.min(4, 0.8 + 0.02 * sec);
 }
 
 // 최고 기록 키: 모드 + 숫자 범위 + (속도 또는 제한 시간, 해당 모드만)
@@ -494,7 +496,9 @@ const Game = (() => {
       node.textContent = v;
       node.style.left = `${12.5 + i * 25}%`;
       field.appendChild(node);
-      const vel = H * (0.09 + 0.012 * (G.level - 1)) * G.sp * (0.85 + Math.random() * 0.3);
+      // 풍선 속도: 레벨(10문제)마다 더 빨리 올라가요. 최대 기본의 3배.
+      const lvBoost = Math.min(3, 1 + 0.2 * (G.level - 1));
+      const vel = H * 0.09 * lvBoost * G.sp * (0.85 + Math.random() * 0.3);
       G.balls.push({ v, node, y: 0, vel, gone: false });
     });
   }
@@ -602,7 +606,10 @@ const Game = (() => {
         G.spawnIn -= dt;
         if (G.spawnIn <= 0) {
           if (G.items.length < 8) spawnFall();
-          G.spawnIn = Math.max(1.2, 3 - 0.35 * (G.level - 1)) / G.sp;
+          // 새 문제가 나오는 간격: 보통 이상은 빨라지는 만큼 더 자주 나와요(최소 0.6초).
+          G.spawnIn = rampUp
+            ? Math.max(0.6, 2.6 / fallRamp(G.elapsed)) / G.sp
+            : Math.max(1.2, 3 - 0.35 * (G.level - 1)) / G.sp;
         }
 
         for (const it of G.items) {

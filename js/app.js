@@ -96,19 +96,19 @@ const App = (() => {
     const v = fmtValue(r.mode, r.value);
     const n = Ranking.placeFor(r);
     const line = n ? t('shareRanked', { game, n, v }) : t('shareScore', { game, v });
-    const text = `${line}\n${t('shareInvite')}`;
+    const text = `${line}\n${t('shareInvite')}\n${url}`;
     track(`share-${r.mode}`, '결과 공유');
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: t('appName'), text, url });
+        await navigator.share({ title: t('appName'), text });
         return;
       } catch (e) {
         if (e && e.name === 'AbortError') return; // 공유 창을 닫은 경우
       }
     }
     try {
-      await navigator.clipboard.writeText(`${text}\n${url}`);
+      await navigator.clipboard.writeText(text);
       toast(t('shareCopied'));
     } catch (e) {
       toast(t('shareFail'));
