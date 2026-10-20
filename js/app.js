@@ -92,7 +92,7 @@ const App = (() => {
     // 영어로 하고 있으면 영어 미리보기가 뜨는 …/en/ 주소로 보내요.
     const base = location.protocol.startsWith('http')
       ? location.origin + location.pathname.replace(/(index\.html)?$/, '')
-      : 'https://wlgh3321.github.io/sumsum-playground/';
+      : 'https://sumsum.studiojhl.com/';
     const url = lang === 'en' ? `${base}en/` : base;
     const game = modeName(r.mode, r.settings);
     const v = fmtValue(r.mode, r.value);
