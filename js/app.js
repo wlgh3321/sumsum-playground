@@ -89,9 +89,11 @@ const App = (() => {
   async function shareResult() {
     const r = lastResult;
     if (!r) return;
-    const url = location.protocol.startsWith('http')
-      ? location.origin + location.pathname
+    // 영어로 하고 있으면 영어 미리보기가 뜨는 …/en/ 주소로 보내요.
+    const base = location.protocol.startsWith('http')
+      ? location.origin + location.pathname.replace(/(index\.html)?$/, '')
       : 'https://wlgh3321.github.io/sumsum-playground/';
+    const url = lang === 'en' ? `${base}en/` : base;
     const game = modeName(r.mode, r.settings);
     const v = fmtValue(r.mode, r.value);
     const n = Ranking.placeFor(r);
@@ -450,6 +452,12 @@ const App = (() => {
 
   function init() {
     cfg = sanitize(Store.getSettings());
+    // 공유 링크(…/en/ → ?lang=en)로 들어오면 그 언어로 시작하고, 주소에서는 지워요.
+    const want = new URLSearchParams(location.search).get('lang');
+    if (want === 'ko' || want === 'en') {
+      Store.setLang(want);
+      try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+    }
     const saved = Store.getLang();
     if (saved === 'ko' || saved === 'en') {
       lang = saved;
