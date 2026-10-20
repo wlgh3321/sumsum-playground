@@ -74,6 +74,16 @@ const App = (() => {
     return { ...s, ops: [...s.ops], ranked: false };
   }
 
+  // 방문자 통계(GoatCounter)에 사건 하나를 남겨요. 통계가 꺼져 있어도 게임은 그대로예요.
+  function track(path, title) {
+    try {
+      if (window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path, title, event: true });
+      }
+    } catch (e) {}
+  }
+  window.track = track;
+
   function save() {
     Store.setSettings(cfg);
   }
@@ -219,7 +229,9 @@ const App = (() => {
     if (!pendingMode) return;
     const id = pendingMode;
     closeSetup();
-    Game.start(id, snapshot(id));
+    const s = snapshot(id);
+    track(`play-${id}${s.ranked ? '-ranked' : ''}`, `게임 시작: ${modeName(id, s)}`);
+    Game.start(id, s);
   }
 
   // 결과 화면. Game이 한 판이 끝났을 때 호출해요.

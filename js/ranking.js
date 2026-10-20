@@ -210,6 +210,7 @@ const Ranking = (() => {
         const b = await board();
         const id = await b.submit(r.mode, c.name, r.value);
         setSavedName(c.name);
+        if (window.track) window.track(`rank-${r.mode}`, '명예의 전당 등록');
         const fresh = await top(r.mode, true);
         const place = fresh.findIndex(x => x.id === id);
         box.textContent = '';
