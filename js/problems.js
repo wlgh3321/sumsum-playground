@@ -21,13 +21,21 @@ const Problems = (() => {
     return arr;
   }
 
-  // 레벨이 오르면 숫자 범위가 12%씩 넓어져요. 곱셈·나눗셈 단은 15단까지만.
-  function rangeFor(s, level) {
-    const k = 1 + 0.12 * (level - 1);
+  // 숫자 범위는 설정한 값 그대로예요. 레벨이 올라도 넘지 않아요.
+  // (예전에는 레벨마다 범위가 넓어져서 9단으로 해도 11·12단이 나왔어요.)
+  // 레벨은 속도와 점수에만 영향을 줘요.
+  function rangeFor(s) {
     return {
-      add: Math.min(300, Math.round(s.addMax * k)),
-      mul: Math.min(15, Math.round(s.mulMax * k)),
+      add: Math.max(1, Math.round(s.addMax)),
+      mul: Math.max(1, Math.round(s.mulMax)),
     };
+  }
+
+  // 이 문제가 지금 설정 범위 안에 있는지 (틀린 문제를 다시 낼 때 확인해요)
+  function fits(p, r) {
+    if (p.op === '+' || p.op === '-') return p.a <= r.add && p.b <= r.add;
+    if (p.op === '*') return p.a <= r.mul && p.b <= r.mul;
+    return p.b <= r.mul && p.ans <= r.mul; // 나눗셈: 나누는 수와 몫이 범위 안
   }
 
   function fresh(op, r) {
@@ -54,14 +62,16 @@ const Problems = (() => {
   }
 
   // 새 문제 만들기. 틀린 문제 목록(weak)이 있으면 25% 확률로 그중에서 다시 꺼내요.
+  // 틀린 문제는 지금 설정 범위 안에 있는 것만 다시 내요. (다른 설정에서 틀린 12단 문제가 9단 게임에 나오지 않게)
   function makeProblem(s, level, weak = []) {
     const ops = s.ops && s.ops.length ? s.ops : OPS;
-    const pool = weak.filter(w => ops.includes(w.op));
+    const r = rangeFor(s);
+    const pool = weak.filter(w => ops.includes(w.op) && fits(w, r));
     if (pool.length && Math.random() < 0.25) {
       const w = pick(pool);
       return { op: w.op, a: w.a, b: w.b, ans: w.ans };
     }
-    return fresh(pick(ops), rangeFor(s, level));
+    return fresh(pick(ops), r);
   }
 
   // 정답 근처의 오답 숫자. 곱셈은 앞뒤 단의 답(예: 7×8 → 6×8, 7×9)을 먼저 섞어요.
@@ -107,7 +117,7 @@ const Problems = (() => {
   const equation = (p, shown) => `${p.a} ${SYM[p.op]} ${p.b} = ${shown}`;
   const levelOf = (n, perLevel) => Math.floor(n / perLevel) + 1;
 
-  const api = { OPS, SYM, rangeFor, makeProblem, makeChoices, makeTF, text, equation, levelOf };
+  const api = { OPS, SYM, rangeFor, fits, makeProblem, makeChoices, makeTF, text, equation, levelOf };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   return api;

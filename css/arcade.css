@@ -510,3 +510,70 @@ html[lang="ko"] .logo-mark {
 #result.screen.active .result-card {
   margin-top: clamp(16px, 7vh, 72px);
 }
+
+/* ---------- 순위표: 아케이드 하이스코어 ---------- */
+.rank-head .section-title {
+  color: var(--sun);
+  text-shadow: 2px 2px 0 var(--pink);
+}
+
+.rank-rule,
+.rank-note,
+.rank-empty {
+  color: var(--text-dim);
+}
+
+.rank-tab[aria-pressed="true"] {
+  background: var(--sun);
+  border-color: var(--sun);
+}
+
+.rank-row {
+  border-radius: 2px;
+}
+
+.rank-row:nth-child(odd) {
+  background: rgba(106, 77, 255, 0.12);
+}
+
+.rank-no { font-size: 12px; color: var(--mint); }
+.rank-score { font-size: 13px; color: var(--sun); }
+.rank-row.r1 .rank-no, .rank-row.r1 .rank-name { color: var(--sun); }
+.rank-row.r2 .rank-no { color: var(--text); }
+.rank-row.r3 .rank-no { color: var(--peach); }
+
+.rank-row.me {
+  outline: 2px solid var(--pink);
+  animation: rankBlink 0.6s steps(1) 4;
+}
+
+@keyframes rankBlink {
+  50% { outline-color: transparent; }
+}
+
+.rank-hi {
+  color: var(--sun);
+}
+
+.rank-form input {
+  border-color: var(--mint);
+  border-radius: 2px;
+  color: var(--text);
+}
+
+.rank-form input:focus {
+  outline: 3px solid var(--sun);
+  outline-offset: 2px;
+}
+
+/* 랭킹전 버튼 */
+#playGrid [data-play="ranked"][aria-pressed="true"] {
+  background: var(--sun);
+  border-color: var(--sun);
+  color: var(--on-bright);
+  box-shadow: 0 0 16px rgba(255, 225, 77, 0.4);
+}
+
+.play-note {
+  color: var(--text-dim);
+}

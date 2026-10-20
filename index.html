@@ -39,6 +39,15 @@
       <div class="mode-grid" id="modeGrid"></div>
     </section>
 
+    <section class="card rank-board" aria-labelledby="rankTitle">
+      <div class="rank-head">
+        <h2 class="section-title" id="rankTitle" data-i18n="rankTitle">명예의 전당</h2>
+        <p class="rank-rule" id="rankRule"></p>
+      </div>
+      <div class="rank-tabs" id="rankTabs" role="group" aria-label="게임 선택"></div>
+      <ol class="rank-list" id="rankList"></ol>
+    </section>
+
     <section class="card weak">
       <div>
         <div class="weak-title" id="weakCount"></div>
@@ -85,6 +94,7 @@
       <div class="result-big" id="resBig"></div>
       <div class="badge" id="resBadge"></div>
       <p class="result-note" id="resNote" hidden></p>
+      <div class="rank-box" id="rankBox" hidden></div>
       <div class="stats" id="resStats"></div>
       <h3 class="section-title small" data-i18n="wrongTitle">틀린 문제</h3>
       <ul class="wrong-list" id="wrongList"></ul>
@@ -102,6 +112,17 @@
         <h2 class="card-title" id="setupTitle"></h2>
         <button type="button" class="btn btn-small" id="setupClose" aria-label="Close">✕</button>
       </div>
+
+      <div class="field play-field-choice" id="playField">
+        <div class="label" data-i18n="playLabel">게임 방식</div>
+        <div class="seg" id="playGrid">
+          <button type="button" class="chip" data-play="practice" data-i18n="playPractice">연습</button>
+          <button type="button" class="chip" data-play="ranked" data-i18n="playRanked">🏆 랭킹전</button>
+        </div>
+        <p class="play-note" id="playNote"></p>
+      </div>
+
+      <div class="setup-options" id="setupOptions">
 
       <div class="field">
         <div class="label" data-i18n="opsLabel">연산 고르기</div>
@@ -152,6 +173,8 @@
         </div>
       </div>
 
+      </div>
+
       <div class="modal-actions">
         <button type="button" class="btn btn-primary" id="startBtn" data-i18n="startGame">시작하기</button>
       </div>
@@ -171,6 +194,10 @@
 <script src="js/music.js"></script>
 <script src="js/problems.js"></script>
 <script src="js/game.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/ranking.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

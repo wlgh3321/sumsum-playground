@@ -26,6 +26,9 @@ const Game = (() => {
   const $ = id => document.getElementById(id);
   const POINTS = 10;
   const RACE_GOAL = 60;
+  const MINUTE_PENALTY = 5; // 시간 도전: 틀린 보기 하나에 −5점
+  const TF_PENALTY = 10;    // 참 거짓: 틀리면 −10점
+  const TF_TIME_PENALTY = 3; // 참 거짓: 틀리면 −3초
 
   let G = null; // 지금 진행 중인 한 판
   let rafId = 0;
@@ -434,9 +437,11 @@ const Game = (() => {
       minuteNext();
       return;
     }
-    // 틀리면 그 보기만 꺼지고, 같은 문제가 남아요.
+    // 틀리면 그 보기만 꺼지고, 같은 문제가 남아요. 막 누르기를 막으려고 5점씩 깎아요.
     btn.disabled = true;
     shake(btn);
+    G.score = Math.max(0, G.score - MINUTE_PENALTY);
+    fx(`−${MINUTE_PENALTY}`, 'bad');
     countWrong();
     if (!G.wrongLogged) {
       G.wrongLogged = true;
@@ -560,6 +565,10 @@ const Game = (() => {
     if (yes === c.isTrue) {
       hit(p, POINTS);
     } else {
+      // 막 누르기를 막으려고 점수와 시간을 같이 깎아요.
+      G.score = Math.max(0, G.score - TF_PENALTY);
+      G.timeLeft -= TF_TIME_PENALTY;
+      fx(`−${TF_PENALTY} · −${TF_TIME_PENALTY}${t('secUnit')}`, 'bad');
       miss(p, {
         q: Problems.equation(c, c.shown),
         answer: c.isTrue ? t('tfTrue') : t('tfFalse'),

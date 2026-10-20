@@ -1,0 +1,34 @@
+// 셈셈 놀이터 순위표 보안 규칙
+// - 누구나 읽을 수 있어요.
+// - 새 기록 추가만 돼요. 고치거나 지우기는 막아요.
+// - 이름은 1~8글자(한글·영문·숫자·_·공백), 점수는 말이 되는 범위만 받아요.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /boards/{mode}/scores/{id} {
+      allow read: if mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf'];
+
+      allow create: if mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf']
+        && request.resource.data.keys().hasOnly(['name', 'score', 'at', 'v'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 8
+        && request.resource.data.name.matches('^[가-힣A-Za-z0-9_ ]+$')
+        && request.resource.data.score is number
+        && request.resource.data.at == request.time
+        && request.resource.data.v == 1
+        && (
+          (mode == 'race'
+            && request.resource.data.score >= 20
+            && request.resource.data.score <= 3600)
+          || (mode != 'race'
+            && request.resource.data.score is int
+            && request.resource.data.score > 0
+            && request.resource.data.score <= 200000
+            && request.resource.data.score % 5 == 0)
+        );
+
+      allow update, delete: if false;
+    }
+  }
+}

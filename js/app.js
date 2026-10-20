@@ -15,7 +15,9 @@ const App = (() => {
     normal: { addMax: 20, mulMax: 9 },
     hard: { addMax: 50, mulMax: 12 },
   };
-  const MODE_DEFAULT = { ops: OPS, preset: 'normal', addMax: 20, mulMax: 9, speed: 'normal', time: 60 };
+  const MODE_DEFAULT = { ops: OPS, preset: 'normal', addMax: 20, mulMax: 9, speed: 'normal', time: 60, ranked: false };
+  // 랭킹전: 모두 같은 조건으로 겨뤄요. 이 설정으로 한 판만 명예의 전당에 올라가요.
+  const RANKED = { ops: OPS, preset: 'normal', addMax: 20, mulMax: 9, speed: 'normal', time: 60 };
   // 모드 카드 정보. glyph는 카드 왼쪽 위 그림 글자예요.
   const MODE_CARDS = [
     { id: 'fall', glyph: '⇣', accent: 'var(--mint)', desc: 'modeFallDesc' },
@@ -46,6 +48,7 @@ const App = (() => {
       mulMax: Number.isFinite(r.mulMax) ? clamp(Math.round(r.mulMax), 2, 15) : MODE_DEFAULT.mulMax,
       speed: Object.keys(SPEED).includes(r.speed) ? r.speed : MODE_DEFAULT.speed,
       time: TIMES.includes(r.time) ? r.time : MODE_DEFAULT.time,
+      ranked: r.ranked === true,
     };
   }
 
@@ -64,9 +67,11 @@ const App = (() => {
     };
   }
 
+  // 실제로 게임에 쓰는 설정. 랭킹전이면 내 설정 대신 랭킹전 조건을 써요.
   function snapshot(id) {
     const s = cfg.modes[id];
-    return { ...s, ops: [...s.ops] };
+    if (s.ranked) return { ...RANKED, ops: [...RANKED.ops], ranked: true };
+    return { ...s, ops: [...s.ops], ranked: false };
   }
 
   function save() {
@@ -118,7 +123,13 @@ const App = (() => {
   // 팝업: 지금 고른 게임의 설정만 보여 줘요.
   function renderSetup() {
     if (!pendingMode) return;
-    const s = current();
+    const ranked = current().ranked;
+    const s = snapshot(pendingMode); // 랭킹전이면 랭킹전 조건을 보여 줘요
+    document.querySelectorAll('#playGrid [data-play]').forEach(b =>
+      setPressed(b, (b.dataset.play === 'ranked') === ranked));
+    $('playNote').textContent = ranked ? t('playRankedNote') : t('playPracticeNote');
+    $('setupOptions').classList.toggle('locked', ranked);
+    $('setupOptions').inert = ranked;
     document.querySelectorAll('#opGrid .op-btn').forEach(b =>
       setPressed(b, s.ops.includes(b.dataset.op)));
     document.querySelectorAll('#presetGrid [data-preset]').forEach(b =>
@@ -145,7 +156,7 @@ const App = (() => {
   // 홈: 게임 카드마다 그 게임의 설정으로 최고 기록을 보여 줘요.
   function renderModes() {
     $('modeGrid').innerHTML = MODE_CARDS.map(m => {
-      const s = cfg.modes[m.id];
+      const s = snapshot(m.id);
       const best = Store.getBest(bestKey(m.id, s));
       const glyph = m.id === 'minute' ? shortTime(s.time) : m.glyph;
       const bestText = best === null ? t('bestNone') : `${t('bestLabel')} ${fmtValue(m.id, best)}`;
@@ -172,6 +183,7 @@ const App = (() => {
     renderSetup();
     renderModes();
     renderWeak();
+    Ranking.renderHome();
   }
 
   function applyLang() {
@@ -245,6 +257,7 @@ const App = (() => {
       : `<li class="miss-none">${t('wrongNone')}</li>`;
 
     show('result');
+    Ranking.onResult(r);
   }
 
   /* ---------- 설정 변경 ---------- */
@@ -309,6 +322,14 @@ const App = (() => {
       s.preset = 'custom';
       changed();
     });
+
+    document.querySelectorAll('#playGrid [data-play]').forEach(b =>
+      press(b, () => {
+        const s = current();
+        if (!s) return;
+        s.ranked = b.dataset.play === 'ranked';
+        changed();
+      }));
 
     press($('soundBtn'), () => {
       cfg.sound = !cfg.sound;
