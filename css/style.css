@@ -1385,3 +1385,21 @@ input[type="range"] {
 .btn-share {
   background: var(--mint);
 }
+
+/* 결과 화면 버튼: 휴대폰에서는 공유하기를 한 줄 전체로, 그 아래에 다시 하기·게임 고르기를 나란히 */
+@media (max-width: 640px) {
+  .result-actions {
+    flex-wrap: wrap;
+  }
+
+  .result-actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .result-actions .btn-share {
+    flex: 1 1 100%;
+  }
+}

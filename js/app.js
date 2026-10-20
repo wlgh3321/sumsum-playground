@@ -269,7 +269,7 @@ const App = (() => {
   function showResult(r) {
     lastMode = r.mode;
     lastResult = r;
-    $('shareBtn').hidden = r.badge.kind === 'quit'; // 그만한 판은 공유 버튼을 숨겨요
+    $('shareBtn').hidden = r.badge.kind === 'quit' || !(r.value > 0); // 그만한 판·0점은 공유 버튼을 숨겨요
     const b = r.badge;
     const badge = $('resBadge');
 
