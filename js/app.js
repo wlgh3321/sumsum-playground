@@ -271,7 +271,18 @@ const App = (() => {
   function showResult(r) {
     lastMode = r.mode;
     lastResult = r;
-    $('shareBtn').hidden = r.badge.kind === 'quit' || !(r.value > 0); // 그만한 판·0점은 공유 버튼을 숨겨요
+    const noShare = r.badge.kind === 'quit' || !(r.value > 0); // 그만한 판·0점은 공유 버튼을 숨겨요
+    $('shareBtn').hidden = noShare;
+    $('shareImgBtn').hidden = noShare;
+    if (!noShare) {
+      ShareCard.set({
+        r,
+        game: modeName(r.mode, r.settings),
+        value: fmtValue(r.mode, r.value),
+        best: r.badge.kind === 'new' || r.badge.kind === 'first',
+        stats: r.stats,
+      });
+    }
     const b = r.badge;
     const badge = $('resBadge');
 
@@ -444,6 +455,10 @@ const App = (() => {
     $('quitBtn').addEventListener('click', () => Game.quit());
     // 공유 창은 브라우저 정책상 터치를 뗄 때(click) 열어야 아이폰에서도 떠요.
     $('shareBtn').addEventListener('click', shareResult);
+    $('shareImgBtn').addEventListener('click', () => {
+      track(`share-img-${lastMode}`, '이미지 자랑');
+      ShareCard.share(() => toast(t('shareImgSaved')));
+    });
     press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode)));
     press($('homeBtn'), () => showHome());
 

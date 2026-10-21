@@ -612,3 +612,19 @@ html[lang="ko"] .logo-mark {
   }
 }
 @media (prefers-reduced-motion: reduce) { .pause-title { animation: none; } }
+
+/* ---------- 결과: 지금 몇 위쯤인지 미리 보기 ---------- */
+.rank-box .rank-hi { font-size: 18px; text-align: center; line-height: 1.5; }
+.rank-preview { margin: 0; }
+.rank-preview .rank-row.ghost {
+  background: rgba(255, 77, 166, 0.18);
+  outline: 2px dashed var(--pink);
+  outline-offset: -2px;
+}
+.rank-preview .rank-row.ghost .rank-no,
+.rank-preview .rank-row.ghost .rank-name { color: var(--pink); }
+.rank-preview .rank-dots { justify-content: center; color: var(--text-dim); background: transparent !important; }
+
+/* 이미지로 자랑하기 버튼 */
+.btn-share-img { background: var(--pink); border-color: var(--pink); color: #fff; }
+.rank-box .rank-hi { word-break: keep-all; }

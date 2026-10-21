@@ -14,6 +14,7 @@ const Ranking = (() => {
 
   let tab = 'fall';
   let lastPlace = null; // 방금 등록한 순위 { mode, value, n } — 공유 문구에 써요
+  let lastEstimate = null; // 이번 판이 지금 몇 위쯤인지 { mode, value, n, ranked } — 자랑 이미지에 써요
   const cache = {}; // mode -> { at, rows }
 
   /* ---------- Firebase 준비 기다리기 ---------- */
@@ -133,44 +134,94 @@ const Ranking = (() => {
   }
 
   /* ---------- 결과 화면 ---------- */
+  // 이 기록이 지금 명예의 전당에서 몇 위쯤인지 (같은 기록이면 먼저 올린 사람이 위)
+  function placeOf(mode, value, rows) {
+    return rows.filter(x => !better(mode, value, x.score)).length + 1;
+  }
+  // 10위와의 차이 (TOP 10 밖일 때)
+  function gapTo10(mode, value, rows) {
+    const cut = rows[rows.length - 1].score;
+    const d = Math.abs(cut - value);
+    return mode === 'race' ? `${d.toFixed(1)}${t('secUnit')}` : `${d}${t('ptsUnit')}`;
+  }
+
+  // 순위표에 "나 (이번 판)" 줄을 끼워서 보여 줘요.
+  // 너무 길지 않게 1~3위, 내 위아래, 10위만 보여 주고 사이는 ⋯ 으로 줄여요.
+  function renderPreview(box, mode, value, rows, place) {
+    const list = document.createElement('ol');
+    list.className = 'rank-list rank-preview';
+    const all = rows.slice(0, SIZE).map(r => ({ ...r }));
+    const me = { id: '__me', name: t('rankMe'), score: value, me: true };
+    all.splice(Math.min(place - 1, all.length), 0, me);
+    const keep = new Set([1, 2, 3, place - 1, place, place + 1, all.length]);
+    let prev = 0;
+    all.forEach((r, i) => {
+      const n = i + 1;
+      if (!keep.has(n)) return;
+      if (n - prev > 1) {
+        const dots = document.createElement('li');
+        dots.className = 'rank-row rank-dots';
+        dots.textContent = '⋯';
+        list.appendChild(dots);
+      }
+      prev = n;
+      const li = document.createElement('li');
+      li.className = `rank-row r${n}${r.me ? ' ghost' : ''}`;
+      const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(i);
+      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name;
+      const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
+      li.append(a, b, c);
+      list.appendChild(li);
+    });
+    box.appendChild(list);
+  }
+
+  function note(box, key, vars, cls = 'rank-note') {
+    const p = document.createElement('p');
+    p.className = cls;
+    p.textContent = t(key, vars);
+    box.appendChild(p);
+    return p;
+  }
+
   async function onResult(r) {
     const box = $('rankBox');
     if (!box) return;
     box.hidden = true;
     box.textContent = '';
     lastPlace = null;
+    lastEstimate = null;
     if (r.badge.kind === 'quit' || !(r.value > 0)) return;
-
-    if (!isRanked(r.mode, r.settings)) {
-      box.hidden = false;
-      const p = document.createElement('p');
-      p.className = 'rank-note';
-      p.textContent = t('rankNotRanked');
-      box.appendChild(p);
-      return;
-    }
+    const ranked = isRanked(r.mode, r.settings);
 
     let rows;
     try {
       rows = await top(r.mode, true);
     } catch (e) {
       box.hidden = false;
-      const p = document.createElement('p');
-      p.className = 'rank-note';
-      p.textContent = t('rankOffline');
-      box.appendChild(p);
+      note(box, ranked ? 'rankOffline' : 'rankNotRanked');
       return;
     }
     if (!$('result').classList.contains('active')) return;
-
     box.hidden = false;
-    if (!qualifies(r.mode, r.value, rows)) {
-      const p = document.createElement('p');
-      p.className = 'rank-note';
-      p.textContent = t('rankCut', { v: fmt(r.mode, rows[rows.length - 1].score) });
-      box.appendChild(p);
+
+    // 지금 몇 위쯤인지 먼저 보여 줘요 (연습 판도 참고로 보여 줘요).
+    const place = placeOf(r.mode, r.value, rows);
+    const inTop = place <= SIZE;
+    lastEstimate = { mode: r.mode, value: r.value, n: place, ranked };
+    if (typeof ShareCard !== "undefined") ShareCard.refresh();
+    if (ranked) {
+      note(box, inTop ? 'rankNowIn' : 'rankNowOut', { n: place, d: inTop ? '' : gapTo10(r.mode, r.value, rows) }, 'rank-hi');
+    } else {
+      note(box, inTop ? 'rankPracIn' : 'rankPracOut', { n: place, d: inTop ? '' : gapTo10(r.mode, r.value, rows) }, 'rank-hi');
+    }
+    renderPreview(box, r.mode, r.value, rows, place);
+
+    if (!ranked) {
+      note(box, 'rankPracNote');
       return;
     }
+    if (!qualifies(r.mode, r.value, rows)) return;
 
     // TOP 10 진입 → 이름 입력
     const title = document.createElement('div');
@@ -216,6 +267,7 @@ const Ranking = (() => {
         const fresh = await top(r.mode, true);
         const place = fresh.findIndex(x => x.id === id);
         if (place >= 0) lastPlace = { mode: r.mode, value: r.value, n: place + 1 };
+        if (typeof ShareCard !== "undefined") ShareCard.refresh();
         box.textContent = '';
         const done = document.createElement('div');
         done.className = 'rank-hi';
@@ -239,5 +291,11 @@ const Ranking = (() => {
     return lastPlace && lastPlace.mode === r.mode && lastPlace.value === r.value ? lastPlace.n : null;
   }
 
-  return { renderHome, onResult, placeFor, setTab: m => { tab = m; } };
+  // 자랑 이미지용: 이번 판이 지금 몇 위쯤인지
+  function estimateFor(r) {
+    const e = lastEstimate;
+    return e && e.mode === r.mode && e.value === r.value ? e : null;
+  }
+
+  return { renderHome, onResult, placeFor, estimateFor, setTab: m => { tab = m; } };
 })();
