@@ -138,6 +138,13 @@ const Game = (() => {
 
   // 결과 목록에 한 줄 남기고, 약점 목록에 넣어요.
   function logMiss(p, o = {}) {
+    const q = o.q || Problems.equation(p, p.ans);
+    const last = G.misses[G.misses.length - 1];
+    // 같은 문제를 연달아 틀리면 한 줄로 합치고, 마지막에 낸 답만 보여 줘요.
+    if (last && last.q === q && !last.missed && !o.missed) {
+      last.mine = o.mine ?? last.mine;
+      return;
+    }
     G.misses.push({
       q: o.q || Problems.equation(p, p.ans),
       answer: o.answer ?? String(p.ans),
@@ -684,7 +691,9 @@ const Game = (() => {
         const landed = G.items.filter(it => it.y + it.h >= H);
         for (const it of landed) {
           removeFall(it);
-          miss(it.p, { missed: true });
+          countWrong();
+          // 이미 틀린 답으로 목록에 올라간 문제면 두 번 넣지 않아요.
+          if (!it.logged) logMiss(it.p, { missed: true });
           // 바닥에 닿으면 한 칸(하트 1개)
           loseLife(2);
           if (G.over) return;
@@ -698,6 +707,14 @@ const Game = (() => {
         if (!hits.length) {
           // 틀린 답은 반 하트만 줄어요.
           countWrong();
+          // 틀린 문제 목록에 남겨요: 입력한 답과 정답이 가장 가까운 문제를 노린 것으로 봐요.
+          if (G.items.length) {
+            const target = G.items.reduce((a, b) => (Math.abs(b.p.ans - v) < Math.abs(a.p.ans - v) ? b : a));
+            if (!target.logged) {
+              target.logged = true;
+              logMiss(target.p, { mine: text });
+            }
+          }
           shake($('answerBox'));
           fx(`−½ ♥`, 'bad');
           loseLife(1);
