@@ -212,6 +212,7 @@ const Game = (() => {
 
   function start(id, settings) {
     stop();
+    $('pauseBox').hidden = true;
     G = {
       id,
       M: MODES[id],
@@ -228,6 +229,7 @@ const Game = (() => {
       timeMax: settings.time,
       elapsed: 0,
       running: false,
+      paused: false,
       over: false,
       timers: [],
       lvFlashUntil: 0,
@@ -280,6 +282,7 @@ const Game = (() => {
     G.over = true;
     stop();
     $('countdown').hidden = true;
+    $('pauseBox').hidden = true;
 
     const id = G.id;
     const isRace = id === 'race';
@@ -317,8 +320,51 @@ const Game = (() => {
     });
   }
 
+  /* ---------- 일시정지 ---------- */
+  // 일시정지하면 시간과 움직임이 모두 멈추고, 문제가 보이지 않게 화면을 가려요.
+  function pause() {
+    if (!G || G.over) return;
+    if (!G.running && !G.paused) {
+      // 카운트다운 중에는 바로 홈으로 나가요.
+      quit();
+      return;
+    }
+    if (G.paused) return;
+    G.paused = true;
+    G.running = false;
+    $('pauseBox').hidden = false;
+    setTimeout(() => $('resumeBtn').focus({ preventScroll: true }), 0);
+  }
+
+  function resume() {
+    if (!G || G.over || !G.paused) return;
+    $('pauseBox').hidden = true;
+    G.paused = false;
+    G.running = true;
+    lastTs = performance.now();
+  }
+
+  function restartGame() {
+    if (!G) return;
+    $('pauseBox').hidden = true;
+    const id = G.id, s = G.s;
+    G.over = true;
+    start(id, s);
+  }
+
+  // 다른 앱으로 가거나 화면이 꺼지면 저절로 일시정지해요.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && G && G.running && !G.over) pause();
+  });
+
   function quit() {
     if (!G || G.over) return;
+    $('pauseBox').hidden = true;
+    if (G.paused) {
+      G.paused = false;
+      finish(false);
+      return;
+    }
     if (!G.running) {
       // 카운트다운 중이면 바로 홈으로
       G.over = true;
@@ -348,7 +394,8 @@ const Game = (() => {
     if (!G || G.over) return;
     if (e.key === 'Escape') {
       e.preventDefault();
-      quit();
+      if (G.paused) resume();
+      else pause();
       return;
     }
     if (!G.running) return;
@@ -376,13 +423,20 @@ const Game = (() => {
     const node = document.createElement('div');
     node.className = 'fall-card';
     node.dataset.op = p.op;
-    node.textContent = Problems.text(p);
+    node.textContent = Problems.text(p).replace(/\s*=\s*\?$/, '');
     field.appendChild(node);
     const w = node.offsetWidth;
     const h = node.offsetHeight;
-    const x = pickFallX(field.clientWidth, w, h);
+    const [x, gap] = pickFallX(field.clientWidth, w, h);
+    // 화면이 좁아서 위쪽 문제와 겹칠 수밖에 없으면, 잠깐(최대 1.5초) 기다렸다가 다시 내보내요.
+    if (gap < 0 && (G.spawnWait || 0) < 1.5) {
+      node.remove();
+      return false;
+    }
+    G.spawnWait = 0;
     node.style.transform = `translate(${x}px, ${-h}px)`;
     G.items.push({ p, node, x, y: -h, h });
+    return true;
   }
 
   // 새 문제가 위쪽에 떠 있는 문제와 겹치지 않는 자리를 골라요.
@@ -402,7 +456,7 @@ const Game = (() => {
       if (score > bestScore) { bestScore = score; best = x; }
       if (score >= 12) break;
     }
-    return best;
+    return [best, near.length ? bestScore : Infinity];
   }
 
   function removeFall(it) {
@@ -508,7 +562,7 @@ const Game = (() => {
 
   function balloonTap(node) {
     const b = G.balls.find(x => x.node === node);
-    if (!b || b.gone || G.over) return;
+    if (!b || b.gone || G.over || !G.running) return;
     const p = G.cur;
     b.gone = true;
     if (b.v === p.ans) {
@@ -545,8 +599,8 @@ const Game = (() => {
     const v = Number(btn.dataset.v);
     const p = G.cur;
     if (v === p.ans) {
-      // 맞히면 늘어나는 시간: 레벨(10문제)마다 줄어요. 2초 → 최소 0.5초. 최대 30초까지만 쌓여요.
-      const bonus = Math.max(0.5, 2 - 0.25 * (G.level - 1));
+      // 맞히면 늘어나는 시간: 레벨(10문제)마다 0.1초씩 줄어요. 2초 → 최소 1초. 최대 30초까지만 쌓여요.
+      const bonus = Math.round(Math.max(1, 2 - 0.1 * (G.level - 1)) * 10) / 10;
       G.timeLeft = Math.min(G.timeMax, G.timeLeft + bonus);
       hit(p, POINTS, `+${POINTS} · +${bonus}${t('secUnit')}`);
       if (G.streak >= 3) banner(t('combo', { n: G.streak }));
@@ -610,11 +664,16 @@ const Game = (() => {
 
         G.spawnIn -= dt;
         if (G.spawnIn <= 0) {
-          if (G.items.length < 8) spawnFall();
-          // 새 문제가 나오는 간격: 보통 이상은 빨라지는 만큼 더 자주 나와요(최소 0.6초).
-          G.spawnIn = rampUp
-            ? Math.max(0.6, 2.6 / fallRamp(G.elapsed)) / G.sp
-            : Math.max(1.2, 3 - 0.35 * (G.level - 1)) / G.sp;
+          if (G.items.length < 8 && !spawnFall()) {
+            // 자리가 없어서 못 내보냈으면 0.2초 뒤에 다시 시도해요.
+            G.spawnWait = (G.spawnWait || 0) + 0.2;
+            G.spawnIn = 0.2;
+          } else {
+            // 새 문제가 나오는 간격: 보통 이상은 빨라지는 만큼 더 자주 나와요(최소 0.6초).
+            G.spawnIn = rampUp
+              ? Math.max(0.6, 2.6 / fallRamp(G.elapsed)) / G.sp
+              : Math.max(1.2, 3 - 0.35 * (G.level - 1)) / G.sp;
+          }
         }
 
         for (const it of G.items) {
@@ -731,7 +790,8 @@ const Game = (() => {
     beat: {
       timed: true,
       // 시간이 갈수록 시계가 빨리 줄어요: 30초 뒤 1.45배, 1분 뒤 1.9배, 최대 3배
-      drain: () => Math.min(3, 1 + 0.015 * G.elapsed),
+      // 시간이 줄어드는 속도: 천천히 빨라져서 약 2분 반 뒤에 최대 2배가 돼요.
+      drain: () => Math.min(2, 1 + 0.0065 * G.elapsed),
       build() {
         $('stage').innerHTML =
           `<div class="clock"><div class="clock-fill" id="clockFill"></div></div>` +
@@ -802,5 +862,5 @@ const Game = (() => {
     },
   };
 
-  return { start, key, keydown, quit };
+  return { start, key, keydown, quit, pause, resume, restart: restartGame };
 })();

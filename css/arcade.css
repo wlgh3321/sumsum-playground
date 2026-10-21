@@ -584,3 +584,31 @@ html[lang="ko"] .logo-mark {
   color: var(--mint);
   box-shadow: 0 0 14px rgba(77, 225, 255, 0.3);
 }
+
+/* ---------- 일시정지 ---------- */
+/* 문제가 보이지 않도록 뒤를 거의 다 가려요. */
+.pause-modal { background: rgba(13, 10, 28, 0.96); z-index: 60; }
+.pause-card { max-width: 360px; text-align: center; padding: 26px 20px 22px; }
+.pause-title {
+  font-family: "Press Start 2P", var(--font-pixel);
+  font-size: 26px;
+  color: var(--sun);
+  text-shadow: 3px 3px 0 var(--pink);
+  animation: pauseBlink 1.2s steps(1) infinite;
+}
+@keyframes pauseBlink { 50% { opacity: 0.35; } }
+.pause-note { margin: 14px 0 20px; color: var(--muted, #b9b3d9); line-height: 1.5; }
+.pause-actions { display: grid; gap: 10px; }
+.pause-actions .btn { width: 100%; justify-content: center; }
+.btn-pause { white-space: nowrap; }
+
+/* ---------- 문제 비: 휴대폰에서는 카드를 작게 ---------- */
+@media (max-width: 520px) {
+  .fall-card {
+    padding: 4px 8px;
+    font-size: clamp(11px, 3.3vw, 15px);
+    line-height: 1.4;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--c) 45%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) { .pause-title { animation: none; } }

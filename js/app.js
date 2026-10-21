@@ -437,7 +437,11 @@ const App = (() => {
     document.querySelectorAll('#numpad [data-key]').forEach(b =>
       press(b, () => Game.key(b.dataset.key)));
 
-    press($('quitBtn'), () => Game.quit());
+    // 일시정지 창의 버튼들은 click으로 연결해요(누르는 순간 창이 열리고 닫히며 뒤에 있는 버튼이 잘못 눌리는 것을 막아요).
+    $('pauseBtn').addEventListener('click', () => Game.pause());
+    $('resumeBtn').addEventListener('click', () => Game.resume());
+    $('restartBtn').addEventListener('click', () => Game.restart());
+    $('quitBtn').addEventListener('click', () => Game.quit());
     // 공유 창은 브라우저 정책상 터치를 뗄 때(click) 열어야 아이폰에서도 떠요.
     $('shareBtn').addEventListener('click', shareResult);
     press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode)));
