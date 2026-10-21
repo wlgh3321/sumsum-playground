@@ -1,0 +1,8 @@
+.git
+.github
+wrangler.jsonc
+.assetsignore
+README.md
+CNAME
+firestore.rules
+*.md
