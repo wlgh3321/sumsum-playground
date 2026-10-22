@@ -628,3 +628,8 @@ html[lang="ko"] .logo-mark {
 /* 이미지로 자랑하기 버튼 */
 .btn-share-img { background: var(--pink); border-color: var(--pink); color: #fff; }
 .rank-box .rank-hi { word-break: keep-all; }
+
+/* 홈 화면에 추가해서 앱처럼 열었을 때: 아이폰 아래쪽 홈 막대에 버튼이 가리지 않게 */
+@media (display-mode: standalone) {
+  body { padding-bottom: env(safe-area-inset-bottom); }
+}
