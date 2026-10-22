@@ -109,13 +109,13 @@ const ShareCard = (() => {
     const tx = lx + LOGO_H + gapL;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillStyle = C.sky; ctx.fillText(title, tx + 10, yLogo + 14 + 10);
-    ctx.fillStyle = C.pink; ctx.fillText(title, tx + 5, yLogo + 14 + 5);
-    ctx.fillStyle = C.sun; ctx.fillText(title, tx, yLogo + 14);
+    ctx.fillStyle = C.sky; ctx.fillText(title, tx + 10, yLogo + 2 + 10);
+    ctx.fillStyle = C.pink; ctx.fillText(title, tx + 5, yLogo + 2 + 5);
+    ctx.fillStyle = C.sun; ctx.fillText(title, tx, yLogo + 2);
     const sub = LANG === 'ko' ? '셈셈 놀이터' : 'PLAYGROUND';
     ctx.font = LANG === 'ko' ? `700 46px ${KO}` : `30px ${PIX}`;
     ctx.fillStyle = C.sky;
-    ctx.fillText(sub, tx + 2, yLogo + 112);
+    ctx.fillText(sub, tx + 2, yLogo + (LANG === 'ko' ? 102 : 110));
     ctx.textBaseline = 'alphabetic';
 
     // 기록 상자

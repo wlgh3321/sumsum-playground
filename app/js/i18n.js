@@ -14,7 +14,7 @@ const DICT = {
     playBtn: '플레이',
     pvTop: '1위 {name} {v}',
     pvTopNone: '1위 자리가 비어 있어요!',
-    speedSlowEnd: '느리게', speedFastEnd: '빠르게',
+    speedSlowEnd: '느리게', speedFastEnd: '빠르게', timeShortEnd: '짧게', timeLongEnd: '길게',
     recTitle: '기록실', recBadges: '배지', recBests: '게임별 최고 기록',
     recPlays: '플레이', recCorrect: '맞힌 문제', recStreak: '최대 연속', recDays: '연속 출석',
     recDayUnit: '일', recPlayUnit: '판', recNone: '아직 없어요', recBadgeCount: '{n}/{m}개 모음',
@@ -178,7 +178,7 @@ const DICT = {
     playBtn: 'PLAY',
     pvTop: '#1 {name} {v}',
     pvTopNone: 'The #1 spot is open!',
-    speedSlowEnd: 'Slow', speedFastEnd: 'Fast',
+    speedSlowEnd: 'Slow', speedFastEnd: 'Fast', timeShortEnd: 'Short', timeLongEnd: 'Long',
     recTitle: 'Records', recBadges: 'Badges', recBests: 'Best scores',
     recPlays: 'Games', recCorrect: 'Solved', recStreak: 'Best streak', recDays: 'Day streak',
     recDayUnit: 'd', recPlayUnit: '', recNone: 'None yet', recBadgeCount: '{n}/{m} collected',
@@ -374,5 +374,5 @@ function modeName(id, s) {
   const name = id === 'minute'
     ? t('modeMinuteName', { time: duration(s.time) })
     : t(MODE_NAME_KEY[id]);
-  return s && s.ranked ? name + t('rankedSuffix') : name;
+  return name; // 랭킹전이어도 이름은 짧게 그대로 (앱)
 }

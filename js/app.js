@@ -25,7 +25,7 @@ const App = (() => {
     { id: 'race', glyph: '60', accent: 'var(--peach)', desc: 'modeRaceDesc' },
     { id: 'balloon', glyph: '팡', accent: 'var(--pink)', desc: 'modeBalloonDesc' },
     { id: 'beat', glyph: '+2', accent: 'var(--lilac)', desc: 'modeBeatDesc' },
-    { id: 'tf', glyph: 'OX', accent: 'var(--sky-deep)', desc: 'modeTfDesc' },
+    { id: 'tf', glyph: 'OX', accent: 'var(--ok)', desc: 'modeTfDesc' },
   ];
 
   let cfg = { sound: true, music: true, modes: {} }; // 전체 설정: 소리 + 게임별 설정

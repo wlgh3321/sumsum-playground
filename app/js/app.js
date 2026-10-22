@@ -27,7 +27,7 @@ const App = (() => {
     { id: 'race', glyph: '60', accent: 'var(--peach)', desc: 'modeRaceDesc' },
     { id: 'balloon', glyph: '팡', accent: 'var(--pink)', desc: 'modeBalloonDesc' },
     { id: 'beat', glyph: '+2', accent: 'var(--lilac)', desc: 'modeBeatDesc' },
-    { id: 'tf', glyph: 'OX', accent: 'var(--sky-deep)', desc: 'modeTfDesc' },
+    { id: 'tf', glyph: 'OX', accent: 'var(--ok)', desc: 'modeTfDesc' },
   ];
 
   let cfg = { sound: true, music: true, modes: {} }; // 전체 설정: 소리 + 게임별 설정
@@ -209,11 +209,8 @@ const App = (() => {
     const si = SPEED_KEYS.indexOf(s.speed);
     $('speedRange').value = si;
     $('speedOut').textContent = t(SPEED_LABEL[s.speed]);
-    document.querySelectorAll('#timeGrid [data-time]').forEach(b => {
-      const sec = Number(b.dataset.time);
-      b.textContent = duration(sec);
-      setPressed(b, sec === s.time);
-    });
+    $('timeRange').value = Math.max(0, TIMES.indexOf(s.time));
+    $('timeOut').textContent = duration(s.time);
 
     $('speedField').hidden = !HAS_SPEED.includes(pendingMode);
     $('timeField').hidden = !HAS_TIME.includes(pendingMode);
@@ -455,11 +452,10 @@ const App = (() => {
       changed();
     });
 
-    document.querySelectorAll('#timeGrid [data-time]').forEach(b =>
-      press(b, () => {
-        current().time = Number(b.dataset.time);
-        changed();
-      }));
+    $('timeRange').addEventListener('input', e => {
+      current().time = TIMES[Number(e.target.value)] || 60;
+      changed();
+    });
 
     // 슬라이더를 움직이면 난이도는 "직접 설정"이 돼요.
     $('addMax').addEventListener('input', e => {
