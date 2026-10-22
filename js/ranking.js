@@ -297,5 +297,11 @@ const Ranking = (() => {
     return e && e.mode === r.mode && e.value === r.value ? e : null;
   }
 
-  return { renderHome, onResult, placeFor, estimateFor, setTab: m => { tab = m; } };
+  // 홈 미리보기: 지금 1등
+  async function top1(mode) {
+    const rows = await top(mode);
+    return rows[0] || null;
+  }
+
+  return { renderHome, onResult, placeFor, estimateFor, top1, setTab: m => { tab = m; } };
 })();
