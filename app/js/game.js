@@ -252,6 +252,7 @@ const Game = (() => {
     $('gameTitle').textContent = modeName(id, settings);
     $('stage').className = 'stage';
     $('stage').onpointerdown = null;
+    $('stage').onclick = null;
     G.M.build();
     $('padWrap').hidden = !G.M.numpad;
     renderInput();
@@ -742,7 +743,7 @@ const Game = (() => {
       build() {
         $('stage').innerHTML =
           '<div class="prompt" id="prompt"></div><div class="choices cols-3" id="choices"></div>';
-        $('stage').onpointerdown = e => {
+        $('stage').onclick = e => {
           const btn = e.target.closest('.choice');
           if (btn) minutePick(btn);
         };
@@ -818,7 +819,7 @@ const Game = (() => {
           '<div class="prompt" id="prompt"></div>' +
           '<div class="choices cols-2" id="choices"></div>' +
           `<p class="hint">${t('beatHint')}</p>`;
-        $('stage').onpointerdown = e => {
+        $('stage').onclick = e => {
           const btn = e.target.closest('.choice');
           if (btn) beatPick(btn);
         };
@@ -859,7 +860,7 @@ const Game = (() => {
           `<button type="button" class="ox-btn ox-x" data-ox="0"><span class="ox-mark">X</span><span class="ox-text">${t('tfFalse')}</span></button>` +
           '</div>' +
           `<p class="hint">${t('tfHint')}</p>`;
-        $('stage').onpointerdown = e => {
+        $('stage').onclick = e => {
           const btn = e.target.closest('[data-ox]');
           if (btn) tfAnswer(btn.dataset.ox === '1');
         };

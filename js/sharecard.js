@@ -26,6 +26,11 @@ const ShareCard = (() => {
     ]).catch(() => {});
   })();
 
+  // 새 로고(+−×÷ 블록 그림)를 미리 불러 둬요
+  const logoImg = new Image();
+  const logoReady = new Promise(res => { logoImg.onload = res; logoImg.onerror = res; });
+  logoImg.src = '/logo-blocks.png?v=1';
+
   function rankLine(r) {
     const placed = typeof Ranking !== "undefined" && Ranking.placeFor(r);
     if (placed) return t('cardRank', { n: placed });
@@ -79,32 +84,45 @@ const ShareCard = (() => {
     for (let x = 0; x <= W; x += 54) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
     for (let y = 0; y <= H; y += 54) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
 
-    // 로고: 네 칸 기호
-    const sq = 58, gap = 8, lx = W / 2 - sq - gap / 2, ly = 70;
-    [[C.sky, '+'], [C.pink, '−'], [C.sun, '×'], [C.lilac, '÷']].forEach(([c, s], i) => {
-      const x = lx + (i % 2) * (sq + gap);
-      const y = ly + Math.floor(i / 2) * (sq + gap);
-      ctx.fillStyle = c;
-      ctx.fillRect(x, y, sq, sq);
-      ctx.textBaseline = 'middle';
-      text(ctx, s, x + sq / 2 + 2, y + sq / 2 + 3, `40px ${PIX}`, C.bg);
-      ctx.textBaseline = 'alphabetic';
-    });
+    // 세로 배치: 위아래 여백이 똑같도록 전체 높이를 계산해서 가운데에 놓아요
+    const LOGO_H = 150, BOX_H = 560, STAT_H = 130, CH_H = 50, URL_H = 28;
+    const GAPS = [50, 36, 64, 30];
+    const total = LOGO_H + BOX_H + STAT_H + CH_H + URL_H + GAPS.reduce((a, b) => a + b, 0);
+    const top = Math.round((H - total) / 2);
+    const yLogo = top;
+    const yBox = yLogo + LOGO_H + GAPS[0];
+    const yStat = yBox + BOX_H + GAPS[1];
+    const yCh = yStat + STAT_H + GAPS[2];
+    const yUrl = yCh + CH_H + GAPS[3];
 
-    // 제목
+    // 로고: [블록 그림] SUMSUM / 셈셈 놀이터 (사이트 위쪽 로고와 같은 모양)
     const title = 'SUMSUM';
     ctx.font = `84px ${PIX}`;
-    ctx.textAlign = 'center';
-    ctx.fillStyle = C.sky; ctx.fillText(title, W / 2 + 10, 330 + 10);
-    ctx.fillStyle = C.pink; ctx.fillText(title, W / 2 + 5, 330 + 5);
-    ctx.fillStyle = C.sun; ctx.fillText(title, W / 2, 330);
-    text(ctx, LANG === 'ko' ? '셈셈 놀이터' : 'PLAYGROUND', W / 2, 400, `700 44px ${KO}`, C.sky);
+    const tw = ctx.measureText(title).width + 10;
+    const gapL = 34;
+    const rowW = LOGO_H + gapL + tw;
+    const lx = Math.round((W - rowW) / 2);
+    if (logoImg.complete && logoImg.naturalWidth) {
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(logoImg, lx, yLogo, LOGO_H, LOGO_H);
+    }
+    const tx = lx + LOGO_H + gapL;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = C.sky; ctx.fillText(title, tx + 10, yLogo + 14 + 10);
+    ctx.fillStyle = C.pink; ctx.fillText(title, tx + 5, yLogo + 14 + 5);
+    ctx.fillStyle = C.sun; ctx.fillText(title, tx, yLogo + 14);
+    const sub = LANG === 'ko' ? '셈셈 놀이터' : 'PLAYGROUND';
+    ctx.font = LANG === 'ko' ? `700 46px ${KO}` : `30px ${PIX}`;
+    ctx.fillStyle = C.sky;
+    ctx.fillText(sub, tx + 2, yLogo + 112);
+    ctx.textBaseline = 'alphabetic';
 
     // 기록 상자
     const bx = 90, bw = W - 180, bh = 560;
     const rl = rankLine(r);
     const nBadge = (rl ? 1 : 0) + (info.best ? 1 : 0);
-    const by0 = 450;
+    const by0 = yBox;
     const by = by0 + (2 - nBadge) * 39; // 배지가 적으면 내용을 조금 내려서 가운데에 맞춰요
     glow(ctx, C.line, 30);
     box(ctx, bx, by0, bw, bh, C.line, C.panel, 8);
@@ -138,7 +156,7 @@ const ShareCard = (() => {
 
     // 통계 세 칸
     const stats = (info.stats || []).slice(0, 3);
-    const sw = (W - 180 - 2 * 24) / 3, sy = 1040, sh = 130;
+    const sw = (W - 180 - 2 * 24) / 3, sy = yStat, sh = STAT_H;
     stats.forEach(([label, v], i) => {
       const sx = 90 + i * (sw + 24);
       box(ctx, sx, sy, sw, sh, '#3d2f86', '#120d2b', 5);
@@ -151,8 +169,10 @@ const ShareCard = (() => {
     });
 
     // 도전 문구 + 주소
-    text(ctx, t('cardChallenge'), W / 2, 1250, `700 46px ${KO}`, C.text);
-    text(ctx, 'sumsum.studiojhl.com', W / 2, 1310, `26px ${PIX}`, C.sky);
+    ctx.textBaseline = 'top';
+    text(ctx, t('cardChallenge'), W / 2, yCh, `700 46px ${KO}`, C.text);
+    text(ctx, 'sumsum.studiojhl.com', W / 2, yUrl, `26px ${PIX}`, C.sky);
+    ctx.textBaseline = 'alphabetic';
   }
 
   async function render() {
@@ -160,6 +180,7 @@ const ShareCard = (() => {
     const my = ++busy;
     file = null;
     await fontsReady;
+    await logoReady;
     if (my !== busy || !info) return;
     const canvas = document.createElement('canvas');
     canvas.width = W;

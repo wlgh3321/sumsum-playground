@@ -131,11 +131,9 @@ const App = (() => {
     return sec % 60 === 0 ? `${sec / 60}${t('minUnit')}` : `${sec}${t('secUnit')}`;
   }
 
-  // 누르는 즉시 반응하도록 pointerdown으로 처리해요. 오른쪽 클릭 등은 무시.
+  // 모든 버튼은 손가락을 뗄 때(click) 적용돼요. 누르는 순간에는 딸깍 모션만 보여요.
   function press(node, fn) {
-    node.addEventListener('pointerdown', e => {
-      if (e.button > 0) return;
-      e.preventDefault();
+    node.addEventListener('click', e => {
       fn(e);
     });
   }
@@ -254,15 +252,7 @@ const App = (() => {
     $('pvName').textContent = modeName(pick, s);
     $('pvDesc').textContent = t(m.desc);
     $('pvBest').textContent = best === null ? t('bestNone') : `${t('bestLabel')} ${fmtValue(pick, best)}`;
-    const v = $('pvVideo');
-    const key = `${lang === 'en' ? 'en' : 'ko'}/${pick}`;
-    const src = `/previews/${key}.mp4?v=2`;
-    if (v.dataset.key !== key) {
-      v.dataset.key = key;
-      v.poster = `/previews/${key}.jpg?v=2`;
-      v.src = src;
-      if (homeTab === 'games') playPreview();
-    }
+    Demo.set(pick);
     const want = pick;
     $('pvTop').textContent = '';
     Ranking.top1(pick).then(r => {
@@ -271,16 +261,8 @@ const App = (() => {
     }).catch(() => {});
   }
 
-  function playPreview() {
-    const v = $('pvVideo');
-    if (!v || !v.src) return;
-    const p = v.play();
-    if (p && p.catch) p.catch(() => {});
-  }
-  function pausePreview() {
-    const v = $('pvVideo');
-    if (v) v.pause();
-  }
+  function playPreview() { Demo.play(); }
+  function pausePreview() { Demo.pause(); }
 
   function choose(id) {
     if (id === pick) return;
@@ -616,6 +598,7 @@ const App = (() => {
     }
     setLang(lang);
     Sound.setEnabled(cfg.sound);
+    Demo.mount($('pvScreen'));
     bind();
     applyLang();
     show('home');
