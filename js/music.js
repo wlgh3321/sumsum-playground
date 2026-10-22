@@ -1,5 +1,6 @@
 /*
- * 배경음악: 직접 만든 8마디 레트로 칩튠 곡을 Web Audio API로 연주해요.
+ * 배경음악: 직접 만든 레트로 칩튠 곡 두 개를 Web Audio API로 연주해요.
+ *   - 홈 곡: 차분한 8마디 곡 / 게임 곡: 소개 영상에 쓴 신나는 곡
  * 음악 파일을 받지 않아요. (멜로디는 이 게임을 위해 새로 쓴 곡이에요)
  * - 멜로디: 사각파, 베이스: 삼각파, 하이햇: 짧은 잡음
  * - 브라우저 정책상 첫 터치/클릭 뒤에 소리가 나요.
@@ -92,7 +93,42 @@ const Music = (() => {
     s.start(t);
   }
 
-  function playStep(i, t) {
+  /* ---------- 두 번째 곡: 게임할 때 나오는 신나는 곡 (소개 영상과 같은 곡) ---------- */
+  const mf = m => 440 * Math.pow(2, (m - 69) / 12);
+  const G_MEL = [72, 76, 79, 76, 74, 72, 74, 76, 72, 69, 72, 76, 79, 77, 76, 74,
+                 77, 76, 74, 72, 69, 72, 74, 72, 71, 74, 79, 77, 76, 74, 72, 71];
+  const G_PROG = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]];
+  const G_BASS = [36, 33, 29, 31];
+
+  function drum(t, vol, freq, decay) {
+    const s = ctx.createBufferSource();
+    const f = ctx.createBiquadFilter();
+    const g = ctx.createGain();
+    s.buffer = noise;
+    s.loop = true;
+    f.type = 'lowpass';
+    f.frequency.value = freq;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+    s.connect(f); f.connect(g); g.connect(master);
+    s.start(t);
+    s.stop(t + decay + 0.02);
+  }
+
+  function playGameStep(i, t) {
+    const bar = Math.floor(i / BAR) % 4;
+    note(mf(G_MEL[i % G_MEL.length]), t, STEP * 0.9, 'square', 0.04);
+    if (i % 2 === 0) note(mf(G_BASS[bar] + (i % 4 === 2 ? 12 : 0)), t, STEP * 1.8, 'triangle', 0.09);
+    else note(mf(G_PROG[bar][(i >> 1) % 3] + 12), t, STEP * 0.5, 'square', 0.018);
+    if (i % 4 === 0) drum(t, 0.18, 300, 0.12);
+    if (i % 4 === 2) drum(t, 0.1, 2500, 0.08);
+    hat(t, 0.015);
+  }
+
+  const SONGS = { home: { total: TOTAL, play: (i, t) => playHomeStep(i, t) }, game: { total: 32, play: playGameStep } };
+  let song = 'home';
+
+  function playHomeStep(i, t) {
     const lead = leadAt.get(i);
     if (lead) note(lead.f, t, lead.len * STEP * 0.92, 'square', 0.045);
     const bar = Math.floor(i / BAR), inBar = i % BAR;
@@ -102,10 +138,21 @@ const Music = (() => {
   }
 
   function tick() {
+    const sg = SONGS[song];
     while (nextTime < ctx.currentTime + 0.15) {
-      playStep(step, nextTime);
+      sg.play(step, nextTime);
       nextTime += STEP;
-      step = (step + 1) % TOTAL;
+      step = (step + 1) % sg.total;
+    }
+  }
+
+  // 홈 곡 ↔ 게임 곡 바꾸기. 소리가 켜져 있으면 바로 새 곡으로 넘어가요.
+  function setSong(name) {
+    if (!SONGS[name] || name === song) return;
+    song = name;
+    if (playing) {
+      halt();
+      start();
     }
   }
 
@@ -145,5 +192,5 @@ const Music = (() => {
     else if (wanted) start();
   });
 
-  return { start, stop, isWanted: () => wanted };
+  return { start, stop, setSong, isWanted: () => wanted };
 })();

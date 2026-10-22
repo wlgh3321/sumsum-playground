@@ -140,6 +140,7 @@ const App = (() => {
 
   function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    Music.setSong(id === 'game' ? 'game' : 'home'); // 게임 중에는 신나는 곡, 나머지는 홈 곡
     window.scrollTo(0, 0);
   }
 
