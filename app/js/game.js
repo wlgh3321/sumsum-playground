@@ -251,6 +251,7 @@ const Game = (() => {
     lastBoard = '';
     $('gameTitle').textContent = modeName(id, settings);
     $('stage').className = 'stage';
+    $('game').dataset.mode = id; // 게임마다 화면 배치를 다르게 (CSS)
     $('stage').onpointerdown = null;
     $('stage').onclick = null;
     G.M.build();

@@ -100,6 +100,8 @@ const App = (() => {
     const line = n ? t('shareRanked', { game, n, v }) : t('shareScore', { game, v });
     const text = `${line}\n${t('shareInvite')}\n${url}`;
     track(`share-${r.mode}`, '결과 공유');
+    // 한국어: 카카오톡으로 바로
+    if (KakaoShare.sendText({ title: line.replace(/^\S+\s/, ''), desc: t('shareInvite') })) return;
 
     if (navigator.share) {
       try {
@@ -283,6 +285,7 @@ const App = (() => {
         best: r.badge.kind === 'new' || r.badge.kind === 'first',
         stats: r.stats,
       });
+      ShareCard.ready().then(f => KakaoShare.prepare(f));
     }
     const b = r.badge;
     const badge = $('resBadge');
@@ -458,6 +461,8 @@ const App = (() => {
     $('shareBtn').addEventListener('click', shareResult);
     $('shareImgBtn').addEventListener('click', () => {
       track(`share-img-${lastMode}`, '이미지 자랑');
+      const r = lastResult;
+      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite') })) return;
       ShareCard.share(() => toast(t('shareImgSaved')));
     });
     press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode)));

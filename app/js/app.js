@@ -102,6 +102,8 @@ const App = (() => {
     const line = n ? t('shareRanked', { game, n, v }) : t('shareScore', { game, v });
     const text = `${line}\n${t('shareInvite')}\n${url}`;
     track(`share-${r.mode}`, '결과 공유');
+    // 한국어: 카카오톡으로 바로
+    if (KakaoShare.sendText({ title: line.replace(/^\S+\s/, ''), desc: t('shareInvite') })) return;
 
     if (navigator.share) {
       try {
@@ -335,11 +337,17 @@ const App = (() => {
   // 게임 카드를 누르면 설정 팝업이 열려요. 설정을 바꾼 뒤 "시작하기"를 눌러야 시작해요.
   function openSetup(id) {
     pendingMode = id;
+    // 여는 순간 손가락 아래 버튼(닫기 X 등)이 눌린 모양으로 보이지 않게, 잠깐 누르기를 막아요
+    const box = $('setup');
+    box.classList.add('opening');
+    clearTimeout(openSetup.t);
+    openSetup.t = setTimeout(() => box.classList.remove('opening'), 350);
+    document.querySelectorAll('#setup .clk').forEach(n => n.classList.remove('clk'));
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     $('setup').hidden = false;
     renderSetup();
     // 맨 위(게임 방식)부터 보이게. 시작 버튼에 포커스를 줘도 아래로 내려가지 않아요.
     $('setup').querySelector('.modal-card').scrollTop = 0;
-    $('startBtn').focus({ preventScroll: true });
   }
 
   function closeSetup() {
@@ -371,6 +379,7 @@ const App = (() => {
         best: r.badge.kind === 'new' || r.badge.kind === 'first',
         stats: r.stats,
       });
+      ShareCard.ready().then(f => KakaoShare.prepare(f));
     }
     const b = r.badge;
     const badge = $('resBadge');
@@ -564,6 +573,8 @@ const App = (() => {
     $('shareBtn').addEventListener('click', shareResult);
     $('shareImgBtn').addEventListener('click', () => {
       track(`share-img-${lastMode}`, '이미지 자랑');
+      const r = lastResult;
+      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite') })) return;
       ShareCard.share(() => toast(t('shareImgSaved')));
     });
     press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode)));

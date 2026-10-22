@@ -23,7 +23,7 @@ const Demo = (() => {
     canvas.className = 'pv-canvas';
     canvas.setAttribute('aria-hidden', 'true');
     box.prepend(canvas);
-    ctx = canvas.getContext('2d');
+    ctx = main = canvas.getContext('2d');
     const ro = new ResizeObserver(resize);
     ro.observe(box);
     resize();
@@ -238,7 +238,7 @@ const Demo = (() => {
         const gap = S * 0.45;
         const cw = (W - P * 2 - gap * (cols - 1)) / cols;
         const chh = Math.min(S * 2.6, (bottom - top - gap * (rows - 1)) / rows);
-        const gy = top + ((bottom - top) - (chh * rows + gap * (rows - 1))) / 2;
+        const gy = top;
         const tapAt = per * 0.62;
         ch.forEach((v, k) => {
           const x = P + (k % cols) * (cw + gap), y = gy + Math.floor(k / cols) * (chh + gap);
@@ -246,6 +246,7 @@ const Demo = (() => {
           key(x, y, cw, chh, hit ? C.mint : C.paper, { dark: !hit, pressed: hit && a < tapAt + 0.15, label: String(v), size: Math.min(chh * 0.36, S * 0.8), color: hit ? C.bg : C.text });
           if (v === ans) { tap(x + cw / 2, y + chh / 2, a - tapAt); pop('+10', x + cw / 2, y, a - tapAt); }
         });
+        return gy + chh * rows + gap * (rows - 1);
       },
     },
 
@@ -283,7 +284,7 @@ const Demo = (() => {
           const kh = Math.min(S * 2.2, (kBottom - kTop - gap * (rows - 1)) / rows);
           const kw = (bw - gap * 2) / cols;
           const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', 'OK'];
-          const ky0 = kTop + (kBottom - kTop - (kh * rows + gap * (rows - 1))) / 2;
+          const ky0 = kTop;
           // 지금 누르는 키
           let cur = null, curAge = 9;
           for (let d = 0; d < typedN && a > per * 0.25; d++) {
@@ -298,9 +299,10 @@ const Demo = (() => {
             key(x, y, kw, kh, isOk ? C.sun : isC ? '#2a0f2e' : C.paper, { dark: !isOk, pressed: on && curAge < 0.12, label: k, size: Math.min(kh * 0.36, S * 0.7), color: isOk ? C.bg : isC ? C.pink : C.text });
             if (on) tap(x + kw / 2, y + kh / 2, curAge);
           });
-        } else if (!roomTall) {
-          pop('+1', W / 2, iy, a - per * 0.8, C.peach);
+          return ky0 + kh * rows + gap * (rows - 1);
         }
+        if (!roomTall) pop('+1', W / 2, iy, a - per * 0.8, C.peach);
+        return iy + inH;
       },
     },
 
@@ -382,13 +384,14 @@ const Demo = (() => {
         const cols = 2, rows = 2;
         const cw = (bw - gap) / cols;
         const chh = Math.min(S * 2.8, (bottom - top - gap) / rows);
-        const gy = top + ((bottom - top) - (chh * 2 + gap)) / 2;
+        const gy = top;
         ch.forEach((v, k) => {
           const x = P + (k % 2) * (cw + gap), y = gy + Math.floor(k / 2) * (chh + gap);
           const hit = v === ans && a >= tapAt;
           key(x, y, cw, chh, hit ? C.lilac : C.paper, { dark: !hit, pressed: hit && a < tapAt + 0.15, label: String(v), size: Math.min(chh * 0.34, S * 0.85), color: hit ? C.bg : C.text });
           if (v === ans) tap(x + cw / 2, y + chh / 2, a - tapAt);
         });
+        return gy + chh * 2 + gap;
       },
     },
 
@@ -409,24 +412,39 @@ const Demo = (() => {
         const top = eqY + S * 1.3, bottom = H - P, gap = S * 0.6;
         const bw = Math.min((W - P * 2 - gap) / 2, (bottom - top) * 1.1);
         const bh = Math.min(bottom - top, bw * 1.0);
-        const x0 = (W - (bw * 2 + gap)) / 2, y0 = top + ((bottom - top) - bh) / 2;
+        const x0 = (W - (bw * 2 + gap)) / 2, y0 = top;
         [[true, C.mint, 'O', t('tfTrue')], [false, C.pink, 'X', t('tfFalse')]].forEach(([v, col, mark, word], k) => {
           const x = x0 + k * (bw + gap);
           const on = v === yes && a >= tapAt && a < tapAt + 0.15;
           key(x, y0, bw, bh, col, { pressed: on, label: mark, size: Math.min(bh * 0.4, S * 2), sub: word, subSize: Math.min(bh * 0.13, S * 0.6) });
           if (v === yes) { tap(x + bw * 0.72, y0 + bh * 0.72, a - tapAt); pop('+10', x + bw / 2, y0, a - tapAt); }
         });
+        return y0 + bh;
       },
     },
   };
 
   /* ---------- 움직이기 ---------- */
+  // 장면을 따로 그린 뒤, 위아래 여백이 똑같도록 세로 가운데에 옮겨 붙여요
+  let main = null, off = null, offCtx = null;
   function frame(now) {
-    if (!ctx || !W) return;
+    if (!main || !W) return;
     const sc = SCENES[mode] || SCENES.fall;
     const tm = ((now - t0) / 1000) % sc.len;
-    ctx.clearRect(0, 0, W, H);
-    try { sc.draw(tm); } catch (e) { /* 그리다 실패해도 앱은 계속 */ }
+    if (!off) { off = document.createElement('canvas'); offCtx = off.getContext('2d'); }
+    if (off.width !== canvas.width || off.height !== canvas.height) { off.width = canvas.width; off.height = canvas.height; }
+    const dpr = canvas.width / W;
+    offCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    offCtx.clearRect(0, 0, W, H);
+    ctx = offCtx;
+    let bottom = H - pad();
+    try { const b = sc.draw(tm); if (typeof b === 'number') bottom = b; } catch (e) { /* 그리다 실패해도 앱은 계속 */ }
+    ctx = main;
+    const shift = Math.max(0, Math.round((H - pad() - bottom) / 2 * dpr));
+    main.setTransform(1, 0, 0, 1, 0, 0);
+    main.clearRect(0, 0, canvas.width, canvas.height);
+    main.drawImage(off, 0, shift);
+    main.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   function loop(now) {
     if (!running) return;

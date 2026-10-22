@@ -191,9 +191,10 @@ const ShareCard = (() => {
     file = new File([blob], `sumsum-${info.r.mode}-${Date.now()}.png`, { type: 'image/png' });
   }
 
+  let pending = Promise.resolve();
   function set(next) {
     info = next;
-    render();
+    pending = render();
   }
 
   function refresh() { render(); }
@@ -232,5 +233,8 @@ const ShareCard = (() => {
     return file ? new Promise(res => { const rd = new FileReader(); rd.onload = () => res(rd.result); rd.readAsDataURL(file); }) : Promise.resolve(null);
   }
 
-  return { set, refresh, share, preview };
+  // 그림이 다 그려지면 파일을 돌려줘요 (카톡에 미리 올릴 때 써요)
+  const ready = () => pending.then(() => file);
+
+  return { set, refresh, share, preview, ready };
 })();

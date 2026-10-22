@@ -410,3 +410,45 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 #setup .field > .label, #setup .field > label.label { margin: 0 0 10px !important; }
 #setup .setup-options > .field:last-child { margin-bottom: 4px !important; }
 #setup .op-grid, #setup .seg { margin: 0; }
+
+/* ---------- 정리 4차 ---------- */
+/* 게임 화면: 아이폰 위(상태 표시줄)·아래(홈 막대)를 피해서 */
+#app:has(#game.active) { padding: calc(12px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom)); }
+#game.screen.active { height: calc(100dvh - 26px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); min-height: 0; }
+/* 빈 공간 없이: 문제는 위에, 보기 버튼·숫자패드가 남는 높이를 채워요 */
+#game .stage::before, #game .stage::after { content: none !important; display: none !important; }
+#game .stage .prompt { margin: 14px 0 16px; }
+#game .stage .clock { margin: 14px 0 0; }
+#game .stage .choices { flex: 1 1 auto; min-height: 0; grid-auto-rows: 1fr; }
+#game .stage .choice { min-height: 0 !important; height: 100%; }
+#game .stage .ox { flex: 1 1 auto; min-height: 0; margin-top: 0; }
+#game .stage .ox-btn { min-height: 0 !important; height: 100%; }
+#game .stage .hint { flex: none; margin: 12px 0 0; }
+/* 60문제 타임어택: 문제는 위, 답 칸+숫자패드가 아래를 채워요 */
+#game[data-mode="race"] .stage { flex: 0 0 auto; }
+#game[data-mode="race"] .pad-wrap { flex: 1 1 auto; min-height: 0; }
+#game[data-mode="race"] .numpad { flex: 1 1 auto; min-height: 0; grid-auto-rows: 1fr; }
+#game[data-mode="race"] .key { min-height: 0; height: 100%; max-height: none; }
+
+/* 미리보기 설명은 늘 한 줄 → 게임마다 미리보기 크기가 같아요 */
+.pv-desc { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pv-name, .pv-meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pv-meta { flex-wrap: nowrap; }
+/* DEMO 표시: 화면 테두리 위에 붙은 딱지 (그림을 가리지 않게) */
+.pick { position: relative; }
+.pick > .pv-tag { top: -9px; left: 12px; z-index: 3; padding: 4px 7px 3px; background: var(--sky); border: 2px solid var(--line); }
+
+/* 기록실 게임별 기록: 한 줄 (아이콘 · 이름 · 기록), 누를 때 테두리 없음 */
+.rec-bests li.mode-card {
+  display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important;
+  gap: 12px; min-height: 0 !important; padding: 10px 0 !important; text-align: left !important;
+  outline: none !important; transform: none !important; -webkit-tap-highlight-color: transparent;
+}
+.rec-bests li.mode-card:hover, .rec-bests li.mode-card:focus, .rec-bests li.mode-card:active { outline: none !important; }
+.rec-bests .rb-name { text-align: left; }
+
+/* 설정 창이 열릴 때 손가락이 닿아 있던 자리가 눌린 것처럼 보이지 않게 */
+#setup.opening .modal-card { pointer-events: none; }
+
+/* 아이폰 맨 위(시계·배터리 줄)를 단색으로 덮어서, 그 아래 로고가 흐리게 보이지 않게 */
+.safe-top { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); background: #0d0a1c; z-index: 90; pointer-events: none; }
