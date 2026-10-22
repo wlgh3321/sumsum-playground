@@ -162,6 +162,20 @@ const App = (() => {
     setPressed($('soundBtn'), cfg.sound);
     $('musicBtn').textContent = cfg.music ? t('musicOn') : t('musicOff');
     setPressed($('musicBtn'), cfg.music);
+    // 위쪽 작은 아이콘 버튼
+    $('qSound').textContent = cfg.sound ? '🔊' : '🔇';
+    setPressed($('qSound'), cfg.sound);
+    setPressed($('qMusic'), cfg.music);
+  }
+
+  // 아래 탭 바: 게임 / 랭킹 / 오답노트 / 설정
+  let homeTab = 'games';
+  function setTab(name) {
+    homeTab = name;
+    document.querySelectorAll('.home-view').forEach(v => { v.hidden = v.dataset.view !== name; });
+    document.querySelectorAll('#tabbar [data-tab]').forEach(b => setPressed(b, b.dataset.tab === name));
+    if (name === 'ranks') Ranking.renderHome();
+    window.scrollTo(0, 0);
   }
 
   // 팝업: 지금 고른 게임의 설정만 보여 줘요.
@@ -212,6 +226,7 @@ const App = (() => {
             <p>${t(m.desc)}</p>
             <div class="best">${bestText}</div>
           </div>
+          <div class="mode-go" aria-hidden="true">▶</div>
         </div>`;
     }).join('');
   }
@@ -220,6 +235,9 @@ const App = (() => {
     const n = Store.weakList().length;
     $('weakCount').textContent = n ? t('weakCount', { n }) : t('weakNone');
     $('weakClear').disabled = n === 0;
+    const SYM = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+    $('weakList').innerHTML = Store.weakList().slice().reverse()
+      .map(w => `<li data-op="${w.op}">${w.a} ${SYM[w.op] || w.op} ${w.b} = <b>${w.ans}</b></li>`).join('');
   }
 
   function renderAll() {
@@ -392,18 +410,23 @@ const App = (() => {
         changed();
       }));
 
-    press($('soundBtn'), () => {
+    const toggleSound = () => {
       cfg.sound = !cfg.sound;
       Sound.setEnabled(cfg.sound);
       changed();
-    });
-
+    };
     // 배경음악 켜기/끄기
-    press($('musicBtn'), () => {
+    const toggleMusic = () => {
       cfg.music = !cfg.music;
       if (cfg.music) Music.start(); else Music.stop();
       changed();
-    });
+    };
+    press($('soundBtn'), toggleSound);
+    press($('musicBtn'), toggleMusic);
+    press($('qSound'), toggleSound);
+    press($('qMusic'), toggleMusic);
+    document.querySelectorAll('#tabbar [data-tab]').forEach(b =>
+      b.addEventListener('click', () => setTab(b.dataset.tab)));
 
     // 브라우저 정책상 음악은 첫 터치/클릭 뒤에 시작할 수 있어요.
     const firstTouch = () => {

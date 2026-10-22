@@ -30,11 +30,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=Do+Hyeon&family=Press+Start+2P&display=swap" rel="stylesheet">
   <!-- 파일 버전(?v=…): 고칠 때마다 바꿔야 휴대폰이 예전 파일을 쓰지 않아요 -->
-  <link rel="stylesheet" href="css/theme.css?v=20261022b">
+  <link rel="stylesheet" href="css/theme.css?v=20261023a">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
-  <link rel="stylesheet" href="css/style.css?v=20261022b">
-  <link rel="stylesheet" href="css/arcade.css?v=20261022b">
-  <link rel="stylesheet" href="css/page.css?v=20261022b">
+  <link rel="stylesheet" href="css/style.css?v=20261023a">
+  <link rel="stylesheet" href="css/arcade.css?v=20261023a">
+  <link rel="stylesheet" href="css/page.css?v=20261023a">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6048734887508367" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -42,47 +42,72 @@
 
   <!-- ===== 홈 ===== -->
   <section id="home" class="screen active">
-    <header class="top">
-      <div class="brand">
-        <h1 class="logo logo-v2"><span class="sr-only" data-i18n="appName">셈셈 놀이터</span><img class="logo-blocks" src="logo-blocks.png?v=1" alt="" width="128" height="128" aria-hidden="true"><span class="logo-text" aria-hidden="true"><span class="logo-word">SUMSUM</span><span class="logo-sub" data-i18n="logoSub">셈셈 놀이터</span></span></h1>
-        <p class="tagline" data-i18n="tagline">사칙연산을 게임으로 연습해요</p>
-      </div>
-      <div class="top-tools">
-        <button type="button" class="chip" id="soundBtn" aria-pressed="true">🔊 소리 켜짐</button>
-        <button type="button" class="chip" id="musicBtn" aria-pressed="true">🎵 음악 켜짐</button>
-        <div class="lang-switch" role="group" aria-label="Language">
-          <button type="button" class="chip" data-lang="ko">한국어</button>
-          <button type="button" class="chip" data-lang="en">English</button>
-        </div>
+    <header class="top top-v2">
+      <h1 class="logo logo-v2"><span class="sr-only" data-i18n="appName">셈셈 놀이터</span><img class="logo-blocks" src="logo-blocks.png?v=1" alt="" width="128" height="128" aria-hidden="true"><span class="logo-text" aria-hidden="true"><span class="logo-word">SUMSUM</span><span class="logo-sub" data-i18n="logoSub">셈셈 놀이터</span></span></h1>
+      <div class="quick-tools">
+        <button type="button" class="icon-btn" id="qSound" aria-pressed="true" aria-label="Sound">🔊</button>
+        <button type="button" class="icon-btn" id="qMusic" aria-pressed="true" aria-label="Music">🎵</button>
       </div>
     </header>
 
-    <section>
-      <h2 class="section-title" data-i18n="modesTitle">게임 고르기</h2>
-      <div class="mode-grid" id="modeGrid"></div>
-    </section>
+    <!-- 탭 1: 게임 -->
+    <div class="home-view" id="viewGames" data-view="games">
+      <p class="tagline" data-i18n="tagline">사칙연산을 게임으로 연습해요</p>
+      <div class="mode-grid mode-list" id="modeGrid"></div>
+    </div>
 
-    <section class="card rank-board" aria-labelledby="rankTitle">
-      <div class="rank-head">
-        <h2 class="section-title" id="rankTitle" data-i18n="rankTitle">명예의 전당</h2>
-        <p class="rank-rule" id="rankRule"></p>
-      </div>
-      <div class="rank-tabs" id="rankTabs" role="group" aria-label="게임 선택"></div>
-      <ol class="rank-list" id="rankList"></ol>
-    </section>
+    <!-- 탭 2: 랭킹 (명예의 전당) -->
+    <div class="home-view" id="viewRanks" data-view="ranks" hidden>
+      <section class="rank-board" aria-labelledby="rankTitle">
+        <div class="rank-head">
+          <h2 class="section-title" id="rankTitle" data-i18n="rankTitle">명예의 전당</h2>
+          <p class="rank-rule" id="rankRule"></p>
+        </div>
+        <div class="rank-tabs" id="rankTabs" role="group" aria-label="게임 선택"></div>
+        <ol class="rank-list card" id="rankList"></ol>
+      </section>
+    </div>
 
-    <section class="card weak">
-      <div>
-        <div class="weak-title" id="weakCount"></div>
-        <p class="weak-hint" data-i18n="weakHint">틀린 문제는 가끔 다시 나와요</p>
-      </div>
-      <button type="button" class="btn btn-small" id="weakClear" data-i18n="weakClear">목록 비우기</button>
-    </section>
+    <!-- 탭 3: 오답노트 -->
+    <div class="home-view" id="viewNotes" data-view="notes" hidden>
+      <h2 class="section-title" data-i18n="notesTitle">오답노트</h2>
+      <section class="card weak">
+        <div>
+          <div class="weak-title" id="weakCount"></div>
+          <p class="weak-hint" data-i18n="weakHint">틀린 문제는 가끔 다시 나와요</p>
+        </div>
+        <ul class="weak-list" id="weakList"></ul>
+        <button type="button" class="btn btn-small" id="weakClear" data-i18n="weakClear">목록 비우기</button>
+      </section>
+    </div>
 
-    <nav class="site-foot" aria-label="사이트 정보">
-      <a href="about.html" data-i18n="footAbout">소개</a><span class="dot">·</span>
-      <a href="privacy.html" data-i18n="footPrivacy">개인정보처리방침</a><span class="dot">·</span>
-      <a href="mailto:jhl.studio.00@gmail.com" data-i18n="footContact">문의</a>
+    <!-- 탭 4: 설정 -->
+    <div class="home-view" id="viewMore" data-view="more" hidden>
+      <h2 class="section-title" data-i18n="moreTitle">설정</h2>
+      <section class="card set-list">
+        <div class="set-row"><span class="set-label" data-i18n="setSound">효과음</span><button type="button" class="chip" id="soundBtn" aria-pressed="true">🔊 소리 켜짐</button></div>
+        <div class="set-row"><span class="set-label" data-i18n="setMusic">배경음악</span><button type="button" class="chip" id="musicBtn" aria-pressed="true">🎵 음악 켜짐</button></div>
+        <div class="set-row"><span class="set-label" data-i18n="setLang">언어</span>
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button type="button" class="chip" data-lang="ko">한국어</button>
+            <button type="button" class="chip" data-lang="en">English</button>
+          </div>
+        </div>
+      </section>
+      <nav class="card set-links" aria-label="사이트 정보">
+        <a href="about.html" data-i18n="footAbout">소개</a>
+        <a href="privacy.html" data-i18n="footPrivacy">개인정보처리방침</a>
+        <a href="mailto:jhl.studio.00@gmail.com" data-i18n="footContact">문의</a>
+      </nav>
+      <p class="set-ver">SumSum Playground · Studio JHL</p>
+    </div>
+
+    <!-- 아래 탭 바 -->
+    <nav class="tabbar" id="tabbar" aria-label="메뉴">
+      <button type="button" class="tab" data-tab="games" aria-pressed="true"><span class="tab-ico" aria-hidden="true">🎮</span><span data-i18n="tabGames">게임</span></button>
+      <button type="button" class="tab" data-tab="ranks" aria-pressed="false"><span class="tab-ico" aria-hidden="true">🏆</span><span data-i18n="tabRanks">랭킹</span></button>
+      <button type="button" class="tab" data-tab="notes" aria-pressed="false"><span class="tab-ico" aria-hidden="true">📝</span><span data-i18n="tabNotes">오답노트</span></button>
+      <button type="button" class="tab" data-tab="more" aria-pressed="false"><span class="tab-ico" aria-hidden="true">⚙️</span><span data-i18n="tabMore">설정</span></button>
     </nav>
   </section>
 
@@ -232,18 +257,18 @@
   <div id="toast" class="toast" role="status" hidden></div>
 </div>
 
-<script src="js/i18n.js?v=20261022b"></script>
-<script src="js/store.js?v=20261022b"></script>
-<script src="js/audio.js?v=20261022b"></script>
-<script src="js/music.js?v=20261022b"></script>
-<script src="js/problems.js?v=20261022b"></script>
-<script src="js/game.js?v=20261022b"></script>
+<script src="js/i18n.js?v=20261023a"></script>
+<script src="js/store.js?v=20261023a"></script>
+<script src="js/audio.js?v=20261023a"></script>
+<script src="js/music.js?v=20261023a"></script>
+<script src="js/problems.js?v=20261023a"></script>
+<script src="js/game.js?v=20261023a"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase.js?v=20261022b"></script>
-<script src="js/ranking.js?v=20261022b"></script>
-<script src="js/sharecard.js?v=20261022b"></script>
-<script src="js/app.js?v=20261022b"></script>
+<script src="js/firebase.js?v=20261023a"></script>
+<script src="js/ranking.js?v=20261023a"></script>
+<script src="js/sharecard.js?v=20261023a"></script>
+<script src="js/app.js?v=20261023a"></script>
 <!-- 오프라인에서도 게임이 되게 해 주는 도우미 (홈 화면에 추가하면 앱처럼 써요) -->
 <script>
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
