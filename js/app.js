@@ -10,8 +10,6 @@ const App = (() => {
   const MODE_IDS = ['fall', 'minute', 'race', 'balloon', 'beat', 'tf'];
   const HAS_SPEED = ['fall', 'balloon']; // 속도는 문제 비·풍선 팡팡에만 있어요.
   const HAS_TIME = ['minute', 'tf']; // 제한 시간은 1분 도전·참 거짓 스피드에만 있어요.
-  const SPEED_KEYS = ['vslow', 'slow', 'normal', 'fast', 'vfast'];
-  const SPEED_LABEL = { vslow: 'speedVslow', slow: 'speedSlow', normal: 'speedNormal', fast: 'speedFast', vfast: 'speedVfast' };
   const PRESETS = {
     easy: { addMax: 10, mulMax: 5 },
     normal: { addMax: 20, mulMax: 9 },
@@ -142,8 +140,6 @@ const App = (() => {
 
   function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
-    document.body.classList.toggle('on-home', id === 'home');
-    if (id === 'home' && homeTab === 'games') playPreview(); else pausePreview();
     Music.setSong(id === 'game' ? 'game' : 'home'); // 게임 중에는 신나는 곡, 나머지는 홈 곡
     window.scrollTo(0, 0);
   }
@@ -162,30 +158,10 @@ const App = (() => {
   function renderHeader() {
     document.querySelectorAll('[data-lang]').forEach(b =>
       setPressed(b, b.dataset.lang === lang));
-    $('soundTxt').textContent = cfg.sound ? t('soundOn') : t('soundOff');
+    $('soundBtn').textContent = cfg.sound ? t('soundOn') : t('soundOff');
     setPressed($('soundBtn'), cfg.sound);
-    $('musicTxt').textContent = cfg.music ? t('musicOn') : t('musicOff');
+    $('musicBtn').textContent = cfg.music ? t('musicOn') : t('musicOff');
     setPressed($('musicBtn'), cfg.music);
-    // 위쪽 작은 아이콘 버튼과 설정 버튼의 도트 아이콘
-    $('qSound').dataset.ico = $('soundBtn').dataset.ico = cfg.sound ? 'sound' : 'soundOff';
-    $('qMusic').dataset.ico = $('musicBtn').dataset.ico = cfg.music ? 'music' : 'musicOff';
-    setPressed($('qSound'), cfg.sound);
-    setPressed($('qMusic'), cfg.music);
-    Icons.decorate();
-  }
-
-  // 아래 탭 바: 게임 / 랭킹 / 오답노트 / 설정
-  let homeTab = 'games';
-  function setTab(name) {
-    homeTab = name;
-    document.querySelectorAll('.home-view').forEach(v => { v.hidden = v.dataset.view !== name; });
-    document.querySelectorAll('#tabbar [data-tab]').forEach(b => setPressed(b, b.dataset.tab === name));
-    if (name === 'ranks') Ranking.renderHome();
-    if (name === 'records') renderRecords();
-    if (name === 'games') playPreview();
-    else pausePreview();
-    $('homeScroll').scrollTop = 0;
-    window.scrollTo(0, 0);
   }
 
   // 팝업: 지금 고른 게임의 설정만 보여 줘요.
@@ -202,10 +178,8 @@ const App = (() => {
       setPressed(b, s.ops.includes(b.dataset.op)));
     document.querySelectorAll('#presetGrid [data-preset]').forEach(b =>
       setPressed(b, b.dataset.preset === s.preset));
-    const si = SPEED_KEYS.indexOf(s.speed);
-    $('speedRange').value = si;
-    $('speedRange').style.setProperty('--p', `${(si / (SPEED_KEYS.length - 1)) * 100}%`);
-    $('speedOut').textContent = t(SPEED_LABEL[s.speed]);
+    document.querySelectorAll('#speedGrid [data-speed]').forEach(b =>
+      setPressed(b, b.dataset.speed === s.speed));
     document.querySelectorAll('#timeGrid [data-time]').forEach(b => {
       const sec = Number(b.dataset.time);
       b.textContent = duration(sec);
@@ -223,108 +197,36 @@ const App = (() => {
     $('setupTitle').textContent = modeName(pendingMode, s);
   }
 
-  // 홈: 아래 작은 버튼으로 게임을 고르면, 위 큰 화면에 그 게임의 미리보기와 설명·기록이 나와요.
-  let pick = 'fall';
-  try { const p = localStorage.getItem('sumsum.pick'); if (MODE_IDS.includes(p)) pick = p; } catch (e) {}
-
+  // 홈: 게임 카드마다 그 게임의 설정으로 최고 기록을 보여 줘요.
   function renderModes() {
     $('modeGrid').innerHTML = MODE_CARDS.map(m => {
       const s = snapshot(m.id);
-      const glyph = m.id === 'minute' ? shortTime(s.time) : m.glyph;
-      return `
-        <button type="button" class="pick-btn mode-card" data-mode="${m.id}" aria-pressed="${m.id === pick}" style="--accent:${m.accent}">
-          <span class="glyph">${glyph}</span>
-          <span class="pick-name">${modeName(m.id, { ...s, ranked: false })}</span>
-        </button>`;
-    }).join('');
-    renderPreview();
-  }
-
-  function renderPreview() {
-    const m = MODE_CARDS.find(x => x.id === pick);
-    const s = snapshot(pick);
-    const best = Store.getBest(bestKey(pick, s));
-    $('pick').style.setProperty('--accent', m.accent);
-    $('pvName').textContent = modeName(pick, s);
-    $('pvDesc').textContent = t(m.desc);
-    $('pvBest').textContent = best === null ? t('bestNone') : `${t('bestLabel')} ${fmtValue(pick, best)}`;
-    const v = $('pvVideo');
-    const key = `${lang === 'en' ? 'en' : 'ko'}/${pick}`;
-    const src = `previews/${key}.mp4?v=1`;
-    if (v.dataset.key !== key) {
-      v.dataset.key = key;
-      v.poster = `previews/${key}.jpg?v=1`;
-      v.src = src;
-      if (homeTab === 'games') playPreview();
-    }
-    const want = pick;
-    $('pvTop').textContent = '';
-    Ranking.top1(pick).then(r => {
-      if (want !== pick) return;
-      $('pvTop').textContent = r ? t('pvTop', { name: r.name, v: fmtValue(pick, r.score) }) : t('pvTopNone');
-    }).catch(() => {});
-  }
-
-  function playPreview() {
-    const v = $('pvVideo');
-    if (!v || !v.src) return;
-    const p = v.play();
-    if (p && p.catch) p.catch(() => {});
-  }
-  function pausePreview() {
-    const v = $('pvVideo');
-    if (v) v.pause();
-  }
-
-  function choose(id) {
-    if (id === pick) return;
-    pick = id;
-    try { localStorage.setItem('sumsum.pick', id); } catch (e) {}
-    document.querySelectorAll('#modeGrid .pick-btn').forEach(b => setPressed(b, b.dataset.mode === id));
-    renderPreview();
-    Sound.tap && Sound.tap();
-  }
-
-  // 기록실: 숫자 요약 · 배지 · 게임별 최고 기록
-  function renderRecords() {
-    const S = Stats.data();
-    const cell = (ico, v, label) =>
-      `<div class="rec-cell">${Icons.svg(ico)}<b>${v}</b><span>${label}</span></div>`;
-    $('recStats').innerHTML =
-      cell('games', `${S.plays}${t('recPlayUnit')}`, t('recPlays')) +
-      cell('check', S.correct, t('recCorrect')) +
-      cell('fire', S.maxStreak, t('recStreak')) +
-      cell('calendar', `${S.days}${t('recDayUnit')}`, t('recDays'));
-    const got = Stats.BADGES.filter(b => S.got[b.id]).length;
-    $('badgeGrid').innerHTML = Stats.BADGES.map(b => {
-      const on = !!S.got[b.id];
-      const cur = Math.min(b.goal, b.cur(S));
-      const prog = on ? '' : `<span class="bdg-prog">${cur}/${b.goal}</span>`;
-      return `<div class="bdg${on ? ' on' : ''}" title="${t(b.desc)}">
-        <span class="bdg-ico">${Icons.svg(on ? b.ico : 'lock')}</span>
-        <span class="bdg-name">${t(b.name)}</span>
-        <span class="bdg-desc">${t(b.desc)}</span>${prog}</div>`;
-    }).join('');
-    $('recBadgeCount') && ($('recBadgeCount').textContent = t('recBadgeCount', { n: got, m: Stats.BADGES.length }));
-    $('recBests').innerHTML = MODE_CARDS.map(m => {
-      const s = snapshot(m.id);
       const best = Store.getBest(bestKey(m.id, s));
       const glyph = m.id === 'minute' ? shortTime(s.time) : m.glyph;
-      return `<li class="mode-card" data-mode="${m.id}" style="--accent:${m.accent}"><span class="glyph">${glyph}</span>
-        <span class="rb-name">${modeName(m.id, s)}</span>
-        <span class="rb-val">${best === null ? '—' : fmtValue(m.id, best)}</span></li>`;
+      const bestText = best === null ? t('bestNone') : `${t('bestLabel')} ${fmtValue(m.id, best)}`;
+      return `
+        <div class="mode-card" role="button" tabindex="0" data-mode="${m.id}" style="--accent:${m.accent}">
+          <div class="glyph">${glyph}</div>
+          <div class="mode-info">
+            <h3>${modeName(m.id, s)}</h3>
+            <p>${t(m.desc)}</p>
+            <div class="best">${bestText}</div>
+          </div>
+        </div>`;
     }).join('');
   }
 
-  function celebrate(list) {
-    list.forEach((b, i) => setTimeout(() => toast(t('badgeGot', { name: t(b.name) })), 400 + i * 1800));
+  function renderWeak() {
+    const n = Store.weakList().length;
+    $('weakCount').textContent = n ? t('weakCount', { n }) : t('weakNone');
+    $('weakClear').disabled = n === 0;
   }
 
   function renderAll() {
     renderHeader();
     renderSetup();
     renderModes();
-    if (homeTab === 'records') renderRecords();
+    renderWeak();
     Ranking.renderHome();
   }
 
@@ -334,7 +236,6 @@ const App = (() => {
       n.textContent = t(n.dataset.i18n);
     });
     renderAll();
-    Icons.decorate();
   }
 
   function showHome() {
@@ -418,7 +319,6 @@ const App = (() => {
 
     show('result');
     Ranking.onResult(r);
-    celebrate(Stats.record(r));
   }
 
   /* ---------- 설정 변경 ---------- */
@@ -458,10 +358,11 @@ const App = (() => {
         changed();
       }));
 
-    $('speedRange').addEventListener('input', e => {
-      current().speed = SPEED_KEYS[Number(e.target.value)] || 'normal';
-      changed();
-    });
+    document.querySelectorAll('#speedGrid [data-speed]').forEach(b =>
+      press(b, () => {
+        current().speed = b.dataset.speed;
+        changed();
+      }));
 
     document.querySelectorAll('#timeGrid [data-time]').forEach(b =>
       press(b, () => {
@@ -491,23 +392,18 @@ const App = (() => {
         changed();
       }));
 
-    const toggleSound = () => {
+    press($('soundBtn'), () => {
       cfg.sound = !cfg.sound;
       Sound.setEnabled(cfg.sound);
       changed();
-    };
+    });
+
     // 배경음악 켜기/끄기
-    const toggleMusic = () => {
+    press($('musicBtn'), () => {
       cfg.music = !cfg.music;
       if (cfg.music) Music.start(); else Music.stop();
       changed();
-    };
-    press($('soundBtn'), toggleSound);
-    press($('musicBtn'), toggleMusic);
-    press($('qSound'), toggleSound);
-    press($('qMusic'), toggleMusic);
-    document.querySelectorAll('#tabbar [data-tab]').forEach(b =>
-      b.addEventListener('click', () => setTab(b.dataset.tab)));
+    });
 
     // 브라우저 정책상 음악은 첫 터치/클릭 뒤에 시작할 수 있어요.
     const firstTouch = () => {
@@ -521,25 +417,24 @@ const App = (() => {
     document.querySelectorAll('[data-lang]').forEach(b =>
       press(b, () => setLanguage(b.dataset.lang)));
 
-    // 아래 작은 버튼: 고르기만 해요. 고른 걸 한 번 더 누르거나 "플레이"를 누르면 설정 창이 열려요.
-    $('modeGrid').addEventListener('click', e => {
-      const b = e.target.closest('.pick-btn');
-      if (!b) return;
-      if (b.dataset.mode === pick) openSetup(pick);
-      else choose(b.dataset.mode);
+    press($('weakClear'), () => {
+      Store.clearWeak();
+      renderWeak();
+      toast(t('weakCleared'));
     });
-    $('playBtn').addEventListener('click', () => openSetup(pick));
-    $('pvScreen').addEventListener('click', () => openSetup(pick));
-    // 기록실의 게임 줄을 누르면 그 게임으로 가요
-    $('recBests').addEventListener('click', e => {
-      const li = e.target.closest('[data-mode]');
-      if (!li) return;
-      choose(li.dataset.mode);
-      setTab('games');
+
+    // 모드 카드는 스크롤 중 실수로 열리지 않도록 click으로 처리해요.
+    const grid = $('modeGrid');
+    grid.addEventListener('click', e => {
+      const card = e.target.closest('.mode-card');
+      if (card) openSetup(card.dataset.mode);
     });
-    // 다른 앱으로 갔다 오면 미리보기를 다시 틀어요
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && homeTab === 'games' && $('home').classList.contains('active')) playPreview();
+    grid.addEventListener('keydown', e => {
+      const card = e.target.closest('.mode-card');
+      if (card && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        openSetup(card.dataset.mode);
+      }
     });
 
     // 설정 팝업
@@ -596,7 +491,6 @@ const App = (() => {
     bind();
     applyLang();
     show('home');
-    celebrate(Stats.visit());
   }
 
   return { show, showHome, showResult, init };

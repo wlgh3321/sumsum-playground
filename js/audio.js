@@ -54,10 +54,6 @@ const Sound = (() => {
       if (!enabled) return;
       tone(220, 0, 0.25, 'sawtooth', 0.1);
     },
-    tap() {
-      if (!enabled) return;
-      tone(660, 0, 0.06, 'square', 0.06);
-    },
     levelUp() {
       if (!enabled) return;
       [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.1, 0.2, 'triangle', 0.15));

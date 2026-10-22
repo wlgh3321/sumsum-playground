@@ -324,9 +324,6 @@ const Game = (() => {
         [t('statStreak'), G.maxStreak],
       ],
       misses: G.misses,
-      correct: G.correct,
-      wrong: G.wrong,
-      maxStreak: G.maxStreak,
     });
   }
 
