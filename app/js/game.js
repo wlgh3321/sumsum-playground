@@ -101,6 +101,8 @@ const Game = (() => {
   // 목숨은 "반 칸" 단위로 세요 (6 = 하트 3개). 홀수면 반 하트를 그려요.
   const hearts = units => {
     if (units <= 0) return '—';
+    // 보너스로 하트가 3개보다 많으면 칸이 모자라서 "♥×4½" 처럼 줄여 보여요
+    if (units > 6) return `<span class="heart">♥</span><span class="heart-n">×${Math.floor(units / 2)}${units % 2 ? '½' : ''}</span>`;
     const full = '<span class="heart">♥</span>'.repeat(Math.floor(units / 2));
     const half = units % 2 ? '<span class="heart half">♥</span>' : '';
     return full + half;
@@ -164,7 +166,44 @@ const Game = (() => {
   function loseLife(units) {
     G.lives = Math.max(0, G.lives - units);
     refresh();
-    if (G.lives <= 0) finish(true);
+    if (G.lives <= 0) endOrContinue();
+  }
+
+  /* ---------- 이어하기 (게임 오버 때 한 번) ---------- */
+  function endOrContinue() {
+    if (!G || G.over || G.askCont) return;
+    if (G.continued || !Bonus.kindOf(G.id) || !Bonus.canReward()) { finish(true); return; }
+    G.askCont = true;
+    G.running = false;
+    const heart = Bonus.kindOf(G.id) === 'heart';
+    $('contNote').textContent = t(Bonus.noAds() ? 'contNoteFree' : 'contNote');
+    $('contGoTxt').textContent = t(heart ? 'contGoHeart' : 'contGoTime');
+    $('contBox').hidden = false;
+    Sound.over();
+  }
+
+  async function cont(yes) {
+    if (!G || G.over || !G.askCont) return;
+    $('contBox').hidden = true;
+    if (yes && await Bonus.reward()) {
+      G.askCont = false;
+      G.continued = true;
+      if (Bonus.kindOf(G.id) === 'heart') {
+        G.lives = 2;
+        // 바닥 가까이 있던 문제는 치워 주고 다시 시작해요
+        if (G.id === 'fall') G.items.slice().forEach(removeFall);
+        if (G.id === 'balloon') balloonNext();
+      } else {
+        G.timeLeft = 10;
+      }
+      Sound.resume();
+      lastTs = performance.now();
+      G.running = true;
+      refresh();
+      return;
+    }
+    G.askCont = false;
+    finish(true);
   }
 
   // 레벨 올리기 (문제 비, 풍선 팡팡). 알림은 점수판의 레벨 칸에 잠깐 띄워요.
@@ -219,9 +258,10 @@ const Game = (() => {
     step(0);
   }
 
-  function start(id, settings) {
+  function start(id, settings, bonus = 0) {
     stop();
     $('pauseBox').hidden = true;
+    $('contBox').hidden = true;
     G = {
       id,
       M: MODES[id],
@@ -233,7 +273,8 @@ const Game = (() => {
       streak: 0,
       maxStreak: 0,
       level: 1,
-      lives: 6, // 반 칸 단위 (6 = 하트 3개)
+      bonus,
+      lives: 6 + (Bonus.kindOf(id) === 'heart' ? bonus : 0), // 반 칸 단위 (6 = 하트 3개)
       timeLeft: settings.time,
       timeMax: settings.time,
       elapsed: 0,
@@ -258,6 +299,7 @@ const Game = (() => {
     $('stage').onpointerdown = null;
     $('stage').onclick = null;
     G.M.build();
+    if (Bonus.kindOf(id) === 'time') G.timeLeft += bonus * Bonus.SEC_PER_UNIT; // 시간 게임 보너스: 더 길게 시작
     $('padWrap').hidden = !G.M.numpad;
     renderInput();
     App.show('game');
@@ -280,8 +322,8 @@ const Game = (() => {
       if (G.over) return;
       if (G.M.timed && G.timeLeft <= 0) {
         G.timeLeft = 0;
-        finish(true);
-        return;
+        endOrContinue();
+        if (G.over) return;
       }
       renderBoard(G.M.board());
     }
@@ -295,6 +337,7 @@ const Game = (() => {
     stop();
     $('countdown').hidden = true;
     $('pauseBox').hidden = true;
+    $('contBox').hidden = true;
 
     const id = G.id;
     const isRace = id === 'race';
@@ -339,7 +382,7 @@ const Game = (() => {
   /* ---------- 일시정지 ---------- */
   // 일시정지하면 시간과 움직임이 모두 멈추고, 문제가 보이지 않게 화면을 가려요.
   function pause() {
-    if (!G || G.over) return;
+    if (!G || G.over || G.askCont) return;
     if (!G.running && !G.paused) {
       // 카운트다운 중에는 바로 홈으로 나가요.
       quit();
@@ -365,9 +408,9 @@ const Game = (() => {
   function restartGame() {
     if (!G) return;
     $('pauseBox').hidden = true;
-    const id = G.id, s = G.s;
+    const id = G.id, s = G.s, bonus = G.bonus;
     G.over = true;
-    start(id, s);
+    start(id, s, bonus);
   }
 
   // 다른 앱으로 가거나 화면이 꺼지면 저절로 일시정지해요.
@@ -377,6 +420,7 @@ const Game = (() => {
 
   function quit() {
     if (!G || G.over) return;
+    if (G.askCont) { cont(false); return; }
     $('pauseBox').hidden = true;
     if (G.paused) {
       G.paused = false;
@@ -901,5 +945,5 @@ const Game = (() => {
     },
   };
 
-  return { start, key, keydown, quit, pause, resume, restart: restartGame };
+  return { start, key, keydown, quit, pause, resume, cont, restart: restartGame };
 })();

@@ -528,3 +528,19 @@ html[lang="en"] .bdg-name { font-size: 13.5px; white-space: nowrap; }
 .rb-rank { flex: none; min-width: 0; font-family: var(--font-title); font-size: 14px; color: var(--mint); padding: 2px 8px; background: #120e26; }
 .rb-rank:empty { display: none; }
 .rb-rank.first { color: var(--sun); background: #2c2366; box-shadow: inset 0 0 0 2px var(--sun); }
+
+/* 내가 10위 밖일 때: ⋯ 줄 다음에 내 줄 */
+.rank-row.rank-dots { display: block; text-align: center; background: none !important; color: var(--muted, #8a86b0); letter-spacing: 4px; padding-top: 0; padding-bottom: 0; line-height: 1.2; }
+
+/* ---------- 보너스 (설정 팝업) ---------- */
+.bonus-row { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin: 18px 0 12px; }
+.bonus-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.bonus-tag { font-size: 13px; color: var(--text); padding: 4px 8px; border: 2px solid var(--line); background: rgba(106, 77, 255, 0.14); line-height: 1.2; white-space: nowrap; }
+.bonus-tag b { color: var(--pink); font-weight: normal; margin-left: 2px; }
+.bonus-hint { font-size: 13px; color: var(--text-dim); text-align: center; }
+.btn-ad { --bc: var(--pink); --tint: #fff; --mix: 55%; color: var(--on-bright) !important; width: 100%; }
+.rec-bonus { margin: 10px 0 0; font-size: 12.5px; color: var(--text-dim); text-align: center; line-height: 1.5; }
+
+/* ---------- 황금 블록 (배지 12개) ---------- */
+html.gold { --sun: #ffd23f; --mint: #ffe58a; --pink: #ffb627; --lilac: #f3c969; --peach: #ff9f1c; --line: #c9a227; --ink: #7a5a12; }
+.heart-n { color: var(--pink); margin-left: 2px; }

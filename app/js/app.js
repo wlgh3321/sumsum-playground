@@ -171,7 +171,36 @@ const App = (() => {
     $('qMusic').dataset.ico = $('musicBtn').dataset.ico = cfg.music ? 'music' : 'musicOff';
     setPressed($('qSound'), cfg.sound);
     setPressed($('qMusic'), cfg.music);
+    // 황금 블록 (배지 12개를 다 모으면 나타나요)
+    $('goldRow').hidden = !Bonus.goldUnlocked();
+    $('goldTxt').textContent = Bonus.goldOn() ? t('soundOn') : t('soundOff');
+    setPressed($('goldBtn'), Bonus.goldOn());
+    Bonus.applyGold();
     Icons.decorate();
+  }
+
+  /* ---------- 보너스 (설정 팝업 아래) ---------- */
+  let adBonus = false; // 이번 판에 광고 보고 받은 하트 +1
+  function renderBonus() {
+    const id = pendingMode;
+    const kind = Bonus.kindOf(id);
+    $('bonusRow').hidden = !kind;
+    if (!kind) return;
+    const parts = Bonus.parts();
+    if (adBonus) parts.push({ key: 'bonAd', u: 2 });
+    $('bonusList').innerHTML = parts.length
+      ? parts.map(p => `<span class="bonus-tag">${t(p.key)} <b>${Bonus.label(id, p.u)}</b></span>`).join('')
+      : `<span class="bonus-hint">${t('bonHint', { v: Bonus.label(id, 1) })}</span>`;
+    $('adBtn').hidden = adBonus || !Bonus.canReward();
+    $('adTxt').textContent = t(Bonus.noAds() ? 'bonAdFree' : 'bonAdBtn', { v: Bonus.label(id, 2) });
+  }
+  async function claimAd() {
+    if (adBonus || !pendingMode) return;
+    $('adBtn').disabled = true;
+    const ok = await Bonus.reward();
+    $('adBtn').disabled = false;
+    if (ok) { adBonus = true; Sound.levelUp(); }
+    renderBonus();
   }
 
   // 아래 탭 바: 게임 / 랭킹 / 오답노트 / 설정
@@ -224,6 +253,7 @@ const App = (() => {
     $('addMaxOut').textContent = t('rangeAdd', { n: s.addMax });
     $('mulMaxOut').textContent = t('rangeMul', { n: s.mulMax });
     $('setupTitle').textContent = modeName(pendingMode, s);
+    renderBonus();
   }
 
   // 홈: 아래 작은 버튼으로 게임을 고르면, 위 큰 화면에 그 게임의 미리보기와 설명·기록이 나와요.
@@ -298,6 +328,7 @@ const App = (() => {
         <span class="bdg-name">${t(b.name)}</span>
         <span class="bdg-desc">${t(b.desc)}</span>${prog}</div>`;
     }).join('');
+    $('recBonus').textContent = t('recBonusNote');
     $('recBadgeCount') && ($('recBadgeCount').textContent = t('recBadgeCount', { n: got, m: Stats.BADGES.length }));
     $('recBests').innerHTML = MODE_CARDS.map(m => {
       const s = snapshot(m.id);
@@ -316,9 +347,8 @@ const App = (() => {
   async function fillRanks() {
     let bestN = null;
     await Promise.all(MODE_CARDS.map(async m => {
-      const v = Store.getBest(bestKey(m.id, { ...RANKED, ranked: true }));
       let n = null;
-      try { n = await Ranking.rankOf(m.id, v); } catch (e) {}
+      try { const r = await Ranking.myRank(m.id); n = r && r.n; } catch (e) {}
       const el = document.querySelector(`#recBests [data-rank="${m.id}"]`);
       if (!el) return;
       if (n) {
@@ -387,7 +417,9 @@ const App = (() => {
     closeSetup();
     const s = snapshot(id);
     track(`play-${id}${s.ranked ? '-ranked' : ''}`, `게임 시작: ${modeName(id, s)}`);
-    Game.start(id, s);
+    const bonus = Bonus.kindOf(id) ? Bonus.units() + (adBonus ? 2 : 0) : 0;
+    adBonus = false;
+    Game.start(id, s, bonus);
   }
 
   // 결과 화면. Game이 한 판이 끝났을 때 호출해요.
@@ -528,6 +560,10 @@ const App = (() => {
       changed();
     };
     press($('soundBtn'), toggleSound);
+    press($('goldBtn'), () => { const on = !Bonus.goldOn(); Bonus.setGold(on); Sound.toggle(on); renderHeader(); });
+    press($('adBtn'), claimAd);
+    press($('contGo'), () => Game.cont(true));
+    press($('contEnd'), () => Game.cont(false));
     press($('musicBtn'), toggleMusic);
     press($('qSound'), toggleSound);
     press($('qMusic'), toggleMusic);

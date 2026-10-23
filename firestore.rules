@@ -30,5 +30,31 @@ service cloud.firestore {
 
       allow update, delete: if false;
     }
+
+    // 앱 명예의 전당: 사람(기기)마다 한 줄. 더 좋은 기록으로만 고칠 수 있어요.
+    match /boards/{mode}/players/{pid} {
+      function okMode() { return mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf']; }
+      function ok(d) {
+        return d.keys().hasOnly(['name', 'score', 'at', 'v'])
+          && d.name is string
+          && d.name.size() >= 1
+          && d.name.size() <= 8
+          && d.name.matches('^[가-힣A-Za-z0-9_ ]+$')
+          && d.score is number
+          && d.at == request.time
+          && d.v == 2
+          && (
+            (mode == 'race' && d.score >= 20 && d.score <= 3600)
+            || (mode != 'race' && d.score is int && d.score > 0 && d.score <= 200000 && d.score % 5 == 0)
+          );
+      }
+      allow read: if okMode();
+      allow create: if okMode() && pid.matches('^[A-Za-z0-9]{8,64}$') && ok(request.resource.data);
+      allow update: if okMode() && ok(request.resource.data)
+        && (mode == 'race'
+          ? request.resource.data.score <= resource.data.score
+          : request.resource.data.score >= resource.data.score);
+      allow delete: if false;
+    }
   }
 }

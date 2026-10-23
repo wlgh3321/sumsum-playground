@@ -28,13 +28,42 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     });
   }
 
+  // 이 기기의 플레이어 번호 (명예의 전당에서 내 줄을 찾고, 최고 기록을 덮어쓸 때 써요)
+  const PID_KEY = 'sumsum.pid';
+  function pid() {
+    let id = '';
+    try { id = localStorage.getItem(PID_KEY) || ''; } catch (e) {}
+    if (!/^[A-Za-z0-9]{8,64}$/.test(id)) {
+      const a = new Uint8Array(12);
+      (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => { a[i] = Math.random() * 256; });
+      id = 'p' + [...a].map(x => x.toString(16).padStart(2, '0')).join('');
+      try { localStorage.setItem(PID_KEY, id); } catch (e) {}
+    }
+    return id;
+  }
+
+  // 전체 순위 (사람마다 최고 기록 한 줄)
   async function top(mode, fresh) {
     const c = cache[mode];
     if (!fresh && c && Date.now() - c.at < 30000) return c.rows;
     const b = await board();
-    const rows = await b.top(mode, SIZE);
+    const rows = await b.players(mode, 500);
     cache[mode] = { at: Date.now(), rows };
     return rows;
+  }
+  // 예전(웹) 명예의 전당 기록은 이름별 최고 기록으로 옮겨 뒀어요 → 같은 이름을 쓰던 기기는 그 줄을 이어받아요
+  const legacyId = name => 'n' + [...new TextEncoder().encode(name)].map(x => x.toString(16).padStart(2, '0')).join('').padEnd(16, '0');
+  function mine(rows) {
+    let i = rows.findIndex(r => r.id === pid());
+    if (i < 0) {
+      const c = cleanName(getSavedName());
+      if (!c.err) {
+        const lid = legacyId(c.name);
+        i = rows.findIndex(r => r.id === lid);
+        if (i >= 0) try { localStorage.setItem(PID_KEY, lid); } catch (e) {}
+      }
+    }
+    return i;
   }
 
   /* ---------- 규칙 ---------- */
@@ -76,8 +105,10 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     : `${v}${t('ptsUnit')}`);
 
   /* ---------- 목록 그리기 ---------- */
-  function renderRows(list, mode, rows, highlightId) {
+  function renderRows(list, mode, all, highlightId) {
     list.textContent = '';
+    const me = mine(all);
+    const rows = all.slice(0, SIZE);
     if (!rows.length) {
       const li = document.createElement('li');
       li.className = 'rank-empty';
@@ -87,7 +118,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     }
     rows.forEach((r, i) => {
       const li = document.createElement('li');
-      li.className = `rank-row r${i + 1}${r.id === highlightId ? ' me' : ''}`;
+      li.className = `rank-row r${i + 1}${r.id === highlightId || i === me ? ' me' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(i);
       const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name;
       if (i === 0) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
@@ -95,6 +126,19 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       li.append(a, b, c);
       list.appendChild(li);
     });
+    // 내가 10위 밖이면: ⋯ 다음에 내 줄
+    if (me >= SIZE) {
+      const dots = document.createElement('li');
+      dots.className = 'rank-row rank-dots';
+      dots.textContent = '⋯';
+      const li = document.createElement('li');
+      li.className = 'rank-row me';
+      const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(me);
+      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = all[me].name;
+      const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, all[me].score);
+      li.append(a, b, c);
+      list.append(dots, li);
+    }
   }
 
   function renderMsg(list, key) {
@@ -152,14 +196,21 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
   function renderPreview(box, mode, value, rows, place) {
     const list = document.createElement('ol');
     list.className = 'rank-list rank-preview';
-    const all = rows.slice(0, SIZE).map(r => ({ ...r }));
-    const me = { id: '__me', name: t('rankMe'), score: value, me: true };
-    all.splice(Math.min(place - 1, all.length), 0, me);
-    const keep = new Set([1, 2, 3, place - 1, place, place + 1, all.length]);
+    // n = 실제 등수. 10위 안이면 끼워 넣고, 밖이면 맨 끝에 진짜 등수로
+    const all = rows.slice(0, SIZE).map((r, i) => ({ ...r, n: i + 1 }));
+    const me = { id: '__me', name: t('rankMe'), score: value, me: true, n: place };
+    if (place <= SIZE) {
+      all.splice(place - 1, 0, me);
+      all.forEach((r, i) => { r.n = i + 1; });
+    } else {
+      all.push(me);
+    }
+    const keep = new Set([1, 2, 3, place - 1, place, place + 1, all[all.length - 1].n]);
+    if (place > SIZE) keep.add(SIZE);
     let prev = 0;
-    all.forEach((r, i) => {
-      const n = i + 1;
-      if (!keep.has(n)) return;
+    all.forEach(r => {
+      const n = r.n;
+      if (!keep.has(n) && !r.me) return;
       if (n - prev > 1) {
         const dots = document.createElement('li');
         dots.className = 'rank-row rank-dots';
@@ -169,7 +220,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       prev = n;
       const li = document.createElement('li');
       li.className = `rank-row r${n}${r.me ? ' ghost' : ''}`;
-      const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(i);
+      const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(n - 1);
       const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name;
       if (n === 1) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
@@ -208,25 +259,65 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     if (!$('result').classList.contains('active')) return;
     box.hidden = false;
 
-    // 지금 몇 위쯤인지 먼저 보여 줘요 (연습 판도 참고로 보여 줘요).
-    const place = placeOf(r.mode, r.value, rows);
-    const inTop = place <= SIZE;
+    const myIdx = mine(rows); // (예전 기록 이어받기도 여기서)
+    const myRow = myIdx >= 0 ? rows[myIdx] : null;
+    const others = rows.filter(x => x.id !== pid());
+    const total = others.length + 1;
+    const place = placeOf(r.mode, r.value, others); // 이번 기록이면 몇 위
     lastEstimate = { mode: r.mode, value: r.value, n: place, ranked };
-    if (typeof ShareCard !== "undefined") ShareCard.refresh();
-    if (ranked) {
-      note(box, inTop ? 'rankNowIn' : 'rankNowOut', { n: place, d: inTop ? '' : gapTo10(r.mode, r.value, rows) }, 'rank-hi');
-    } else {
-      note(box, inTop ? 'rankPracIn' : 'rankPracOut', { n: place, d: inTop ? '' : gapTo10(r.mode, r.value, rows) }, 'rank-hi');
-    }
-    renderPreview(box, r.mode, r.value, rows, place);
+    if (typeof ShareCard !== 'undefined') ShareCard.refresh();
 
     if (!ranked) {
+      note(box, 'rankPracAll', { n: place }, 'rank-hi');
+      note(box, 'rankTotal', { total });
+      renderPreview(box, r.mode, r.value, others, place);
       note(box, 'rankPracNote');
       return;
     }
-    if (!qualifies(r.mode, r.value, rows)) return;
 
-    // TOP 10 진입 → 이름 입력
+    const improved = !myRow || better(r.mode, r.value, myRow.score);
+    if (!improved) {
+      // 내 최고 기록이 그대로예요
+      note(box, 'rankKeep', { v: fmt(r.mode, myRow.score), n: myIdx + 1 }, 'rank-hi');
+      note(box, 'rankTotal', { total: rows.length });
+      const list = document.createElement('ol');
+      list.className = 'rank-list';
+      renderRows(list, r.mode, rows);
+      box.append(list);
+      return;
+    }
+
+    const save = async name => {
+      const b = await board();
+      await b.save(r.mode, pid(), name, r.value);
+      setSavedName(name);
+      if (window.track) window.track(`rank-${r.mode}`, '명예의 전당 갱신');
+      const fresh = await top(r.mode, true);
+      const n = mine(fresh) + 1;
+      lastPlace = { mode: r.mode, value: r.value, n };
+      if (typeof ShareCard !== 'undefined') ShareCard.refresh();
+      box.textContent = '';
+      note(box, myRow ? 'rankUpdated' : 'rankFirst', { n }, 'rank-hi');
+      note(box, 'rankTotal', { total: fresh.length });
+      const list = document.createElement('ol');
+      list.className = 'rank-list';
+      renderRows(list, r.mode, fresh);
+      box.append(list);
+      tab = r.mode;
+    };
+
+    // 이름을 이미 정했으면 자동으로 최고 기록을 올려요
+    const saved = cleanName(getSavedName());
+    if (!saved.err) {
+      note(box, 'rankSaving', {}, 'rank-hi');
+      try { await save(saved.name); } catch (e) { box.textContent = ''; note(box, 'rankErrSave'); }
+      return;
+    }
+
+    // 처음이면 이름 정하기
+    note(box, 'rankNowAll', { n: place }, 'rank-hi');
+    note(box, 'rankTotal', { total });
+    renderPreview(box, r.mode, r.value, others, place);
     const title = document.createElement('div');
     title.className = 'rank-hi';
     title.textContent = t('rankEnter');
@@ -238,7 +329,6 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     input.maxLength = 8;
     input.autocomplete = 'nickname';
     input.placeholder = t('rankPlaceholder');
-    input.value = getSavedName();
     input.setAttribute('aria-label', t('rankPlaceholder'));
     const btn = document.createElement('button');
     btn.type = 'submit';
@@ -262,31 +352,18 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       busy = true;
       btn.disabled = true;
       err.hidden = true;
-      try {
-        const b = await board();
-        const id = await b.submit(r.mode, c.name, r.value);
-        setSavedName(c.name);
-        if (window.track) window.track(`rank-${r.mode}`, '명예의 전당 등록');
-        const fresh = await top(r.mode, true);
-        const place = fresh.findIndex(x => x.id === id);
-        if (place >= 0) lastPlace = { mode: r.mode, value: r.value, n: place + 1 };
-        if (typeof ShareCard !== "undefined") ShareCard.refresh();
-        box.textContent = '';
-        const done = document.createElement('div');
-        done.className = 'rank-hi';
-        done.textContent = place >= 0 ? t('rankDone', { n: place + 1 }) : t('rankSaved');
-        const list = document.createElement('ol');
-        list.className = 'rank-list';
-        renderRows(list, r.mode, fresh, id);
-        box.append(done, list);
-        tab = r.mode;
-      } catch (e2) {
-        busy = false;
-        btn.disabled = false;
-        err.textContent = t('rankErrSave');
-        err.hidden = false;
+      try { await save(c.name); } catch (e2) {
+        busy = false; btn.disabled = false;
+        err.textContent = t('rankErrSave'); err.hidden = false;
       }
     });
+  }
+
+  // 기록실: 이 게임에서 내 순위 { n, total } (아직 없으면 null)
+  async function myRank(mode) {
+    const rows = await top(mode);
+    const i = mine(rows);
+    return i >= 0 ? { n: i + 1, total: rows.length } : null;
   }
 
   // 공유 문구용: 이 결과로 명예의 전당에 등록했으면 몇 위인지
@@ -314,5 +391,5 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     return n <= SIZE ? n : null;
   }
 
-  return { renderHome, onResult, placeFor, estimateFor, rankOf, CROWN, top1, setTab: m => { tab = m; } };
+  return { renderHome, onResult, placeFor, estimateFor, rankOf, myRank, CROWN, top1, setTab: m => { tab = m; } };
 })();

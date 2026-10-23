@@ -23,7 +23,20 @@
   const dir = mode => (mode === 'race' ? 'asc' : 'desc');
   const scoresOf = mode => db.collection('boards').doc(mode).collection('scores');
 
+  // 앱: 사람마다 한 줄(최고 기록만). 문서 이름 = 이 기기의 플레이어 번호
+  const playersOf = mode => db.collection('boards').doc(mode).collection('players');
+
   window.Board = {
+    async players(mode, n = 500) {
+      const snap = await playersOf(mode).orderBy('score', dir(mode)).limit(n).get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    },
+    async save(mode, pid, name, score) {
+      await playersOf(mode).doc(pid).set({
+        name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 2,
+      });
+      return pid;
+    },
     async top(mode, n = 10) {
       const snap = await scoresOf(mode).orderBy('score', dir(mode)).limit(n).get();
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
