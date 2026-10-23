@@ -458,13 +458,27 @@ const App = (() => {
     $('restartBtn').addEventListener('click', () => Game.restart());
     $('quitBtn').addEventListener('click', () => Game.quit());
     // 공유 창은 브라우저 정책상 터치를 뗄 때(click) 열어야 아이폰에서도 떠요.
-    $('shareBtn').addEventListener('click', shareResult);
+    // 결과 공유하기: 한국어는 카톡으로 점수 이미지 카드, 아니면 휴대폰 공유 창으로 점수 이미지
     $('shareImgBtn').addEventListener('click', () => {
-      track(`share-img-${lastMode}`, '이미지 자랑');
+      track(`share-img-${lastMode}`, '결과 공유');
       const r = lastResult;
       if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite') })) return;
       ShareCard.share(() => toast(t('shareImgSaved')));
     });
+    // 결과 이미지 저장: 이미지를 크게 보여 주고 저장 버튼
+    $('shareBtn').addEventListener('click', async () => {
+      track(`save-img-${lastMode}`, '이미지 저장');
+      const f = await ShareCard.ready();
+      if (!f) return;
+      const img = $('saveImg');
+      if (img.dataset.url) URL.revokeObjectURL(img.dataset.url);
+      img.dataset.url = URL.createObjectURL(f);
+      img.src = img.dataset.url;
+      $('saveBox').hidden = false;
+    });
+    $('saveDl').addEventListener('click', () => ShareCard.save(() => toast(t('shareImgSaved'))));
+    $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
+    $('saveBox').addEventListener('click', e => { if (e.target === $('saveBox')) $('saveBox').hidden = true; });
     press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode)));
     press($('homeBtn'), () => showHome());
 

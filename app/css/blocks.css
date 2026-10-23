@@ -452,3 +452,11 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 
 /* 아이폰 맨 위(시계·배터리 줄)를 단색으로 덮어서, 그 아래 로고가 흐리게 보이지 않게 */
 .safe-top { position: fixed; top: 0; left: 0; right: 0; height: env(safe-area-inset-top); background: #0d0a1c; z-index: 90; pointer-events: none; }
+
+/* 결과 이미지 저장 창 */
+.save-modal { z-index: 70; }
+#saveBox .save-card { max-width: 420px; height: auto; padding: 16px; text-align: center; }
+.save-img { display: block; width: 100%; max-height: 62dvh; object-fit: contain; margin: 0 auto; }
+.save-hint { margin: 12px 0 14px; color: var(--text-dim); font-size: 15px; }
+.save-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.save-actions .btn { width: 100%; }

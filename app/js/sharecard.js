@@ -236,5 +236,17 @@ const ShareCard = (() => {
   // 그림이 다 그려지면 파일을 돌려줘요 (카톡에 미리 올릴 때 써요)
   const ready = () => pending.then(() => file);
 
-  return { set, refresh, share, preview, ready };
+  // 저장하기: 휴대폰은 공유 창의 '이미지 저장'(사진첩), 컴퓨터는 파일로 내려받아요
+  async function save(onSaved) {
+    const f = await ready();
+    if (!f) return;
+    const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (mobile && navigator.canShare && navigator.canShare({ files: [f] })) {
+      try { await navigator.share({ files: [f] }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    download(f);
+    if (onSaved) onSaved();
+  }
+
+  return { set, refresh, share, preview, ready, save };
 })();

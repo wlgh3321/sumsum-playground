@@ -8,7 +8,7 @@ const KakaoShare = (() => {
   const KEY = '13ca3b1f9c7700a82d68e2f3d7c156aa'; // 카카오 JavaScript 키 (sumsum.studiojhl.com 에서만 작동)
   const SDK = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
   const SITE = 'https://sumsum.studiojhl.com/';
-  const OG = 'https://sumsum.studiojhl.com/og.png?v=3';
+  const OG = 'https://sumsum.studiojhl.com/og.png?v=4';
 
   let loading = null;
   let imgUrl = null;   // 미리 올려 둔 자랑 이미지 주소
