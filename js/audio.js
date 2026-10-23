@@ -104,7 +104,8 @@ const Sound = (() => {
     // 게임
     correct() { tone(880, 0, 0.08); tone(1320, 0.07, 0.12); },
     wrong() { tone(220, 0, 0.22, 'sawtooth', 0.1, -80); },
-    pop() { noise(0, 0.12, 0.12, 1800); tone(1400, 0, 0.06, 'square', 0.06, 600); },
+    // 풍선: 부드러운 '뽁' (높아지는 사인파 두 번)
+    pop() { tone(520, 0, 0.09, 'sine', 0.16, 520); tone(1040, 0.05, 0.08, 'sine', 0.07, 300); },
     levelUp() { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.08, 0.16, 'triangle', 0.15)); },
     combo(n) { tone(660 + Math.min(n, 20) * 30, 0, 0.07, 'square', 0.07); tone(990 + Math.min(n, 20) * 30, 0.06, 0.09, 'square', 0.07); },
     count() { tone(440, 0, 0.12, 'square', 0.1); },

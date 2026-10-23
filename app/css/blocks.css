@@ -416,8 +416,10 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 #app:has(#game.active) { padding: calc(12px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom)); }
 #game.screen.active { height: calc(100dvh - 26px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); min-height: 0; }
 /* 문제·보기 크기는 적당하게, 남는 공간은 위아래에 똑같이 나눠서 가운데에 */
+/* 남는 공간은 위 1 : 아래 1.6 으로 (살짝 위쪽에 놓여야 눈높이에 맞아요) */
 #game .stage::before, #game .stage::after { content: none !important; display: none !important; }
-#game .stage:not(:has(.play-field, .balloon-field)) { justify-content: center; }
+#game .stage:not(:has(.play-field, .balloon-field))::before { content: "" !important; display: block !important; flex: 1 1 0; }
+#game .stage:not(:has(.play-field, .balloon-field))::after { content: "" !important; display: block !important; flex: 1.6 1 0; }
 #game .stage .prompt { margin: 0 0 18px; }
 #game .stage .clock { margin: 0 0 18px; }
 #game .stage .choices { flex: none; }
@@ -428,7 +430,9 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 #game .stage .ox-btn { min-height: 0 !important; height: clamp(130px, 24dvh, 190px); }
 #game .stage .hint { flex: none; margin: 14px 0 0; }
 /* 60문제 타임어택: 문제 + 답 칸 + 숫자패드를 한 덩어리로 가운데에 */
-#game[data-mode="race"] .game-body { justify-content: center; }
+#game[data-mode="race"] .game-body::before { content: ""; flex: 1 1 0; }
+#game[data-mode="race"] .game-body::after { content: ""; flex: 1.6 1 0; }
+#game[data-mode="race"] .stage::before, #game[data-mode="race"] .stage::after { display: none !important; }
 #game[data-mode="race"] .stage { flex: 0 0 auto; }
 #game[data-mode="race"] .pad-wrap { flex: none; }
 #game[data-mode="race"] .key { min-height: 0; height: clamp(50px, 7.5dvh, 64px); }
@@ -483,3 +487,13 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 
 /* 알림(배지 획득 등)은 화면 위쪽에 띄워서 버튼을 가리지 않게 */
 .toast { top: calc(14px + env(safe-area-inset-top)) !important; bottom: auto !important; }
+
+/* 틀렸을 때 빨간 테두리: 바깥으로 삐져나오지 않고 칸 안쪽에 */
+.stage.flash-ok, .stage.flash-bad { outline-offset: -4px; }
+@keyframes flashOk { from { outline: 4px solid var(--ok); } to { outline: 4px solid transparent; } }
+@keyframes flashBad { from { outline: 4px solid var(--bad); } to { outline: 4px solid transparent; } }
+
+/* 결과 화면: 카드를 화면 세로 가운데에, 틀린 문제 줄은 글자를 가운데 정렬 */
+#result.screen.active { min-height: calc(100dvh - 26px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display: flex !important; flex-direction: column; justify-content: center; }
+#result.screen.active .result-card { margin-top: 0 !important; margin-bottom: 0; }
+#result .miss { justify-content: center; text-align: center; }
