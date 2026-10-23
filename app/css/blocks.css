@@ -460,3 +460,14 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .save-hint { margin: 12px 0 14px; color: var(--text-dim); font-size: 15px; }
 .save-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .save-actions .btn { width: 100%; }
+
+/* DEMO 표시: 겹치지 않게 미리보기 위쪽에 얇은 띠로 (오락실 'DEMO PLAY' 느낌) */
+.pick > .pv-tag {
+  position: static !important;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 26px; padding: 0 !important; margin: 0;
+  background: #120d2b !important; border: 0 !important; border-bottom: 3px solid var(--line) !important;
+  color: var(--pink); font-family: "Press Start 2P", monospace; font-size: 9px; letter-spacing: 0.18em;
+  animation: none;
+}
+.pick > .pv-tag::before, .pick > .pv-tag::after { content: ""; width: 7px; height: 7px; background: var(--pink); animation: pauseBlink 1.2s steps(1) infinite; }
