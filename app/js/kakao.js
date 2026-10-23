@@ -5,7 +5,7 @@
  * - 이미지 자랑: 결과 화면이 뜨면 자랑 이미지를 카카오에 미리 올려 두고, 버튼을 누르면 그 이미지로 카톡 카드를 보내요.
  */
 const KakaoShare = (() => {
-  const KEY = ''; // ← 여기에 JavaScript 키
+  const KEY = '13ca3b1f9c7700a82d68e2f3d7c156aa'; // 카카오 JavaScript 키 (sumsum.studiojhl.com 에서만 작동)
   const SDK = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js';
   const SITE = 'https://sumsum.studiojhl.com/';
   const OG = 'https://sumsum.studiojhl.com/og.png?v=3';
