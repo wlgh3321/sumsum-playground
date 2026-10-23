@@ -512,3 +512,8 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
   #result .miss-q { font-size: 12px; flex-basis: 100%; text-align: center; }
   #result .miss-a, #result .miss-mine { font-size: 13px; }
 }
+/* 배지 설명: 영어처럼 길면 3줄까지 보이게 (잘리지 않게), 칸 높이는 모두 같게 */
+.badge-grid { grid-auto-rows: 1fr; }
+.bdg-desc { min-height: 3.75em; overflow: visible; display: block; }
+html[lang="en"] .bdg-desc { font-size: 10.5px; }
+html[lang="en"] .bdg-name { font-size: 13.5px; white-space: nowrap; }
