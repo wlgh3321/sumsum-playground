@@ -253,6 +253,7 @@ const Game = (() => {
     lastBoard = '';
     $('gameTitle').textContent = modeName(id, settings);
     $('stage').className = 'stage';
+    const oldBar = $('raceBar'); if (oldBar) oldBar.remove();
     $('game').dataset.mode = id; // 게임마다 화면 배치를 다르게 (CSS)
     $('stage').onpointerdown = null;
     $('stage').onclick = null;
@@ -768,14 +769,23 @@ const Game = (() => {
       numpad: true,
       build() {
         $('stage').innerHTML = '<div class="prompt" id="prompt"></div>';
+        // 진행 막대는 문제 칸(틀림 테두리) 바깥 위에 따로 둬요
+        const bar = document.createElement('div');
+        bar.className = 'race-bar'; bar.id = 'raceBar';
+        bar.innerHTML = '<div class="race-fill" id="raceFill"></div>';
+        $('stage').before(bar);
       },
       begin: raceNext,
       submit: raceSubmit,
-      board: () => [
+      board: () => {
+        const fill = $('raceFill');
+        if (fill) fill.style.width = `${Math.min(100, (G.correct / RACE_GOAL) * 100)}%`;
+        return [
         ['sbProgress', `${G.correct}/${RACE_GOAL}`],
         ['sbTime', `${G.elapsed.toFixed(1)}${t('secUnit')}`],
         ['sbWrong', G.wrong],
-      ],
+      ];
+      },
     },
 
     balloon: {

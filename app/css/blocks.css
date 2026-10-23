@@ -497,3 +497,7 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 #result.screen.active { min-height: calc(100dvh - 26px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display: flex !important; flex-direction: column; justify-content: center; }
 #result.screen.active .result-card { margin-top: 0 !important; margin-bottom: 0; }
 #result .miss { justify-content: center; text-align: center; }
+
+/* 60문제 타임어택: 맞힐 때마다 차오르는 주황 막대 (미리보기 DEMO와 같은 모양) */
+.race-bar { flex: none; height: 12px; margin: 0; background: var(--paper); box-shadow: inset 2px 2px 0 #07050f, inset -2px -2px 0 #3b3080; }
+.race-fill { height: 100%; width: 0; background: var(--peach); box-shadow: inset 0 -3px 0 rgba(0,0,0,0.25); transition: width 0.18s steps(3, end); }
