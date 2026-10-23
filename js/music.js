@@ -161,7 +161,7 @@ const Music = (() => {
     if (playing || document.hidden) return;
     const c = context();
     if (!c) return;
-    if (c.state === 'suspended') c.resume();
+    if (c.state !== 'running') c.resume().catch(() => {});
     master = c.createGain();
     master.gain.value = 0.8;
     master.connect(c.destination);
@@ -191,6 +191,8 @@ const Music = (() => {
     if (document.hidden) halt();
     else if (wanted) start();
   });
+  // 전화·알림 등으로 끊겼다가 돌아오면 다시 깨워요
+  window.addEventListener('pointerdown', () => { if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {}); }, true);
 
   return { start, stop, setSong, isWanted: () => wanted };
 })();

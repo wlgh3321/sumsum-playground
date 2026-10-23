@@ -12,6 +12,7 @@ const Ranking = (() => {
   const NAME_KEY = 'sumsum:rankName';
   const BAD = ['시발', '씨발', 'ㅅㅂ', '병신', 'ㅂㅅ', '개새', '좆', '존나', '니미', '느금', '섹스', 'fuck', 'shit', 'bitch', 'sex', 'dick'];
 
+const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-rendering="crispEdges"><path fill="#ffe14d" d="M0 1h1v1h-1zM5 0h2v1h-2zM11 1h1v1h-1zM0 2h2v1h-2zM4 1h4v2h-4zM10 2h2v1h-2zM0 3h12v3h-12zM1 6h10v2h-10z"/><path fill="#ff4da6" d="M3 4h1v1h-1zM8 4h1v1h-1z"/><path fill="#4de1ff" d="M5 4h2v1h-2z"/><path fill="#b38a00" d="M1 7h10v1h-10z"/></svg>';
   let tab = 'fall';
   let lastPlace = null; // 방금 등록한 순위 { mode, value, n } — 공유 문구에 써요
   let lastEstimate = null; // 이번 판이 지금 몇 위쯤인지 { mode, value, n, ranked } — 자랑 이미지에 써요
@@ -89,6 +90,7 @@ const Ranking = (() => {
       li.className = `rank-row r${i + 1}${r.id === highlightId ? ' me' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(i);
       const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name;
+      if (i === 0) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
       li.append(a, b, c);
       list.appendChild(li);
@@ -169,6 +171,7 @@ const Ranking = (() => {
       li.className = `rank-row r${n}${r.me ? ' ghost' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(i);
       const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name;
+      if (n === 1) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
       li.append(a, b, c);
       list.appendChild(li);
@@ -297,5 +300,13 @@ const Ranking = (() => {
     return e && e.mode === r.mode && e.value === r.value ? e : null;
   }
 
-  return { renderHome, onResult, placeFor, estimateFor, setTab: m => { tab = m; } };
+  // 내 기록이 지금 명예의 전당 몇 위인지 (TOP 10 밖이면 null)
+  async function rankOf(mode, value) {
+    if (value === null || value === undefined) return null;
+    const rows = await top(mode);
+    const n = rows.filter(x => better(mode, x.score, value)).length + 1;
+    return n <= SIZE ? n : null;
+  }
+
+  return { renderHome, onResult, placeFor, estimateFor, rankOf, CROWN, setTab: m => { tab = m; } };
 })();

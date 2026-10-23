@@ -285,7 +285,9 @@ const App = (() => {
       cell('games', `${S.plays}${unit('recPlayUnit')}`, t('recPlays')) +
       cell('check', S.correct, t('recCorrect')) +
       cell('fire', S.maxStreak, t('recStreak')) +
-      cell('calendar', `${S.days}${unit('recDayUnit')}`, t('recDays'));
+      cell('calendar', `${S.days}${unit('recDayUnit')}`, t('recDays')) +
+      cell('medal', `${Stats.BADGES.filter(b => S.got[b.id]).length}<small>/${Stats.BADGES.length}</small>`, t('recBadgeCell')) +
+      `<div class="rec-cell" id="recRankCell">${Icons.svg('trophy')}<b id="recBestRank">—</b><span>${t('recBestRank')}</span></div>`;
     const got = Stats.BADGES.filter(b => S.got[b.id]).length;
     $('badgeGrid').innerHTML = Stats.BADGES.map(b => {
       const on = !!S.got[b.id];
@@ -303,8 +305,32 @@ const App = (() => {
       const glyph = m.id === 'minute' ? shortTime(s.time) : m.glyph;
       return `<li class="mode-card" data-mode="${m.id}" style="--accent:${m.accent}"><span class="glyph">${glyph}</span>
         <span class="rb-name">${modeName(m.id, s)}</span>
-        <span class="rb-val">${best === null ? '—' : fmtValue(m.id, best)}</span></li>`;
+        <span class="rb-val">${best === null ? '—' : fmtValue(m.id, best)}</span>
+        <span class="rb-rank" data-rank="${m.id}"></span></li>`;
     }).join('');
+    fillRanks();
+  }
+
+  // 게임별 명예의 전당 등수 (랭킹전 최고 기록 기준). 1등은 왕관.
+  const rankText = n => (lang === 'en' ? `#${n}` : `${n}${t('rankUnit')}`);
+  async function fillRanks() {
+    let bestN = null;
+    await Promise.all(MODE_CARDS.map(async m => {
+      const v = Store.getBest(bestKey(m.id, { ...RANKED, ranked: true }));
+      let n = null;
+      try { n = await Ranking.rankOf(m.id, v); } catch (e) {}
+      const el = document.querySelector(`#recBests [data-rank="${m.id}"]`);
+      if (!el) return;
+      if (n) {
+        el.innerHTML = (n === 1 ? Ranking.CROWN : '') + rankText(n);
+        el.classList.toggle('first', n === 1);
+        if (bestN === null || n < bestN) bestN = n;
+      } else {
+        el.textContent = '';
+      }
+    }));
+    const b = $('recBestRank');
+    if (b) b.innerHTML = bestN ? (bestN === 1 ? Ranking.CROWN : '') + rankText(bestN) : '—';
   }
 
   function celebrate(list) {

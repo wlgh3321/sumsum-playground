@@ -8,7 +8,9 @@ const Sound = (() => {
   let enabled = true;
   let lastTick = 0;
 
-  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+  // 'ambient': 다른 앱 음악과 섞이고, 아이폰 위쪽(다이내믹 아일랜드)에 '재생 중' 표시가 뜨지 않아요.
+  // (대신 무음 스위치를 켜면 소리가 꺼져요. 대부분의 게임과 같은 방식이에요.)
+  try { if (navigator.audioSession) navigator.audioSession.type = 'ambient'; } catch (e) {}
 
   function getContext() {
     try {
@@ -17,7 +19,8 @@ const Sound = (() => {
         if (!AC) return null;
         ctx = new AC();
       }
-      if (ctx.state === 'suspended') ctx.resume();
+      if (ctx.state === 'closed') { ctx = null; return getContext(); }
+      if (ctx.state !== 'running') ctx.resume().catch(() => {}); // suspended / interrupted(전화·다른 앱) 모두 다시 깨워요
       return ctx;
     } catch (e) {
       return null;
@@ -36,6 +39,11 @@ const Sound = (() => {
     }
   };
   ['pointerdown', 'touchend', 'keydown'].forEach(ev => window.addEventListener(ev, unlock, { capture: true, passive: true }));
+  // 다른 앱에 갔다 오거나 화면이 꺼졌다 켜지면 소리 장치를 다시 깨워요
+  const wake = () => { if (ctx && !document.hidden && ctx.state !== 'running') ctx.resume().catch(() => {}); };
+  document.addEventListener('visibilitychange', wake);
+  window.addEventListener('pageshow', wake);
+  window.addEventListener('focus', wake);
 
   function tone(freq, start, dur, type = 'square', vol = 0.12, slide = 0) {
     if (!enabled) return;
