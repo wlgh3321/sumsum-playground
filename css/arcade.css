@@ -689,7 +689,3 @@ svg.ico { width: 1.05em; height: 1.05em; flex: none; display: inline-block; }
 .save-hint { margin: 12px 0 14px; color: var(--text-dim); font-size: 15px; word-break: keep-all; }
 .save-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* 틀렸을 때 빨간 테두리: 바깥으로 삐져나오지 않고 칸 안쪽에 */
-.stage.flash-ok, .stage.flash-bad { outline-offset: -4px; }
-@keyframes flashOk { from { outline: 4px solid var(--ok); } to { outline: 4px solid transparent; } }
-@keyframes flashBad { from { outline: 4px solid var(--bad); } to { outline: 4px solid transparent; } }

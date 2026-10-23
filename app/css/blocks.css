@@ -488,10 +488,10 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 /* 알림(배지 획득 등)은 화면 위쪽에 띄워서 버튼을 가리지 않게 */
 .toast { top: calc(14px + env(safe-area-inset-top)) !important; bottom: auto !important; }
 
-/* 틀렸을 때 빨간 테두리: 바깥으로 삐져나오지 않고 칸 안쪽에 */
-.stage.flash-ok, .stage.flash-bad { outline-offset: -4px; }
-@keyframes flashOk { from { outline: 4px solid var(--ok); } to { outline: 4px solid transparent; } }
-@keyframes flashBad { from { outline: 4px solid var(--bad); } to { outline: 4px solid transparent; } }
+/* 60문제 타임어택: 틀림/맞음 테두리가 문제 글자를 위아래 가운데로 감싸고, 아래 칸들과 폭이 맞게 */
+#game[data-mode="race"] .stage { padding: 14px 0 !important; }
+#game[data-mode="race"] .stage .prompt { margin: 0 !important; }
+#game[data-mode="race"] .stage.flash-ok, #game[data-mode="race"] .stage.flash-bad { outline-offset: -8px; }
 
 /* 결과 화면: 카드를 화면 세로 가운데에, 틀린 문제 줄은 글자를 가운데 정렬 */
 #result.screen.active { min-height: calc(100dvh - 26px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display: flex !important; flex-direction: column; justify-content: center; }
