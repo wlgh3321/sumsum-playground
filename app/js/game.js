@@ -126,6 +126,7 @@ const Game = (() => {
     Store.removeWeak(p);
     good(label ?? `+${pts}`);
     refresh();
+    if (G.streak >= 5 && G.streak % 5 === 0) setTimeout(() => Sound.combo(G.streak), 140);
   }
 
   // 틀린 횟수만 올려요 (보기를 여러 번 틀려도 횟수는 매번 올라가요).
@@ -203,6 +204,7 @@ const Game = (() => {
       num.textContent = steps[i];
       restart(num, 'pop');
       const last = i === steps.length - 1;
+      if (last) Sound.go(); else Sound.count();
       G.timers.push(setTimeout(() => {
         if (!last) {
           step(i + 1);
@@ -312,6 +314,7 @@ const Game = (() => {
       }
     }
 
+    if (completed) { if (badge.kind === 'new' || badge.kind === 'first') Sound.record(); else Sound.over(); }
     const tries = G.correct + G.wrong;
     const acc = tries ? Math.round((G.correct / tries) * 100) : 0;
     App.showResult({
@@ -344,6 +347,7 @@ const Game = (() => {
     if (G.paused) return;
     G.paused = true;
     G.running = false;
+    Sound.pause();
     $('pauseBox').hidden = false;
     setTimeout(() => $('resumeBtn').focus({ preventScroll: true }), 0);
   }
@@ -353,6 +357,7 @@ const Game = (() => {
     $('pauseBox').hidden = true;
     G.paused = false;
     G.running = true;
+    Sound.resume();
     lastTs = performance.now();
   }
 
@@ -398,6 +403,7 @@ const Game = (() => {
     } else if (G.input.length < 4) {
       G.input += k;
     }
+    if (k !== 'ok') Sound.key();
     renderInput();
     refresh();
   }
@@ -579,6 +585,7 @@ const Game = (() => {
     b.gone = true;
     if (b.v === p.ans) {
       node.classList.add('popped');
+      Sound.pop();
       setTimeout(() => node.remove(), 300);
       hit(p, POINTS * G.level);
       checkLevel(8);

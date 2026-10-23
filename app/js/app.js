@@ -269,7 +269,7 @@ const App = (() => {
     try { localStorage.setItem('sumsum.pick', id); } catch (e) {}
     document.querySelectorAll('#modeGrid .pick-btn').forEach(b => setPressed(b, b.dataset.mode === id));
     renderPreview();
-    Sound.tap && Sound.tap();
+    Sound.select();
   }
 
   // 단위(판·일): 영어에서는 비워 두거나 영어 단위를 써요
@@ -308,7 +308,7 @@ const App = (() => {
   }
 
   function celebrate(list) {
-    list.forEach((b, i) => setTimeout(() => toast(t('badgeGot', { name: t(b.name) })), 400 + i * 1800));
+    list.forEach((b, i) => setTimeout(() => { Sound.badge(); toast(t('badgeGot', { name: t(b.name) })); }, 400 + i * 1800));
   }
 
   function renderAll() {
@@ -491,12 +491,14 @@ const App = (() => {
     const toggleSound = () => {
       cfg.sound = !cfg.sound;
       Sound.setEnabled(cfg.sound);
+      if (cfg.sound) Sound.toggle(true);
       changed();
     };
     // 배경음악 켜기/끄기
     const toggleMusic = () => {
       cfg.music = !cfg.music;
       if (cfg.music) Music.start(); else Music.stop();
+      Sound.toggle(cfg.music);
       changed();
     };
     press($('soundBtn'), toggleSound);
@@ -506,11 +508,18 @@ const App = (() => {
     document.querySelectorAll('#tabbar [data-tab]').forEach(b =>
       b.addEventListener('click', () => setTab(b.dataset.tab)));
 
+    // 조절 바: 한 칸 움직일 때마다 '틱'
+    document.querySelectorAll('input[type="range"]').forEach(r => r.addEventListener('input', () => {
+      const min = Number(r.min) || 0, max = Number(r.max) || 1;
+      Sound.tick((Number(r.value) - min) / (max - min || 1));
+    }));
     // 딸깍: 모든 블록 버튼을 누르면 꾹 눌렸다 올라오는 모션
     const KEYS = '.btn, .chip, .key, .op-btn, .choice, .ox-btn, .icon-btn, .pick-btn, .tab';
     document.addEventListener('pointerdown', e => {
       const b = e.target.closest(KEYS);
       if (!b || b.disabled) return;
+      // 딸깍 소리 (게임 안의 숫자키·보기·OX와 고르기 버튼, 소리 버튼은 따로 소리가 나요)
+      if (!b.matches('.key, .choice, .ox-btn, .pick-btn, #qSound, #qMusic, #soundBtn, #musicBtn')) Sound.tap();
       b.classList.remove('clk');
       void b.offsetWidth; // 연속으로 눌러도 매번 다시 움직이게
       b.classList.add('clk');

@@ -395,9 +395,20 @@ const App = (() => {
         changed();
       }));
 
+    // 효과음: 버튼 딸깍, 조절 바 틱 (게임 안 숫자키·보기·OX와 소리 버튼은 따로 소리가 나요)
+    document.addEventListener('pointerdown', e => {
+      const b = e.target.closest('.btn, .chip, .op-btn, .mode-card, .rank-tab');
+      if (b && !b.disabled && !b.matches('#soundBtn, #musicBtn')) Sound.tap();
+    }, true);
+    document.querySelectorAll('input[type="range"]').forEach(r => r.addEventListener('input', () => {
+      const min = Number(r.min) || 0, max = Number(r.max) || 1;
+      Sound.tick((Number(r.value) - min) / (max - min || 1));
+    }));
+
     press($('soundBtn'), () => {
       cfg.sound = !cfg.sound;
       Sound.setEnabled(cfg.sound);
+      if (cfg.sound) Sound.toggle(true);
       changed();
     });
 
@@ -405,6 +416,7 @@ const App = (() => {
     press($('musicBtn'), () => {
       cfg.music = !cfg.music;
       if (cfg.music) Music.start(); else Music.stop();
+      Sound.toggle(cfg.music);
       changed();
     });
 
