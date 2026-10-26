@@ -316,7 +316,7 @@ const App = (() => {
       cell('check', S.correct, t('recCorrect')) +
       cell('fire', S.maxStreak, t('recStreak')) +
       cell('calendar', `${S.days}${unit('recDayUnit')}`, t('recDays')) +
-      cell('medal', `${Stats.BADGES.filter(b => S.got[b.id]).length}<small>/${Stats.BADGES.length}</small>`, t('recBadgeCell')) +
+      cell('medal', `${Stats.BADGES.filter(b => S.got[b.id]).length}<small class="frac">/${Stats.BADGES.length}</small>`, t('recBadgeCell')) +
       `<div class="rec-cell" id="recRankCell">${Icons.svg('trophy')}<b id="recBestRank">—</b><span>${t('recBestRank')}</span></div>`;
     const got = Stats.BADGES.filter(b => S.got[b.id]).length;
     $('badgeGrid').innerHTML = Stats.BADGES.map(b => {

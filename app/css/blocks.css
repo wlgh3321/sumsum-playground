@@ -544,3 +544,9 @@ html[lang="en"] .bdg-name { font-size: 13.5px; white-space: nowrap; }
 /* ---------- 황금 블록 (배지 12개) ---------- */
 html.gold { --sun: #ffd23f; --mint: #ffe58a; --pink: #ffb627; --lilac: #f3c969; --peach: #ff9f1c; --line: #c9a227; --ink: #7a5a12; }
 .heart-n { color: var(--pink); margin-left: 2px; }
+
+/* 기록실 배지 칸: "8/12" 의 /12 도 8과 같은 도트 글꼴 */
+.rec-cell b small.frac { font-family: "Press Start 2P", monospace; font-size: 10px; margin-left: 1px; }
+
+/* 기본 글꼴에 없는 드문 글자(옝·쀏·똠 등)가 섞인 이름은 통째로 도트 글꼴로 */
+.rank-name.nm-px { font-family: "Galmuri11", var(--font-title); font-weight: 700; font-size: 18px; letter-spacing: 0; }

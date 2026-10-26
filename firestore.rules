@@ -24,7 +24,7 @@ service cloud.firestore {
           || (mode != 'race'
             && request.resource.data.score is int
             && request.resource.data.score > 0
-            && request.resource.data.score <= 200000
+            && request.resource.data.score <= 5000000
             && request.resource.data.score % 5 == 0)
         );
 
@@ -45,7 +45,7 @@ service cloud.firestore {
           && d.v == 2
           && (
             (mode == 'race' && d.score >= 20 && d.score <= 3600)
-            || (mode != 'race' && d.score is int && d.score > 0 && d.score <= 200000 && d.score % 5 == 0)
+            || (mode != 'race' && d.score is int && d.score > 0 && d.score <= 5000000 && d.score % 5 == 0)
           );
       }
       allow read: if okMode();

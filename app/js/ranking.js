@@ -120,7 +120,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = `rank-row r${i + 1}${r.id === highlightId || i === me ? ' me' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(i);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name;
+      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name; Glyph.fit(b, r.name);
       if (i === 0) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
       li.append(a, b, c);
@@ -134,7 +134,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = 'rank-row me';
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(me);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = all[me].name;
+      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = all[me].name; Glyph.fit(b, all[me].name);
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, all[me].score);
       li.append(a, b, c);
       list.append(dots, li);
@@ -221,7 +221,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = `rank-row r${n}${r.me ? ' ghost' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(n - 1);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name;
+      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name; Glyph.fit(b, r.name);
       if (n === 1) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
       li.append(a, b, c);
