@@ -343,7 +343,7 @@ const App = (() => {
   }
 
   // 게임별 명예의 전당 등수 (랭킹전 최고 기록 기준). 1등은 왕관.
-  const rankText = n => (lang === 'en' ? `#${n}` : `${n}${t('rankUnit')}`);
+  const rankText = (n, small) => (lang === 'en' ? `#${n}` : small ? `${n}<small>${t('rankUnit')}</small>` : `${n}${t('rankUnit')}`);
   async function fillRanks() {
     let bestN = null;
     await Promise.all(MODE_CARDS.map(async m => {
@@ -360,7 +360,7 @@ const App = (() => {
       }
     }));
     const b = $('recBestRank');
-    if (b) b.innerHTML = bestN ? (bestN === 1 ? Ranking.CROWN : '') + rankText(bestN) : '—';
+    if (b) b.innerHTML = bestN ? (bestN === 1 ? Ranking.CROWN : '') + rankText(bestN, true) : '—';
   }
 
   function celebrate(list) {

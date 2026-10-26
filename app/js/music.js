@@ -161,7 +161,8 @@ const Music = (() => {
     if (playing || document.hidden) return;
     const c = context();
     if (!c) return;
-    if (c.state !== 'running') c.resume().catch(() => {});
+    // 소리 장치가 잠들어 있으면 깨운 뒤 박자를 다시 맞춰요 (가끔 첫 곡이 안 나오던 문제)
+    if (c.state !== 'running') c.resume().then(() => { if (playing) nextTime = c.currentTime + 0.08; }).catch(() => {});
     master = c.createGain();
     master.gain.value = 0.8;
     master.connect(c.destination);

@@ -556,3 +556,16 @@ html.gold { --sun: #ffd23f; --mint: #ffe58a; --pink: #ffb627; --lilac: #f3c969; 
 .modal { padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)) !important; }
 .modal-card { max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
 #setup .modal-card { max-height: min(calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)), 760px); }
+
+/* 목숨: 하트가 많아지면(보너스) 칸 너비에 맞춰 하트를 작게 */
+#scoreboard .score-cell { container-type: inline-size; }
+.hearts { display: inline-flex; justify-content: center; white-space: nowrap; }
+.hearts .heart { font-size: min(1em, calc((100cqw - 4px) / var(--n) * 1.05)); }
+
+/* 결과 화면도 위(다이내믹 아일랜드)·아래(홈 바)를 피해서 네모가 다 보이게 */
+#app:has(#result.active) { padding-top: calc(12px + env(safe-area-inset-top)); padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+
+/* 두 번 눌러도 화면이 확대되지 않게 */
+html, body { touch-action: manipulation; }
+html.native, html.native body { overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+html.native input { -webkit-user-select: text; user-select: text; }

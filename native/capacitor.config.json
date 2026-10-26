@@ -6,7 +6,7 @@
   "ios": {
     "contentInset": "never",
     "backgroundColor": "#0d0a1c",
-    "scrollEnabled": false
+    "scrollEnabled": true
   },
   "android": {
     "backgroundColor": "#0d0a1c"

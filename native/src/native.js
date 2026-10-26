@@ -68,6 +68,14 @@
     hook('badge', () => H.notification({ type: 'SUCCESS' }));
   }
 
+  /* ---------- 배경음악: 앱에서는 터치 없이도 바로 시작 ---------- */
+  window.addEventListener('load', () => {
+    try {
+      const st = (typeof Store !== 'undefined' && Store.getSettings && Store.getSettings()) || {};
+      if (st.music !== false && typeof Music !== 'undefined') Music.start();
+    } catch (e) {}
+  });
+
   /* ---------- 상태 표시줄·시작 화면 ---------- */
   if (P.StatusBar) buzz(() => P.StatusBar.setStyle({ style: 'DARK' }));
   if (P.SplashScreen) window.addEventListener('load', () => setTimeout(() => buzz(() => P.SplashScreen.hide()), 150));

@@ -101,11 +101,10 @@ const Game = (() => {
   // 목숨은 "반 칸" 단위로 세요 (6 = 하트 3개). 홀수면 반 하트를 그려요.
   const hearts = units => {
     if (units <= 0) return '—';
-    // 보너스로 하트가 3개보다 많으면 칸이 모자라서 "♥×4½" 처럼 줄여 보여요
-    if (units > 6) return `<span class="heart">♥</span><span class="heart-n">×${Math.floor(units / 2)}${units % 2 ? '½' : ''}</span>`;
+    // 보너스로 하트가 많아지면 칸에 다 들어가도록 하트 크기를 줄여요 (CSS의 --n)
     const full = '<span class="heart">♥</span>'.repeat(Math.floor(units / 2));
     const half = units % 2 ? '<span class="heart half">♥</span>' : '';
-    return full + half;
+    return `<span class="hearts" style="--n:${Math.ceil(units / 2)}">${full}${half}</span>`;
   };
 
   function renderInput() {
@@ -300,6 +299,7 @@ const Game = (() => {
     $('stage').onclick = null;
     G.M.build();
     if (Bonus.kindOf(id) === 'time') G.timeLeft += bonus * Bonus.SEC_PER_UNIT; // 시간 게임 보너스: 더 길게 시작
+    renderBoard(G.M.board()); // 3·2·1 동안에도 이 게임의 점수판이 보이게 (전 게임 점수판이 남지 않게)
     $('padWrap').hidden = !G.M.numpad;
     renderInput();
     App.show('game');
@@ -879,8 +879,7 @@ const Game = (() => {
         $('stage').innerHTML =
           `<div class="clock"><div class="clock-fill" id="clockFill"></div></div>` +
           '<div class="prompt" id="prompt"></div>' +
-          '<div class="choices cols-2" id="choices"></div>' +
-          `<p class="hint">${t('beatHint')}</p>`;
+          '<div class="choices cols-2" id="choices"></div>';
         $('stage').onclick = e => {
           const btn = e.target.closest('.choice');
           if (btn) beatPick(btn);
@@ -920,8 +919,7 @@ const Game = (() => {
           '<div class="ox">' +
           `<button type="button" class="ox-btn ox-o" data-ox="1"><span class="ox-mark">O</span><span class="ox-text">${t('tfTrue')}</span></button>` +
           `<button type="button" class="ox-btn ox-x" data-ox="0"><span class="ox-mark">X</span><span class="ox-text">${t('tfFalse')}</span></button>` +
-          '</div>' +
-          `<p class="hint">${t('tfHint')}</p>`;
+          '</div>';
         $('stage').onclick = e => {
           const btn = e.target.closest('[data-ox]');
           if (btn) tfAnswer(btn.dataset.ox === '1');
