@@ -8,7 +8,11 @@
 (() => {
   const C = window.Capacitor;
   if (!C || !C.isNativePlatform || !C.isNativePlatform()) return;
-  const P = C.Plugins || {};
+  // 앱에 들어 있는 기능(플러그인)을 이름으로 불러와요 (설치 안 된 건 건너뛰어요)
+  const P = {};
+  for (const name of ['Haptics', 'Share', 'Filesystem', 'SplashScreen', 'StatusBar']) {
+    try { if (C.isPluginAvailable(name)) P[name] = (C.Plugins && C.Plugins[name]) || C.registerPlugin(name); } catch (e) {}
+  }
   document.documentElement.classList.add('native', 'native-' + C.getPlatform());
 
   /* ---------- 공유 (navigator.share 대신 앱 공유 창) ---------- */
