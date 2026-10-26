@@ -600,70 +600,70 @@ html.native input { -webkit-user-select: text; user-select: text; }
   /* 다른 탭(랭킹·기록실·설정)은 가운데에 읽기 좋은 폭으로 */
   #viewRanks:not([hidden]), #viewRecords:not([hidden]), #viewMore:not([hidden]) { width: 100%; max-width: 720px; margin: 0 auto; }
 
-  /* ---- 게임 ---- */
+  /* ---- 게임 ----
+     왼쪽: 위에 [일시정지·제목][점수판 한 줄], 아래에 게임 화면(문제 비·문제·풍선)
+     오른쪽: 숫자패드 또는 보기 버튼을 위아래 꽉 채워서 */
   #app:has(#game.active) {
-    max-width: 1180px;
-    padding-left: calc(16px + env(safe-area-inset-left));
-    padding-right: calc(16px + env(safe-area-inset-right));
+    max-width: none;
+    padding-left: calc(18px + env(safe-area-inset-left));
+    padding-right: calc(18px + env(safe-area-inset-right));
   }
   #game.screen.active {
     display: grid;
-    grid-template-columns: clamp(170px, 20vw, 220px) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-areas: "top body" "board body";
-    column-gap: 18px;
+    grid-template-columns: auto minmax(0, 1fr) clamp(280px, 38vw, 430px);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas: "top board pad" "clock clock pad" "stage stage pad";
+    column-gap: 16px;
+    row-gap: 0;
   }
-  #game .game-top { grid-area: top; flex-direction: column; align-items: stretch; gap: 10px; margin: 0 0 12px; }
-  #game .game-top .btn-pause { width: 100%; }
-  #game .game-title { text-align: center; font-size: 20px; }
-  #game .scoreboard { grid-area: board; grid-template-columns: 1fr; grid-auto-rows: min-content; align-content: start; gap: 10px; margin: 0; }
-  #game .score-cell { padding: 8px 8px 6px; }
-  #game .game-body { grid-area: body; display: flex; flex-direction: row; align-items: stretch; gap: 18px; min-height: 0; }
+  #game .game-top { grid-area: top; margin: 0 0 12px; align-self: center; }
+  #game .game-title { display: none; } /* 넓은 화면에서는 점수판 자리를 넓게 (게임 이름은 화면만 봐도 알 수 있어요) */
+  #game .scoreboard { grid-area: board; margin: 0 0 12px; align-self: center; gap: 8px; }
+  #game .score-cell { padding: 5px 6px 4px; }
+  #game .score-label { font-size: 12px; }
+  #game .game-body { display: contents; }
   #game .game-body::before, #game .game-body::after { display: none !important; }
-  #game .stage { flex: 1 1 0; min-width: 0; }
-  #game .pad-wrap { flex: 0 0 clamp(250px, 32vw, 340px); justify-content: center; }
-  #game .pad-wrap .key { height: auto; min-height: clamp(48px, 10dvh, 70px); }
+  #game .stage { grid-area: stage; min-width: 0; min-height: 0; }
 
-  /* 60문제: 왼쪽에 문제를 가운데로 */
-  #game[data-mode="race"] .stage { flex: 1 1 0; justify-content: center; }
-  #game[data-mode="race"] .stage::before, #game[data-mode="race"] .stage::after { content: "" !important; display: block !important; flex: 1 1 0; }
+  /* 숫자패드: 오른쪽 위아래 꽉 */
+  #game .pad-wrap { grid-area: pad; display: flex; flex-direction: column; gap: 10px; min-height: 0; justify-content: stretch; }
+  #game .pad-wrap[hidden] { display: none; }
+  #game .pad-wrap .answer-box { flex: 0 0 auto; min-height: clamp(52px, 11dvh, 76px); }
+  #game .pad-wrap .numpad { flex: 1 1 auto; min-height: 0; grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  #game .pad-wrap .key { height: 100%; min-height: 0; }
+  #game .pad-wrap .key:not(.key-util):not(.key-ok) { font-size: clamp(22px, 3vw, 34px); }
+  #game .stage > .choices .choice { font-size: clamp(20px, 2.6vw, 32px); }
 
-  /* 1분 도전·시간 버티기: 왼쪽 문제 / 오른쪽 보기 */
-  #game[data-mode="minute"] .stage, #game[data-mode="beat"] .stage {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-    grid-template-rows: 1fr auto auto 1fr;
-    grid-template-areas: "a c" "clock c" "prompt c" "b c";
-    column-gap: 18px;
-    align-items: center;
+  /* 60문제: 문제는 왼쪽 가운데에 크게 */
+  #game[data-mode="race"] .stage { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  #game[data-mode="race"] .stage::before, #game[data-mode="race"] .stage::after { display: none !important; }
+  #game[data-mode="race"] .race-bar { grid-area: clock; margin: 0 0 12px; }
+
+  /* 풍선 팡팡: 오른쪽 칸 없이 풍선 화면을 넓게 */
+  #game[data-mode="balloon"].screen.active {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "top board" "clock clock" "stage stage";
   }
-  #game[data-mode="minute"] .stage::before, #game[data-mode="beat"] .stage::before { grid-area: a; }
-  #game[data-mode="minute"] .stage::after, #game[data-mode="beat"] .stage::after { grid-area: b; }
-  #game[data-mode="minute"] .stage .prompt, #game[data-mode="beat"] .stage .prompt { grid-area: prompt; margin: 0; }
-  #game[data-mode="beat"] .stage .clock { grid-area: clock; margin: 0 0 18px; }
-  #game[data-mode="minute"] .stage .choices, #game[data-mode="beat"] .stage .choices { grid-area: c; align-self: center; }
-  #game[data-mode="minute"] .stage .choices.cols-3 { grid-auto-rows: clamp(52px, 12dvh, 84px); }
-  #game[data-mode="beat"] .stage .choices.cols-2 { grid-auto-rows: clamp(70px, 18dvh, 120px); }
+  #game[data-mode="balloon"] .scoreboard { max-width: 520px; justify-self: end; width: 100%; }
 
-  /* 참 거짓: 왼쪽 식 / 오른쪽 O·X */
-  #game[data-mode="tf"] .stage {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: 1fr auto 1fr;
-    grid-template-areas: "a ox" "prompt ox" "b ox";
-    column-gap: 18px;
-    align-items: center;
-  }
-  #game[data-mode="tf"] .stage::before { grid-area: a; }
-  #game[data-mode="tf"] .stage::after { grid-area: b; }
-  #game[data-mode="tf"] .stage .prompt { grid-area: prompt; margin: 0; }
-  #game[data-mode="tf"] .stage .ox { grid-area: ox; align-self: center; }
-  #game[data-mode="tf"] .stage .ox-btn { height: clamp(140px, 34dvh, 240px); }
+  /* 1분 도전·시간 버티기·참 거짓: 왼쪽에 문제, 오른쪽에 보기 버튼을 꽉 */
+  #game[data-mode="minute"] .stage, #game[data-mode="beat"] .stage, #game[data-mode="tf"] .stage { display: contents; }
+  #game[data-mode="minute"] .stage::before, #game[data-mode="minute"] .stage::after,
+  #game[data-mode="beat"] .stage::before, #game[data-mode="beat"] .stage::after,
+  #game[data-mode="tf"] .stage::before, #game[data-mode="tf"] .stage::after { display: none !important; }
+  #game .stage > .prompt { grid-area: stage; align-self: center; justify-self: center; margin: 0 !important; text-align: center; }
+  #game[data-mode="beat"] .stage > .clock { grid-area: clock; margin: 0 0 12px !important; }
+  #game .stage > .choices { grid-area: pad; height: 100%; min-height: 0; align-self: stretch; }
+  #game[data-mode="minute"] .stage > .choices.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  #game[data-mode="beat"] .stage > .choices.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  #game .stage > .choices .choice { height: 100%; }
+  #game[data-mode="tf"] .stage > .ox { grid-area: pad; height: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0; }
+  #game[data-mode="tf"] .stage > .ox .ox-btn { height: 100%; }
 
-  /* 문제 글자: 왼쪽 칸 폭에 맞춰 한 줄로 */
+  /* 문제 글자: 한 줄로, 왼쪽 칸에 맞춰 크게 */
   #game[data-mode="minute"] .stage .prompt, #game[data-mode="beat"] .stage .prompt,
   #game[data-mode="race"] .stage .prompt, #game[data-mode="tf"] .stage .equation {
-    font-size: clamp(22px, 2.9vw, 38px); white-space: nowrap;
+    font-size: clamp(26px, 4.4vw, 56px); white-space: nowrap;
   }
 
   /* 결과 화면: 가운데 카드 */
