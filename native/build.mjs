@@ -1,13 +1,14 @@
 // 앱에 넣을 파일 만들기: ../app 을 www/ 로 복사하고, 인터넷에서 받던 글꼴·Firebase를 앱 안에 넣어요.
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT = path.join(import.meta.dirname, 'www');
 const NM = path.join(import.meta.dirname, 'node_modules');
 
 fs.rmSync(OUT, { recursive: true, force: true });
-fs.cpSync(path.join(ROOT, 'app'), OUT, { recursive: true });
+execFileSync('cp', ['-R', path.join(ROOT, 'app'), OUT]); // (fs.cpSync 는 일부 폴더에서 권한 오류가 나서 cp 를 써요)
 for (const f of ['logo-blocks.png', 'favicon.svg', 'favicon-32.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) {
   fs.copyFileSync(path.join(ROOT, f), path.join(OUT, f));
 }
