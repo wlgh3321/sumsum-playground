@@ -548,5 +548,11 @@ html.gold { --sun: #ffd23f; --mint: #ffe58a; --pink: #ffb627; --lilac: #f3c969; 
 /* 기록실 배지 칸: "8/12" 의 /12 도 8과 같은 도트 글꼴 */
 .rec-cell b small.frac { font-family: "Press Start 2P", monospace; font-size: 10px; margin-left: 1px; }
 
-/* 기본 글꼴에 없는 드문 글자(옝·쀏·똠 등)가 섞인 이름은 통째로 도트 글꼴로 */
-.rank-name.nm-px { font-family: "Galmuri11", var(--font-title); font-weight: 700; font-size: 18px; letter-spacing: 0; }
+/* 드문 한글(옝·쀏·똠 등): 도현체에는 자주 쓰는 2,437자만 있어요(원래 글꼴 자체가 그래요).
+   그런 이름은 통째로, 도현체와 비슷하게 굵고 좁은 고딕(Noto Sans KR 900)으로 그려요. */
+.rank-name.nm-px { font-family: "NameFull", var(--font-title); font-weight: 900; font-size: 17px; letter-spacing: -0.06em; }
+
+/* 노치·다이내믹 아일랜드가 있는 화면(앱): 팝업이 위·아래 안전 영역을 피해서 네모가 다 보이게 */
+.modal { padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)) !important; }
+.modal-card { max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+#setup .modal-card { max-height: min(calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom)), 760px); }

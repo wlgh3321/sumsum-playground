@@ -192,9 +192,11 @@ const ShareCard = (() => {
   }
 
   let pending = Promise.resolve();
+  // 결과 화면이 먼저 부드럽게 뜨도록, 자랑 이미지는 잠깐 뒤에 그려요 (휴대폰이 느리면 화면이 버벅였어요)
   function set(next) {
     info = next;
-    pending = render();
+    file = null;
+    pending = new Promise(res => setTimeout(res, 900)).then(render);
   }
 
   function refresh() { render(); }
