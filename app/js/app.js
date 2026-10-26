@@ -662,7 +662,7 @@ const App = (() => {
     $('saveDl').addEventListener('click', () => ShareCard.save(() => toast(t('shareImgSaved'))));
     $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
     $('saveBox').addEventListener('click', e => { if (e.target === $('saveBox')) $('saveBox').hidden = true; });
-    press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode)));
+    press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode), Bonus.kindOf(lastMode) ? Bonus.units() : 0)); // 다시 하기도 보너스 그대로
     press($('homeBtn'), () => showHome());
 
     document.addEventListener('keydown', e => {

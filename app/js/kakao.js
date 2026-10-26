@@ -14,7 +14,9 @@ const KakaoShare = (() => {
   let imgUrl = null;   // 미리 올려 둔 자랑 이미지 주소
   let imgFor = null;   // 어떤 파일을 올렸는지
 
-  const on = () => !!KEY && typeof LANG !== 'undefined' && LANG === 'ko';
+  // 앱(아이폰·안드로이드 설치본)에서는 카카오 웹 공유가 안 돼요 → 휴대폰 공유 창을 써요
+  const isNative = () => !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  const on = () => !!KEY && !isNative() && typeof LANG !== 'undefined' && LANG === 'ko';
 
   function load() {
     if (!KEY) return Promise.reject(new Error('no key'));

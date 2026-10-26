@@ -1,0 +1,32 @@
+{
+  "name": "sumsum-native",
+  "private": true,
+  "version": "1.0.0",
+  "description": "셈셈 놀이터 iOS·Android 앱 (Capacitor). 게임 파일은 ../app 을 복사해서 앱 안에 넣어요.",
+  "scripts": {
+    "build": "node build.mjs",
+    "sync": "node build.mjs && npx cap sync",
+    "ios": "node build.mjs && npx cap sync ios && npx cap open ios",
+    "android": "node build.mjs && npx cap sync android && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "^8.0.0",
+    "@capacitor/haptics": "8.0.2",
+    "@capacitor/ios": "8.5.3",
+    "@capacitor/share": "^8.0.0",
+    "@capacitor/splash-screen": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "8.5.3",
+    "@fontsource/do-hyeon": "^5.0.0",
+    "@fontsource/gowun-dodum": "^5.0.0",
+    "@fontsource/jua": "^5.0.0",
+    "@fontsource/press-start-2p": "^5.0.0",
+    "firebase": "12.18.0",
+    "galmuri": "2.40.3"
+  }
+}

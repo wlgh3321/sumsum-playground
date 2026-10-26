@@ -1,0 +1,27 @@
+{
+  "appId": "com.studiojhl.sumsum",
+  "appName": "셈셈 놀이터",
+  "webDir": "www",
+  "backgroundColor": "#0d0a1c",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#0d0a1c",
+    "scrollEnabled": false
+  },
+  "android": {
+    "backgroundColor": "#0d0a1c"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "launchShowDuration": 3000,
+      "backgroundColor": "#0d0a1c",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0d0a1c",
+      "overlaysWebView": true
+    }
+  }
+}
