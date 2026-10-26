@@ -42,3 +42,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return config
     }
 }
+
+// 화면 방향: 보통 아이폰은 세로만, 큰 화면(아이폰 듀오를 펼쳤을 때·아이패드)은 가로도 돼요.
+// 가로가 되면 웹 화면이 넓은 배치(왼쪽 화면·오른쪽 버튼)로 바뀌어요.
+class MainViewController: CAPBridgeViewController {
+    private var isLargeScreen: Bool {
+        let size = view.window?.windowScene?.screen.bounds.size ?? UIScreen.main.bounds.size
+        return min(size.width, size.height) >= 600
+    }
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return isLargeScreen ? .all : .portrait
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        if #available(iOS 16.0, *) { setNeedsUpdateOfSupportedInterfaceOrientations() }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if #available(iOS 16.0, *) { setNeedsUpdateOfSupportedInterfaceOrientations() }
+    }
+}
