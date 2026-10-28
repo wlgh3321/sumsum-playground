@@ -15,6 +15,7 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        registerPlugin(IntentLinkPlugin.class); // 카카오톡 공유(intent:// 주소) 열기
         super.onCreate(savedInstanceState);
         applyOrientation(getResources().getConfiguration());
     }

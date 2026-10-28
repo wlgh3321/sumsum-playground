@@ -14,9 +14,15 @@ const KakaoShare = (() => {
   let imgUrl = null;   // 미리 올려 둔 자랑 이미지 주소
   let imgFor = null;   // 어떤 파일을 올렸는지
 
-  // 앱(아이폰·안드로이드 설치본)에서는 카카오 웹 공유가 안 돼요 → 휴대폰 공유 창을 써요
+  // 아이폰 앱은 카카오 공식 SDK(native.js)로 보내요. 안드로이드 앱은 이 웹 공유가 그대로 돼요
+  // (https://localhost 를 카카오 JavaScript 키 사이트 도메인에 등록해야 해요).
   const isNative = () => !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-  const on = () => !!KEY && !isNative() && typeof LANG !== 'undefined' && LANG === 'ko';
+  const isIOSApp = () => isNative() && window.Capacitor.getPlatform && window.Capacitor.getPlatform() === 'ios';
+  const on = () => !!KEY && !isIOSApp() && typeof LANG !== 'undefined' && LANG === 'ko';
+  // 앱에서 보낸 카드는 '앱 받기' 버튼, 웹에서 보낸 카드는 '나도 도전하기' 버튼
+  const btns = () => isNative()
+    ? [{ title: '앱 받기', link: { mobileWebUrl: SITE + 'get/', webUrl: SITE + 'get/' } }, { title: '웹에서 하기', link: { mobileWebUrl: SITE, webUrl: SITE } }]
+    : [{ title: '나도 도전하기', link: { mobileWebUrl: SITE, webUrl: SITE } }];
 
   function load() {
     if (!KEY) return Promise.reject(new Error('no key'));
@@ -63,7 +69,7 @@ const KakaoShare = (() => {
           title, description: desc, imageUrl: OG, imageWidth: 1200, imageHeight: 630,
           link: { mobileWebUrl: SITE, webUrl: SITE },
         },
-        buttons: [{ title: '나도 도전하기', link: { mobileWebUrl: SITE, webUrl: SITE } }],
+        buttons: btns(),
       });
       return true;
     } catch (e) { return false; }
@@ -79,7 +85,7 @@ const KakaoShare = (() => {
           title, description: desc, imageUrl: imgUrl, imageWidth: 1080, imageHeight: 1350,
           link: { mobileWebUrl: SITE, webUrl: SITE },
         },
-        buttons: [{ title: '나도 도전하기', link: { mobileWebUrl: SITE, webUrl: SITE } }],
+        buttons: btns(),
       });
       return true;
     } catch (e) { return false; }

@@ -5,7 +5,7 @@
  * - 글꼴과 Firebase 스크립트도 저장해 둬서 비행기 모드에서도 게임은 돼요. (순위표만 안 떠요)
  * 새 버전을 올릴 때는 아래 VERSION만 바꾸면 예전 저장본이 지워져요.
  */
-const VERSION = 'sumsum-v38';
+const VERSION = 'sumsum-v39';
 const CORE = [
   '/',
   '/en/',
