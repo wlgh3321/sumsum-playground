@@ -186,14 +186,13 @@ const App = (() => {
     const id = pendingMode;
     if (adMode !== id) { adBonus = false; adMode = null; }
     const kind = Bonus.kindOf(id);
-    $('bonusRow').hidden = !kind;
+    const parts = kind ? Bonus.parts() : [];
+    if (kind && adBonus) parts.push({ key: 'bonAd', u: 2 });
+    $('bonusRow').hidden = !parts.length;
+    $('bonusList').innerHTML = parts.map(p => `<span class="bonus-tag">${t(p.key)} <b>${Bonus.label(id, p.u)}</b></span>`).join('');
+    $('adBtn').hidden = !kind || adBonus || !Bonus.canReward();
+    $('setupActions').classList.toggle('split', !$('adBtn').hidden);
     if (!kind) return;
-    const parts = Bonus.parts();
-    if (adBonus) parts.push({ key: 'bonAd', u: 2 });
-    $('bonusList').innerHTML = parts.length
-      ? parts.map(p => `<span class="bonus-tag">${t(p.key)} <b>${Bonus.label(id, p.u)}</b></span>`).join('')
-      : `<span class="bonus-hint">${t('bonHint', { v: Bonus.label(id, 1) })}</span>`;
-    $('adBtn').hidden = adBonus || !Bonus.canReward();
     $('adTxt').textContent = t(Bonus.noAds() ? 'bonAdFree' : 'bonAdBtn', { v: Bonus.label(id, 2) });
   }
   async function claimAd() {

@@ -533,12 +533,17 @@ html[lang="en"] .bdg-name { font-size: 13.5px; white-space: nowrap; }
 .rank-row.rank-dots { display: block; text-align: center; background: none !important; color: var(--muted, #8a86b0); letter-spacing: 4px; padding-top: 0; padding-bottom: 0; line-height: 1.2; }
 
 /* ---------- 보너스 (설정 팝업) ---------- */
-.bonus-row { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin: 18px 0 12px; }
-.bonus-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.bonus-row { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; padding: 8px 10px; border: 2px solid var(--pink); background: rgba(255, 79, 163, 0.10); }
+.bonus-row[hidden] { display: none; }
+.bonus-cap { flex: none; font-size: 13px; color: var(--pink); line-height: 1.2; }
+.bonus-list { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .bonus-tag { font-size: 13px; color: var(--text); padding: 4px 8px; border: 2px solid var(--line); background: rgba(106, 77, 255, 0.14); line-height: 1.2; white-space: nowrap; }
 .bonus-tag b { color: var(--pink); font-weight: normal; margin-left: 2px; }
 .bonus-hint { font-size: 13px; color: var(--text-dim); text-align: center; }
 .btn-ad { --bc: var(--pink); --tint: #fff; --mix: 55%; color: var(--on-bright) !important; width: 100%; }
+/* 시작하기 옆에 광고 버튼: 같은 너비·같은 높이로 나란히 */
+.modal-actions.split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: stretch; }
+.modal-actions.split .btn { white-space: nowrap; padding-left: 8px; padding-right: 8px; }
 .rec-bonus { margin: 10px 0 0; font-size: 12.5px; color: var(--text-dim); text-align: center; line-height: 1.5; }
 
 /* ---------- 황금 블록 (배지 12개) ---------- */
