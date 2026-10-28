@@ -8,3 +8,5 @@ firestore.rules
 *.md
 native
 native/**
+store-assets
+store-assets/**
