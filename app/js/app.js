@@ -767,7 +767,13 @@ const App = (() => {
   async function restoreNoAds() {
     const N = window.SumsumNative;
     if (!N) return;
-    const ok = await N.restoreNoAds();
+    const btn = $('restoreBtn');
+    if (btn.disabled) return;
+    btn.disabled = true;
+    toast(t('noAdsChecking')); // 누르자마자 반응이 보이게
+    let ok = false;
+    try { ok = await N.restoreNoAds(); } catch (e) {}
+    btn.disabled = false;
     toast(t(ok ? 'noAdsRestored' : 'noAdsNone'));
     refreshStore();
   }

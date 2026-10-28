@@ -176,8 +176,10 @@
   }
   async function restoreNoAds() {
     if (!IAP) return false;
-    try { await IAP.restorePurchases(); } catch (e) {}
-    return checkOwned();
+    // 스토어가 대답을 안 하면 버튼이 멈춘 것처럼 보이니까 15초까지만 기다려요
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    try { await Promise.race([IAP.restorePurchases(), wait(15000)]); } catch (e) {}
+    return Promise.race([checkOwned(), wait(8000).then(() => false)]);
   }
 
   window.SumsumNative = {
