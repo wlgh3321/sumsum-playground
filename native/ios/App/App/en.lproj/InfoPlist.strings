@@ -1,3 +1,5 @@
 /* App name on the home screen */
 "CFBundleDisplayName" = "SumSum";
 "CFBundleName" = "SumSum";
+/* When saving the score card image */
+"NSPhotoLibraryAddUsageDescription" = "Save your score card image to Photos.";

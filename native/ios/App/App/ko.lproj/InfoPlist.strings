@@ -1,3 +1,5 @@
 /* 홈 화면에 보이는 앱 이름 */
 "CFBundleDisplayName" = "셈셈 놀이터";
 "CFBundleName" = "셈셈 놀이터";
+/* 점수 카드 이미지를 사진에 저장할 때 */
+"NSPhotoLibraryAddUsageDescription" = "점수 카드 이미지를 사진에 저장해요.";

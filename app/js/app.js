@@ -670,9 +670,8 @@ const App = (() => {
       const f = await ShareCard.ready();
       if (!f) return;
       const img = $('saveImg');
-      if (img.dataset.url) URL.revokeObjectURL(img.dataset.url);
-      img.dataset.url = URL.createObjectURL(f);
-      img.src = img.dataset.url;
+      // data URL 로 넣어야 아이폰 앱에서 꾹 눌렀을 때 '사진에 저장'이 떠요 (blob: 주소는 안 돼요)
+      img.src = await new Promise(res => { const rd = new FileReader(); rd.onload = () => res(rd.result); rd.readAsDataURL(f); });
       $('saveBox').hidden = false;
     });
     $('saveDl').addEventListener('click', () => ShareCard.save(() => toast(t('shareImgSaved'))));

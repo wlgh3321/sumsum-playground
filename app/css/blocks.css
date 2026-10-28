@@ -578,6 +578,8 @@ html.gold { --sun: #ffd23f; --mint: #ffe58a; --pink: #ffb627; --lilac: #f3c969; 
 /* 두 번 눌러도 화면이 확대되지 않게 */
 html, body { touch-action: manipulation; }
 html.native, html.native body { overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+/* 점수 카드 그림은 꾹 누르면 '사진에 저장' 메뉴가 떠야 해요 */
+html.native .save-img { -webkit-touch-callout: default; pointer-events: auto; }
 html.native input { -webkit-user-select: text; user-select: text; }
 
 /* =====================================================================
