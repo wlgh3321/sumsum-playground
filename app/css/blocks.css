@@ -138,6 +138,8 @@ body.on-home #app { padding: 0; max-width: 560px; height: 100dvh; }
   border-bottom: 3px solid var(--line);
   cursor: pointer;
 }
+/* 아이패드처럼 세로로 긴 큰 화면: 미리보기가 남는 공간을 끝까지 채워요 (빈칸 없이) */
+@media (min-height: 1000px) and (min-width: 700px) { .pv-screen { max-height: none; } }
 .pv-video {
   position: absolute;
   inset: 0;
