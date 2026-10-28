@@ -8,7 +8,9 @@
 const Ranking = (() => {
   const $ = id => document.getElementById(id);
   const MODES = ['fall', 'minute', 'race', 'balloon', 'beat', 'tf'];
-  const SIZE = 10;
+  // 명예의 전당 칸 수: 앱은 TOP 20 (스크롤해서 봐요), 웹사이트는 그대로 TOP 10
+  const IS_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  const SIZE = IS_APP ? 20 : 10;
   const NAME_KEY = 'sumsum:rankName';
   const BAD = ['시발', '씨발', 'ㅅㅂ', '병신', 'ㅂㅅ', '개새', '좆', '존나', '니미', '느금', '섹스', 'fuck', 'shit', 'bitch', 'sex', 'dick'];
 
