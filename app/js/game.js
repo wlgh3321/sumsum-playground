@@ -411,7 +411,8 @@ const Game = (() => {
   function restartGame() {
     if (!G) return;
     $('pauseBox').hidden = true;
-    const id = G.id, s = G.s, bonus = G.bonus;
+    const id = G.id, s = G.s;
+    const bonus = Bonus.kindOf(id) ? Bonus.units() : 0; // 처음부터 다시: 광고 보상은 빼고 다시 계산
     G.over = true;
     start(id, s, bonus);
   }

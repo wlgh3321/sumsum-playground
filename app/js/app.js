@@ -181,8 +181,10 @@ const App = (() => {
 
   /* ---------- 보너스 (설정 팝업 아래) ---------- */
   let adBonus = false; // 이번 판에 광고 보고 받은 하트 +1
+  let adMode = null;    // 광고 보상을 받은 게임 (다른 게임으로 넘어가지 않게)
   function renderBonus() {
     const id = pendingMode;
+    if (adMode !== id) { adBonus = false; adMode = null; }
     const kind = Bonus.kindOf(id);
     $('bonusRow').hidden = !kind;
     if (!kind) return;
@@ -199,7 +201,7 @@ const App = (() => {
     $('adBtn').disabled = true;
     const ok = await Bonus.reward();
     $('adBtn').disabled = false;
-    if (ok) { adBonus = true; Sound.levelUp(); }
+    if (ok) { adBonus = true; adMode = pendingMode; Sound.levelUp(); }
     renderBonus();
   }
 
@@ -412,16 +414,25 @@ const App = (() => {
     $('setup').hidden = true;
   }
 
+  // 보너스를 붙여서 시작하고, 어떤 보너스가 붙었는지 잠깐 알려 줘요 (광고 보상은 그 판에만)
+  function startWithBonus(id, s, withAd) {
+    const kind = Bonus.kindOf(id);
+    const parts = kind ? Bonus.parts() : [];
+    if (kind && withAd) parts.push({ key: 'bonAd', u: 2 });
+    const bonus = parts.reduce((a, p) => a + p.u, 0);
+    Game.start(id, s, bonus);
+    if (parts.length) setTimeout(() => toast(`${t('bonTitle')} · ` + parts.map(p => `${t(p.key)} ${Bonus.label(id, p.u)}`).join(' · ')), 200);
+  }
+
   function startPending() {
     if (!pendingMode) return;
     const id = pendingMode;
     closeSetup();
     const s = snapshot(id);
     track(`play-${id}${s.ranked ? '-ranked' : ''}`, `게임 시작: ${modeName(id, s)}`);
-    const bonus = Bonus.kindOf(id) ? Bonus.units() + (adBonus ? 2 : 0) : 0;
     const usedAd = adBonus;
-    adBonus = false;
-    Game.start(id, s, bonus);
+    adBonus = false; adMode = null;
+    startWithBonus(id, s, usedAd);
     if (usedAd) Bonus.markRewarded(); // 시작 전에 광고를 본 판은 끝나고 전면 광고를 쉬어요
   }
 
@@ -676,7 +687,7 @@ const App = (() => {
       try { await Bonus.maybeInterstitial(); } finally { leaving = false; }
       go();
     };
-    press($('againBtn'), () => leaveResult(() => Game.start(lastMode, snapshot(lastMode), Bonus.kindOf(lastMode) ? Bonus.units() : 0))); // 다시 하기도 보너스 그대로
+    press($('againBtn'), () => leaveResult(() => startWithBonus(lastMode, snapshot(lastMode), false))); // 다시 하기: 배지·출석 보너스만 (광고 보상은 다시 안 붙어요)
     press($('homeBtn'), () => leaveResult(() => showHome()));
 
     document.addEventListener('keydown', e => {
