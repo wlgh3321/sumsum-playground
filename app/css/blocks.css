@@ -669,3 +669,73 @@ html.native input { -webkit-user-select: text; user-select: text; }
   /* 결과 화면: 가운데 카드 */
   #app:has(#result.active) { max-width: 1180px; }
 }
+
+/* =====================================================================
+   앱 시작 화면 (설치한 앱에서만): 오락실 모니터를 켜는 느낌
+   1) 멈춘 시작 그림과 똑같은 자리에 로고 → 2) 지직지직 깜빡 + 화면 줄무늬 → 3) LOADING 깜빡 → 4) 화면이 가로줄로 꺼지듯 사라져요
+   ===================================================================== */
+.intro { display: none; }
+html.intro-on .intro {
+  display: block; position: fixed; inset: 0; z-index: 1000;
+  background: #0d0a1c; overflow: hidden; touch-action: none;
+}
+.intro-screen { position: absolute; inset: 0; }
+/* 로고 크기·자리: 시작 그림(2732px 정사각형에 폭 1000px 로고, 화면을 꽉 채워 보여 줌)과 똑같이 */
+.intro-logo {
+  position: absolute; left: 50%; top: 50%;
+  width: calc(max(100vw, 100vh) * 0.366);
+  transform: translate(-50%, -50%);
+  image-rendering: pixelated;
+}
+.intro-load {
+  position: absolute; left: 0; right: 0;
+  top: calc(50% + max(100vw, 100vh) * 0.05 + 22px);
+  text-align: center; font-family: "Press Start 2P", monospace; font-size: 13px; letter-spacing: 2px;
+  color: var(--mint, #4de1ff); text-shadow: 2px 2px 0 #ff4da6;
+  opacity: 0;
+}
+.intro-cur { display: inline-block; width: 0.8em; height: 1em; margin-left: 6px; vertical-align: -0.12em; background: currentColor; box-shadow: 2px 2px 0 #ff4da6; }
+/* 화면 줄무늬 + 위에서 아래로 지나가는 밝은 띠 */
+.intro::before {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.28) 0 1px, transparent 1px 3px);
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.75);
+}
+.intro::after {
+  content: ""; position: absolute; left: 0; right: 0; top: -20%; height: 18%; z-index: 3; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(160, 140, 255, 0.10), transparent);
+}
+.intro.play::after { animation: introRoll 1.6s linear infinite; }
+.intro.play .intro-logo { animation: introFlicker 1.1s steps(1, end) both, introJitter 2.2s steps(1, end) 1.1s both; }
+.intro.play .intro-load { animation: introShow 0s linear 0.75s forwards; }
+.intro.play .intro-cur { animation: introBlink 0.5s steps(1, end) 0.75s infinite; }
+.intro.off .intro-screen { animation: introOff 0.38s cubic-bezier(.6, 0, .9, .4) forwards; }
+.intro.off { animation: introFade 0.42s linear forwards; }
+
+@keyframes introFlicker {
+  0% { opacity: 1; filter: none; }
+  10% { opacity: 0.15; }
+  16% { opacity: 1; filter: drop-shadow(-4px 0 0 #ff4da6) drop-shadow(4px 0 0 #4de1ff); }
+  24% { opacity: 0.35; filter: none; }
+  30% { opacity: 1; }
+  46% { opacity: 0.6; filter: drop-shadow(3px 0 0 #ff4da6) drop-shadow(-3px 0 0 #4de1ff); }
+  52% { opacity: 1; filter: none; }
+  70% { opacity: 0.85; }
+  74% { opacity: 1; }
+  100% { opacity: 1; filter: none; }
+}
+@keyframes introJitter {
+  0%, 100% { transform: translate(-50%, -50%); }
+  40% { transform: translate(calc(-50% + 2px), -50%); filter: drop-shadow(-2px 0 0 #ff4da6) drop-shadow(2px 0 0 #4de1ff); }
+  44% { transform: translate(-50%, -50%); filter: none; }
+}
+@keyframes introBlink { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes introShow { to { opacity: 1; } }
+@keyframes introRoll { from { top: -20%; } to { top: 110%; } }
+/* 브라운관 끄기: 가로로 납작해지며 하얗게 번쩍 */
+@keyframes introOff {
+  0% { transform: scale(1, 1); filter: brightness(1); }
+  60% { transform: scale(1, 0.006); filter: brightness(3); }
+  100% { transform: scale(0, 0.006); filter: brightness(6); }
+}
+@keyframes introFade { 0%, 70% { background: #0d0a1c; } 100% { background: transparent; opacity: 0; } }

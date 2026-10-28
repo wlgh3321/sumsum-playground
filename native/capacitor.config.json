@@ -14,10 +14,10 @@
   "plugins": {
     "SplashScreen": {
       "launchAutoHide": true,
-      "launchShowDuration": 800,
+      "launchShowDuration": 3000,
       "backgroundColor": "#0d0a1c",
       "showSpinner": false,
-      "launchFadeOutDuration": 200
+      "launchFadeOutDuration": 0
     },
     "StatusBar": {
       "style": "DARK",
