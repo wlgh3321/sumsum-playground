@@ -171,11 +171,13 @@ const Game = (() => {
   /* ---------- 이어하기 (게임 오버 때 한 번) ---------- */
   function endOrContinue() {
     if (!G || G.over || G.askCont) return;
-    if (G.continued || !Bonus.kindOf(G.id) || !Bonus.canReward()) { finish(true); return; }
+    // 이어하기는 한 판에 두 번까지 (두 번째는 광고 2개)
+    if ((G.continued || 0) >= 2 || !Bonus.kindOf(G.id) || !Bonus.canReward()) { finish(true); return; }
     G.askCont = true;
     G.running = false;
     const heart = Bonus.kindOf(G.id) === 'heart';
-    $('contNote').textContent = t(Bonus.noAds() ? 'contNoteFree' : 'contNote');
+    const second = (G.continued || 0) === 1;
+    $('contNote').textContent = t(Bonus.noAds() ? 'contNoteFree' : second ? 'contNote2' : 'contNote', { n: 2 - (G.continued || 0) });
     $('contGoTxt').textContent = t(heart ? 'contGoHeart' : 'contGoTime');
     $('contBox').hidden = false;
     Sound.over();
@@ -184,9 +186,9 @@ const Game = (() => {
   async function cont(yes) {
     if (!G || G.over || !G.askCont) return;
     $('contBox').hidden = true;
-    if (yes && await Bonus.reward()) {
+    if (yes && await Bonus.reward((G.continued || 0) === 1 ? 2 : 1)) {
       G.askCont = false;
-      G.continued = true;
+      G.continued = (G.continued || 0) + 1;
       if (Bonus.kindOf(G.id) === 'heart') {
         G.lives = 2;
         // 바닥 가까이 있던 문제는 치워 주고 다시 시작해요

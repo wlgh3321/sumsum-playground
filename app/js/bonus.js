@@ -48,10 +48,14 @@ const Bonus = (() => {
   }
   const canReward = () => noAds() || adReady();
   // 보상 받기: 광고 없애기를 샀으면 바로, 아니면 보상형 광고를 끝까지 보면 true
-  async function reward() {
+  // times: 광고를 몇 개 이어서 봐야 하는지 (두 번째 이어하기는 2개). 하나라도 끝까지 안 보면 false
+  async function reward(times = 1) {
     if (noAds()) return true;
-    if (!adReady()) return false;
-    try { return !!(await N().showReward()); } catch (e) { return false; }
+    for (let i = 0; i < times; i++) {
+      if (!adReady()) return false;
+      try { if (!(await N().showReward())) return false; } catch (e) { return false; }
+    }
+    return true;
   }
 
   // 황금 블록
