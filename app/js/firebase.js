@@ -27,6 +27,11 @@
   const playersOf = mode => db.collection('boards').doc(mode).collection('players');
 
   window.Board = {
+    // 앱 설정 (예: config/ads 의 전면 광고 횟수). 없으면 null
+    async config(name) {
+      const d = await db.collection('config').doc(name).get();
+      return d.exists ? d.data() : null;
+    },
     async players(mode, n = 500) {
       const snap = await playersOf(mode).orderBy('score', dir(mode)).limit(n).get();
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));

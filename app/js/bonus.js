@@ -51,6 +51,7 @@ const Bonus = (() => {
   // times: 광고를 몇 개 이어서 봐야 하는지 (두 번째 이어하기는 2개). 하나라도 끝까지 안 보면 false
   async function reward(times = 1) {
     if (noAds()) return true;
+    markRewarded();
     for (let i = 0; i < times; i++) {
       if (!adReady()) return false;
       try { if (!(await N().showReward())) return false; } catch (e) { return false; }
@@ -70,5 +71,49 @@ const Bonus = (() => {
   }
   function applyGold() { document.documentElement.classList.toggle('gold', goldOn()); }
 
-  return { parts, units, kindOf, label, SEC_PER_UNIT, noAds, adReady, canReward, reward, goldUnlocked, goldOn, setGold, applyGold };
+  /* ---------- 전면 광고 (게임 끝나고 가끔) ----------
+     결과 화면에서 "다시 하기"·"게임 고르기"를 누를 때만. 숫자는 Firebase config/ads 문서로 앱 업데이트 없이 바꿀 수 있어요. */
+  const AD_KEY = 'sumsum.ads.v1';
+  const rules = { every: 3, gapSec: 180, grace: 3 }; // 3판에 1번, 3분 간격, 처음 3판은 안 띄움
+  let adState = { since: 0, lastAt: 0 };
+  try { adState = Object.assign(adState, JSON.parse(localStorage.getItem(AD_KEY) || '{}')); } catch (e) {}
+  const saveAd = () => { try { localStorage.setItem(AD_KEY, JSON.stringify(adState)); } catch (e) {} };
+  let rewardedThisGame = false;
+  // 원격 설정 불러오기 (실패하면 기본값)
+  function loadAdRules() {
+    try {
+      if (window.Board && Board.config) Board.config('ads').then(c => {
+        if (!c) return;
+        ['every', 'gapSec', 'grace'].forEach(k => { if (typeof c[k] === 'number' && c[k] >= 0) rules[k] = c[k]; });
+      }).catch(() => {});
+    } catch (e) {}
+  }
+  window.addEventListener('board-ready', loadAdRules);
+  setTimeout(loadAdRules, 3000);
+
+  // 한 판이 끝나면 (결과 화면) 불러요
+  function gameDone() { adState.since++; saveAd(); }
+  // 보상형 광고를 본 판에는 전면 광고를 쉬어요
+  function markRewarded() { rewardedThisGame = true; }
+  function newGame() { rewardedThisGame = false; }
+
+  // 결과 화면에서 다음으로 넘어갈 때: 조건이 맞으면 전면 광고를 보여 주고, 끝나면 넘어가요
+  async function maybeInterstitial() {
+    const n = N();
+    if (noAds() || !n || !n.interReady || !n.interReady()) return;
+    const plays = Stats.data().plays;
+    const now = Date.now();
+    if (rewardedThisGame) return;
+    if (plays <= rules.grace) return;
+    if (adState.since < rules.every) return;
+    if (now - adState.lastAt < rules.gapSec * 1000) return;
+    try {
+      if (typeof Music !== 'undefined' && Music.stop && Music.isWanted && Music.isWanted()) { /* 광고 중엔 음악이 멈춰요 (광고가 끝나면 다시) */ }
+      const shown = await n.showInterstitial();
+      if (shown) { adState.since = 0; adState.lastAt = Date.now(); saveAd(); }
+    } catch (e) {}
+  }
+
+  return { parts, units, kindOf, label, SEC_PER_UNIT, noAds, adReady, canReward, reward, goldUnlocked, goldOn, setGold, applyGold,
+    gameDone, markRewarded, newGame, maybeInterstitial };
 })();

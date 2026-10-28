@@ -211,6 +211,7 @@ const App = (() => {
     document.querySelectorAll('#tabbar [data-tab]').forEach(b => setPressed(b, b.dataset.tab === name));
     if (name === 'ranks') Ranking.renderHome();
     if (name === 'records') renderRecords();
+    if (name === 'more') refreshStore();
     if (name === 'games') playPreview();
     else pausePreview();
     $('homeScroll').scrollTop = 0;
@@ -418,8 +419,10 @@ const App = (() => {
     const s = snapshot(id);
     track(`play-${id}${s.ranked ? '-ranked' : ''}`, `게임 시작: ${modeName(id, s)}`);
     const bonus = Bonus.kindOf(id) ? Bonus.units() + (adBonus ? 2 : 0) : 0;
+    const usedAd = adBonus;
     adBonus = false;
     Game.start(id, s, bonus);
+    if (usedAd) Bonus.markRewarded(); // 시작 전에 광고를 본 판은 끝나고 전면 광고를 쉬어요
   }
 
   // 결과 화면. Game이 한 판이 끝났을 때 호출해요.
@@ -475,6 +478,7 @@ const App = (() => {
     show('result');
     Ranking.onResult(r);
     celebrate(Stats.record(r));
+    if (r.badge.kind !== 'quit') Bonus.gameDone();
   }
 
   /* ---------- 설정 변경 ---------- */
@@ -560,6 +564,8 @@ const App = (() => {
       changed();
     };
     press($('soundBtn'), toggleSound);
+    press($('noAdsBtn'), () => App.buyNoAds());
+    press($('restoreBtn'), () => App.restoreNoAds());
     press($('goldBtn'), () => { const on = !Bonus.goldOn(); Bonus.setGold(on); Sound.toggle(on); renderHeader(); });
     press($('adBtn'), claimAd);
     press($('contGo'), () => Game.cont(true));
@@ -662,8 +668,16 @@ const App = (() => {
     $('saveDl').addEventListener('click', () => ShareCard.save(() => toast(t('shareImgSaved'))));
     $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
     $('saveBox').addEventListener('click', e => { if (e.target === $('saveBox')) $('saveBox').hidden = true; });
-    press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode), Bonus.kindOf(lastMode) ? Bonus.units() : 0)); // 다시 하기도 보너스 그대로
-    press($('homeBtn'), () => showHome());
+    // 결과 화면에서 넘어갈 때 가끔 전면 광고 (규칙은 bonus.js)
+    let leaving = false;
+    const leaveResult = async go => {
+      if (leaving) return;
+      leaving = true;
+      try { await Bonus.maybeInterstitial(); } finally { leaving = false; }
+      go();
+    };
+    press($('againBtn'), () => leaveResult(() => Game.start(lastMode, snapshot(lastMode), Bonus.kindOf(lastMode) ? Bonus.units() : 0))); // 다시 하기도 보너스 그대로
+    press($('homeBtn'), () => leaveResult(() => showHome()));
 
     document.addEventListener('keydown', e => {
       if (!$('setup').hidden) {
@@ -697,7 +711,44 @@ const App = (() => {
     celebrate(Stats.visit());
   }
 
-  return { show, showHome, showResult, init };
+  /* ---------- 광고 없애기 (설치한 앱에서만) ---------- */
+  async function refreshStore() {
+    const N = window.SumsumNative;
+    const row = $('noAdsRow');
+    if (!row) return;
+    row.hidden = !(N && N.iap);
+    $('restoreRow').hidden = row.hidden;
+    if (row.hidden) return;
+    const btn = $('noAdsBtn');
+    if (N.noAds()) {
+      $('noAdsTxt').textContent = t('noAdsOwned');
+      btn.disabled = true;
+      setPressed(btn, true);
+      return;
+    }
+    btn.disabled = false;
+    setPressed(btn, false);
+    $('noAdsTxt').textContent = t('noAdsBuy');
+    const price = await N.noAdsPrice();
+    if (price && !N.noAds()) $('noAdsTxt').textContent = price;
+  }
+  async function buyNoAds() {
+    const N = window.SumsumNative;
+    if (!N || N.noAds()) return;
+    $('noAdsBtn').disabled = true;
+    const ok = await N.buyNoAds();
+    if (ok) { Sound.record(); toast(t('noAdsThanks')); }
+    refreshStore();
+  }
+  async function restoreNoAds() {
+    const N = window.SumsumNative;
+    if (!N) return;
+    const ok = await N.restoreNoAds();
+    toast(t(ok ? 'noAdsRestored' : 'noAdsNone'));
+    refreshStore();
+  }
+
+  return { show, showHome, showResult, init, refreshStore, buyNoAds, restoreNoAds };
 })();
 
 App.init();

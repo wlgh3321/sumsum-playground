@@ -261,6 +261,7 @@ const Game = (() => {
 
   function start(id, settings, bonus = 0) {
     stop();
+    Bonus.newGame();
     $('pauseBox').hidden = true;
     $('contBox').hidden = true;
     G = {

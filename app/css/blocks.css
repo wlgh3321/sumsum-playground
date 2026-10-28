@@ -739,3 +739,6 @@ html.intro-on .intro {
   100% { transform: scale(0, 0.006); filter: brightness(6); }
 }
 @keyframes introFade { 0%, 70% { background: #0d0a1c; } 100% { background: transparent; opacity: 0; } }
+
+/* 설정: 광고 없애기 아래 설명 줄은 조금 작게 */
+.set-label.set-sub { font-size: 13px; color: var(--text-dim); }

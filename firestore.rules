@@ -31,6 +31,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // 앱 설정 (전면 광고 횟수 등): 누구나 읽기만, 고치기는 콘솔에서만
+    match /config/{name} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // 앱 명예의 전당: 사람(기기)마다 한 줄. 더 좋은 기록으로만 고칠 수 있어요.
     match /boards/{mode}/players/{pid} {
       function okMode() { return mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf']; }
