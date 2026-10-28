@@ -19,7 +19,8 @@
     "@capacitor/share": "^8.0.0",
     "@capacitor/splash-screen": "^8.0.0",
     "@capacitor/status-bar": "^8.0.0",
-    "@capgo/native-purchases": "^8.9.6"
+    "@capgo/native-purchases": "^8.9.6",
+    "sumsum-kakao-share": "file:plugins/kakao-share"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

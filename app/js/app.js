@@ -658,9 +658,24 @@ const App = (() => {
     $('quitBtn').addEventListener('click', () => Game.quit());
     // 공유 창은 브라우저 정책상 터치를 뗄 때(click) 열어야 아이폰에서도 떠요.
     // 결과 공유하기: 한국어는 카톡으로 점수 이미지 카드, 아니면 휴대폰 공유 창으로 점수 이미지
-    $('shareImgBtn').addEventListener('click', () => {
+    $('shareImgBtn').addEventListener('click', async () => {
       track(`share-img-${lastMode}`, '결과 공유');
       const r = lastResult;
+      // 앱(한국어): 카카오톡으로 점수 이미지 + 앱 받기 버튼 카드를 바로 보내요
+      const N = window.SumsumNative;
+      if (r && N && N.kakao && LANG === 'ko') {
+        try {
+          const f = await ShareCard.ready();
+          const SITE = 'https://sumsum.studiojhl.com/';
+          await N.kakaoImage(f, {
+            title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`,
+            desc: t('shareInvite'),
+            url: SITE + 'get/',
+            buttons: [{ title: '앱 받기', url: SITE + 'get/' }, { title: '웹에서 하기', url: SITE }],
+          });
+          return;
+        } catch (e) { /* 카톡이 없거나 실패하면 아래 공유 창으로 */ }
+      }
       if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite') })) return;
       ShareCard.share(() => toast(t('shareImgSaved')));
     });

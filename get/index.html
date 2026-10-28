@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>셈셈 놀이터 앱 받기</title>
+<meta name="robots" content="noindex">
+<meta property="og:title" content="셈셈 놀이터 앱 받기">
+<meta property="og:image" content="https://sumsum.studiojhl.com/og.png?v=4">
+<style>
+  html, body { margin: 0; height: 100%; background: #0f0b1f; color: #fff; font-family: -apple-system, "Apple SD Gothic Neo", sans-serif; }
+  main { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px 16px; box-sizing: border-box; text-align: center; }
+  img { width: 88px; height: 88px; border-radius: 20px; }
+  a { display: block; width: 100%; max-width: 280px; padding: 14px 0; border-radius: 10px; background: #ffe14d; color: #0f0b1f; font-weight: 700; text-decoration: none; }
+  a.sub { background: #2c2366; color: #fff; }
+</style>
+</head>
+<body>
+<main>
+  <img src="/icon-192.png" alt="">
+  <p>셈셈 놀이터로 이동하는 중…</p>
+  <a id="ios" href="https://apps.apple.com/app/id6826497198" hidden>App Store에서 받기</a>
+  <a id="android" href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum" hidden>Google Play에서 받기</a>
+  <a class="sub" href="/">웹에서 바로 하기</a>
+</main>
+<script>
+  // 스토어에 정식으로 나오면 true 로 바꿔요. 그전에는 웹 게임으로 보내요.
+  var LIVE = { ios: false, android: false };
+  var ua = navigator.userAgent;
+  var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+  var android = /Android/.test(ua);
+  var go = ios && LIVE.ios ? 'ios' : android && LIVE.android ? 'android' : null;
+  if (LIVE.ios) document.getElementById('ios').hidden = false;
+  if (LIVE.android) document.getElementById('android').hidden = false;
+  location.replace(go ? document.getElementById(go).href : '/');
+</script>
+</body>
+</html>

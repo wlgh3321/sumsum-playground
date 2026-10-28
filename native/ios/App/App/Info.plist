@@ -75,6 +75,13 @@
 			<string>cstr6suwn9.skadnetwork</string>
 		</dict>
 	</array>
+	<key>KAKAO_APP_KEY</key>
+	<string></string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakaokompassauth</string>
+		<string>kakaolink</string>
+	</array>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save your score card image to Photos.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>

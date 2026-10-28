@@ -10,7 +10,7 @@
   if (!C || !C.isNativePlatform || !C.isNativePlatform()) return;
   // 앱에 들어 있는 기능(플러그인)을 이름으로 불러와요 (설치 안 된 건 건너뛰어요)
   const P = {};
-  for (const name of ['Haptics', 'Share', 'Filesystem', 'SplashScreen', 'StatusBar', 'AdMob', 'NativePurchases']) {
+  for (const name of ['Haptics', 'Share', 'Filesystem', 'SplashScreen', 'StatusBar', 'AdMob', 'NativePurchases', 'KakaoShare']) {
     try { if (C.isPluginAvailable(name)) P[name] = (C.Plugins && C.Plugins[name]) || C.registerPlugin(name); } catch (e) {}
   }
   document.documentElement.classList.add('native', 'native-' + C.getPlatform());
@@ -186,6 +186,14 @@
     showInterstitial,
     iap: !!IAP,
     noAdsPrice, buyNoAds, restoreNoAds, checkOwned,
+    kakao: !!P.KakaoShare,
+    // 카카오톡으로 점수 이미지 카드 바로 보내기 (안 되면 throw → 공유 창으로)
+    kakaoImage: async (file, { title, desc, buttons, url }) => {
+      if (!P.KakaoShare) throw new Error('no kakao');
+      const ok = await P.KakaoShare.isAvailable().then(r => r.value).catch(() => false);
+      if (!ok) throw new Error('no talk');
+      await P.KakaoShare.shareImage({ image: await toB64(file), title, desc, buttons, url });
+    },
   };
   startAds();
   checkOwned().then(has => { if (has && typeof App !== 'undefined' && App.refreshStore) App.refreshStore(); });

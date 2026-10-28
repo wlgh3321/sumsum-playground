@@ -1,0 +1,11 @@
+{
+  "name": "sumsum-kakao-share",
+  "version": "1.0.0",
+  "description": "셈셈 놀이터 앱 안에서 카카오톡으로 결과 이미지 카드를 바로 보내요 (카카오 공식 SDK)",
+  "private": true,
+  "files": ["ios/", "Package.swift"],
+  "capacitor": {
+    "ios": { "src": "ios" }
+  },
+  "peerDependencies": { "@capacitor/core": ">=8.0.0" }
+}
