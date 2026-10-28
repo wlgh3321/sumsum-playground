@@ -533,17 +533,22 @@ html[lang="en"] .bdg-name { font-size: 13.5px; white-space: nowrap; }
 .rank-row.rank-dots { display: block; text-align: center; background: none !important; color: var(--muted, #8a86b0); letter-spacing: 4px; padding-top: 0; padding-bottom: 0; line-height: 1.2; }
 
 /* ---------- 보너스 (설정 팝업) ---------- */
-.bonus-row { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; padding: 8px 10px; border: 2px solid var(--pink); background: rgba(255, 79, 163, 0.10); }
+.bonus-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 8px 10px; border: 2px solid var(--pink); background: rgba(255, 79, 163, 0.10); animation: bonusGlow 1.2s steps(1) infinite; }
+/* 깜빡깜빡: 테두리는 분홍↔노랑, 하트 숫자는 켜졌다 꺼졌다 (오락실 INSERT COIN 느낌) */
+@keyframes bonusGlow { 0% { border-color: var(--pink); } 50% { border-color: var(--sun); } }
+@keyframes bonusBlink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.15; } }
+.bonus-row .bonus-cap, .bonus-tag b { animation: bonusBlink 0.9s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .bonus-row, .bonus-row .bonus-cap, .bonus-tag b { animation: none; } }
 .bonus-row[hidden] { display: none; }
 .bonus-cap { flex: none; font-size: 13px; color: var(--pink); line-height: 1.2; }
-.bonus-list { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.bonus-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; min-width: 0; }
 .bonus-tag { font-size: 13px; color: var(--text); padding: 4px 8px; border: 2px solid var(--line); background: rgba(106, 77, 255, 0.14); line-height: 1.2; white-space: nowrap; }
 .bonus-tag b { color: var(--pink); font-weight: normal; margin-left: 2px; }
 .bonus-hint { font-size: 13px; color: var(--text-dim); text-align: center; }
 .btn-ad { --bc: var(--pink); --tint: #fff; --mix: 55%; color: var(--on-bright) !important; width: 100%; }
 /* 시작하기 옆에 광고 버튼: 같은 너비·같은 높이로 나란히 */
 .modal-actions.split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: stretch; }
-.modal-actions.split .btn { white-space: nowrap; padding-left: 8px; padding-right: 8px; }
+.modal-actions.split .btn { white-space: nowrap; font-size: 16px; padding-left: 6px; padding-right: 6px; gap: 0.3em; justify-content: center; }
 .rec-bonus { margin: 10px 0 0; font-size: 12.5px; color: var(--text-dim); text-align: center; line-height: 1.5; }
 
 /* ---------- 황금 블록 (배지 12개) ---------- */
