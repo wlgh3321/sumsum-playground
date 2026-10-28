@@ -17,7 +17,8 @@ for (const f of ['logo-blocks.png', 'favicon.svg', 'favicon-32.png', 'apple-touc
 const FONTS = path.join(OUT, 'fonts');
 fs.mkdirSync(FONTS, { recursive: true });
 let css = '';
-for (const name of ['do-hyeon', 'jua', 'gowun-dodum', 'press-start-2p']) {
+// 앱에서 실제로 쓰는 글꼴만 (Jua·Gowun Dodum 은 arcade.css 가 Do Hyeon 으로 덮어써서 안 써요)
+for (const name of ['do-hyeon', 'press-start-2p']) {
   const dir = path.join(NM, '@fontsource', name);
   let c = fs.readFileSync(path.join(dir, '400.css'), 'utf8');
   c = c.replace(/,\s*url\(\.\/files\/[^)]+\.woff\) format\('woff'\)/g, '');
@@ -27,8 +28,12 @@ for (const name of ['do-hyeon', 'jua', 'gowun-dodum', 'press-start-2p']) {
   css += c.replace(/url\(\.\/files\//g, 'url(./') + '\n';
 }
 const GM = path.join(NM, 'galmuri', 'dist');
-for (const f of fs.readdirSync(GM)) if (f.endsWith('.woff2')) fs.copyFileSync(path.join(GM, f), path.join(FONTS, f));
-css += fs.readFileSync(path.join(GM, 'galmuri.css'), 'utf8').replace(/url\((['"]?)\.?\/?([^)'"]+\.woff2)\1\)/g, 'url(./$2)').replace(/,\s*url\([^)]+\.(woff|ttf)['"]?\) format\(["'](woff|truetype)["']\)/g, '');
+// 갈무리는 Galmuri11 (보통·굵게) 만 써요 — 나머지 7개는 앱 크기만 키워요
+const GM_KEEP = ['Galmuri11.woff2', 'Galmuri11-Bold.woff2'];
+for (const f of GM_KEEP) fs.copyFileSync(path.join(GM, f), path.join(FONTS, f));
+css += (fs.readFileSync(path.join(GM, 'galmuri.css'), 'utf8').match(/@font-face\s*\{[^}]*\}/g) || [])
+  .filter(b => GM_KEEP.some(f => b.includes("/" + f + "'") || b.includes("/" + f + ")") || b.includes('/' + f + '"')))
+  .join('\n').replace(/url\((['"]?)\.?\/?([^)'"]+\.woff2)\1\)/g, 'url(./$2)').replace(/,\s*url\([^)]+\.(woff|ttf)['"]?\) format\(["'](woff|truetype)["']\)/g, '');
 fs.writeFileSync(path.join(FONTS, 'fonts.css'), css);
 
 // Firebase SDK
