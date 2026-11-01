@@ -1,0 +1,118 @@
+/* 학습 가이드(글 모음) 페이지 — page.css 위에 조금만 더해요 */
+.crumbs {
+  font-size: 14px;
+  color: var(--text-dim, inherit);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: center;
+}
+.crumbs a { color: var(--text-dim, inherit); text-decoration: none; }
+.crumbs a:hover { color: var(--mint, inherit); text-decoration: underline; }
+.crumbs .sep { opacity: 0.6; }
+
+.doc .lead {
+  font-size: 17px;
+  line-height: 1.75;
+  margin: 10px 0 4px;
+}
+
+.doc h3 {
+  margin: 20px 0 6px;
+  font-family: var(--font-title);
+  font-size: 18px;
+  color: var(--sun, inherit);
+}
+
+.doc ol { padding-left: 1.4em; margin: 6px 0; }
+
+/* 예시 계산 상자 */
+.doc .calc {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border: 2px dashed var(--line, #6a4dff);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-title);
+  font-size: 17px;
+  line-height: 1.9;
+  white-space: pre-line;
+}
+
+/* 한 줄 요약·도움말 상자 */
+.doc .tip {
+  margin: 14px 0;
+  padding: 12px 16px;
+  border-left: 6px solid var(--sun, #ffe14d);
+  background: rgba(255, 225, 77, 0.08);
+  border-radius: var(--radius);
+}
+.doc .tip p { margin: 0; }
+.doc .tip b { color: var(--sun, inherit); }
+
+/* 게임하러 가기 버튼 */
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cta p { margin: 0; font-size: 16px; }
+.cta .btn-go {
+  display: inline-block;
+  padding: 12px 20px;
+  font-family: var(--font-title);
+  font-size: 17px;
+  color: var(--on-bright, #0d0a1c);
+  background: var(--sun, #ffe14d);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.cta .btn-go:hover { filter: brightness(1.08); }
+
+/* 글 목록 */
+.post-list {
+  list-style: none;
+  padding: 0 !important;
+  margin: 10px 0 0 !important;
+  display: grid;
+  gap: 10px;
+}
+.post-list li { margin: 0; }
+.post-list a {
+  display: block;
+  padding: 12px 14px;
+  border: 2px solid var(--line, #6a4dff);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+}
+.post-list a:hover { background: rgba(106, 77, 255, 0.15); }
+.post-list .t {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 17px;
+  color: var(--mint, inherit);
+}
+.post-list .d {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-dim, inherit);
+}
+
+@media (min-width: 640px) {
+  .post-list.two { grid-template-columns: 1fr 1fr; }
+}
+
+/* 언어 바꾸기 링크와 섹션 제목 */
+.doc-top a.lang-link { text-decoration: none; }
+.doc h2.rel-h { margin-top: 0; }
+
+/* 한국어 낱말이 줄 끝에서 쪼개지지 않게 */
+.doc h1, .doc h2, .doc h3, .doc p, .doc li, .doc td, .post-list .t, .post-list .d {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.doc h1 { text-wrap: balance; }

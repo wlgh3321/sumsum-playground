@@ -237,6 +237,9 @@ const App = (() => {
     document.querySelectorAll('[data-i18n]').forEach(n => {
       n.textContent = t(n.dataset.i18n);
     });
+    // 학습 가이드 링크는 언어에 맞는 주소로
+    const g = document.getElementById('footGuide');
+    if (g) g.href = lang === 'en' ? 'en/guide/' : 'guide/';
     renderAll();
   }
 

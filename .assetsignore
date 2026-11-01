@@ -10,3 +10,5 @@ native
 native/**
 store-assets
 store-assets/**
+tools
+tools/**

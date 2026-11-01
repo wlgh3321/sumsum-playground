@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sumsum.studiojhl.com/sitemap.xml
