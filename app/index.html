@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="css/theme.css?v=20261029a">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
   <link rel="stylesheet" href="css/style.css?v=20261029a">
-  <link rel="stylesheet" href="css/arcade.css?v=20261029a">
+  <link rel="stylesheet" href="css/arcade.css?v=20261103a">
   <link rel="stylesheet" href="css/page.css?v=20261029a">
   <link rel="stylesheet" href="css/blocks.css?v=20261029a">
   <link rel="stylesheet" href="fonts/name-full.css?v=1">
@@ -393,10 +393,16 @@
   <div id="contBox" class="modal pause-modal" hidden>
     <div class="modal-card pause-card" role="dialog" aria-modal="true" aria-labelledby="contTitle">
       <div class="pause-title" id="contTitle">CONTINUE?</div>
+      <div class="cont-count" id="contCount" aria-hidden="true">10</div>
       <p class="pause-note" id="contNote"></p>
       <div class="pause-actions">
         <button type="button" class="btn btn-primary" id="contGo" data-ico="play"><span id="contGoTxt"></span></button>
         <button type="button" class="btn" id="contEnd" data-ico="trophy"><span data-i18n="contEnd">결과 보기</span></button>
+      </div>
+      <div class="coin-fx" id="coinFx" hidden aria-hidden="true">
+        <span class="coin-drop"><span class="coin"></span></span>
+        <span class="coin-slot"></span>
+        <span class="coin-txt">COIN IN!</span>
       </div>
     </div>
   </div>
@@ -414,10 +420,10 @@
 <script src="js/glyph.js?v=20261029a"></script>
 <script src="js/bonus.js?v=20261029a"></script>
 <script src="js/store.js?v=20261029a"></script>
-<script src="js/audio.js?v=20261029a"></script>
+<script src="js/audio.js?v=20261103a"></script>
 <script src="js/music.js?v=20261029a"></script>
 <script src="js/problems.js?v=20261029a"></script>
-<script src="js/game.js?v=20261029a"></script>
+<script src="js/game.js?v=20261103a"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
 <script src="js/firebase.js?v=20261029a"></script>

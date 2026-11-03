@@ -122,6 +122,10 @@ const Sound = (() => {
     resume() { tone(440, 0, 0.06); tone(660, 0.07, 0.1); },
     over() { [523, 392, 330, 262].forEach((f, i) => tone(f, i * 0.12, 0.2, 'triangle', 0.14)); },
     record() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone(f, i * 0.09, 0.14, 'square', 0.09)); },
+    // 이어하기 카운트다운 (3초부터는 더 높고 급하게)
+    contTick(n) { n <= 3 ? (tone(988, 0, 0.07, 'square', 0.09), tone(988, 0.12, 0.07, 'square', 0.07)) : tone(660, 0, 0.08, 'square', 0.07); },
+    // 동전 넣기: 띠링!
+    coin() { tone(988, 0, 0.08, 'square', 0.1); tone(1319, 0.08, 0.4, 'square', 0.1); },
     badge() { [988, 1319].forEach((f, i) => tone(f, i * 0.09, 0.18, 'square', 0.08)); },
   };
 })();

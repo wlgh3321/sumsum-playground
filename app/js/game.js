@@ -179,12 +179,66 @@ const Game = (() => {
     const second = (G.continued || 0) === 1;
     $('contNote').textContent = t(Bonus.noAds() ? 'contNoteFree' : second ? 'contNote2' : 'contNote', { n: 2 - (G.continued || 0) });
     $('contGoTxt').textContent = t(heart ? 'contGoHeart' : 'contGoTime');
+    $('coinFx').hidden = true;
     $('contBox').hidden = false;
     Sound.over();
+    startContCount();
+  }
+
+  /* 오락실처럼 10초 카운트다운: 0이 되면 저절로 결과 화면으로 가요. 다른 앱에 가 있는 동안은 멈춰요. */
+  const CONT_SECS = 10;
+  let contTimer = null;
+  function stopContCount() {
+    clearInterval(contTimer);
+    contTimer = null;
+  }
+  function startContCount() {
+    stopContCount();
+    let n = CONT_SECS;
+    const el = $('contCount');
+    const show = () => {
+      el.textContent = n;
+      el.classList.toggle('hot', n <= 3);
+      el.classList.remove('pop');
+      void el.offsetWidth;
+      el.classList.add('pop');
+    };
+    show();
+    contTimer = setInterval(() => {
+      if (document.hidden || !G || !G.askCont || G.contBusy) return;
+      n--;
+      if (n <= 0) {
+        stopContCount();
+        cont(false);
+        return;
+      }
+      show();
+      Sound.contTick(n);
+    }, 1000);
+  }
+
+  // 이어하기를 누르면 동전이 투입구로 쏙 들어가는 연출
+  function coinFx() {
+    return new Promise(res => {
+      const fx = $('coinFx');
+      fx.hidden = false;
+      fx.classList.remove('go');
+      void fx.offsetWidth;
+      fx.classList.add('go');
+      Sound.coin();
+      setTimeout(() => { fx.hidden = true; fx.classList.remove('go'); res(); }, 900);
+    });
   }
 
   async function cont(yes) {
-    if (!G || G.over || !G.askCont) return;
+    if (!G || G.over || !G.askCont || G.contBusy) return;
+    stopContCount();
+    if (yes) {
+      G.contBusy = true;
+      await coinFx();
+      G.contBusy = false;
+      if (!G || G.over || !G.askCont) return;
+    }
     $('contBox').hidden = true;
     if (yes && await Bonus.reward((G.continued || 0) === 1 ? 2 : 1)) {
       G.askCont = false;
@@ -262,6 +316,7 @@ const Game = (() => {
   function start(id, settings, bonus = 0) {
     stop();
     Bonus.newGame();
+    stopContCount();
     $('pauseBox').hidden = true;
     $('contBox').hidden = true;
     G = {
@@ -340,6 +395,7 @@ const Game = (() => {
     stop();
     $('countdown').hidden = true;
     $('pauseBox').hidden = true;
+    stopContCount();
     $('contBox').hidden = true;
 
     const id = G.id;
