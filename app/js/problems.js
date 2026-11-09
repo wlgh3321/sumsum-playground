@@ -11,7 +11,21 @@ const Problems = (() => {
   const OPS = ['+', '-', '*', '/'];
   const SYM = { '+': '+', '-': '−', '*': '×', '/': '÷' };
 
-  const rand = n => Math.floor(Math.random() * n);
+  // 씨앗(seed) 난수: "도전장" 기능에서 친구와 완전히 똑같은 문제를 내려고 써요.
+  // 씨앗을 넣으면 그 뒤로 나오는 문제가 항상 같은 순서로 나와요. seed()를 안 부르면 그냥 평범한 난수예요.
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  let rng = Math.random;
+  function seed(s) { rng = mulberry32((Number(s) >>> 0) || 1); }
+  function unseed() { rng = Math.random; }
+
+  const rand = n => Math.floor(rng() * n);
   const pick = arr => arr[rand(arr.length)];
   function shuffle(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -67,7 +81,7 @@ const Problems = (() => {
     const ops = s.ops && s.ops.length ? s.ops : OPS;
     const r = rangeFor(s);
     const pool = weak.filter(w => ops.includes(w.op) && fits(w, r));
-    if (pool.length && Math.random() < 0.25) {
+    if (pool.length && rng() < 0.25) {
       const w = pick(pool);
       return { op: w.op, a: w.a, b: w.b, ans: w.ans };
     }
@@ -109,7 +123,7 @@ const Problems = (() => {
   // 참 거짓 문제: 절반은 맞는 식, 절반은 틀린 식(shown이 틀린 답)
   function makeTF(s, level, weak = []) {
     const p = makeProblem(s, level, weak);
-    if (Math.random() < 0.5) return { ...p, shown: p.ans, isTrue: true };
+    if (rng() < 0.5) return { ...p, shown: p.ans, isTrue: true };
     return { ...p, shown: wrongNumbers(p, 1)[0], isTrue: false };
   }
 
@@ -117,7 +131,7 @@ const Problems = (() => {
   const equation = (p, shown) => `${p.a} ${SYM[p.op]} ${p.b} = ${shown}`;
   const levelOf = (n, perLevel) => Math.floor(n / perLevel) + 1;
 
-  const api = { OPS, SYM, rangeFor, fits, makeProblem, makeChoices, makeTF, text, equation, levelOf };
+  const api = { OPS, SYM, rangeFor, fits, makeProblem, makeChoices, makeTF, text, equation, levelOf, seed, unseed };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   return api;

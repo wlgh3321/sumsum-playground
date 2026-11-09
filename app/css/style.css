@@ -872,6 +872,13 @@ input[type="range"] {
   font-weight: bold;
 }
 
+.vs-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .stats {
   margin: 12px 0 16px;
   display: grid;

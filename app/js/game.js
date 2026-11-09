@@ -313,16 +313,21 @@ const Game = (() => {
     step(0);
   }
 
-  function start(id, settings, bonus = 0) {
+  // forceSeed를 주면(친구 도전장) 그 씨앗으로, 아니면 매번 새 씨앗으로 문제를 내요.
+  // (모든 판이 "씨앗"으로 돌아가요. 도전장이 아니면 그냥 매번 다른 무작위 씨앗이라 평소와 똑같이 느껴져요.)
+  function start(id, settings, bonus = 0, forceSeed) {
     stop();
     Bonus.newGame();
     stopContCount();
     $('pauseBox').hidden = true;
     $('contBox').hidden = true;
+    const useSeed = forceSeed || (1 + Math.floor(Math.random() * 2147483646));
+    Problems.seed(useSeed);
     G = {
       id,
       M: MODES[id],
       s: settings,
+      seed: useSeed,
       sp: SPEED[settings.speed] || 1,
       score: 0,
       correct: 0,
@@ -424,6 +429,7 @@ const Game = (() => {
       mode: id,
       settings: G.s,
       value,
+      seed: G.seed,
       labelKey: isRace ? 'resLabelTime' : 'resLabelScore',
       badge,
       stats: [

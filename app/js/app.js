@@ -104,16 +104,18 @@ const App = (() => {
   }
 
   // 내 결과로 "도전장" 링크 만들기 (친구가 이 주소로 들어오면 내 점수와 비교돼요)
+  // 랭킹전 기록이면 문제를 만든 "씨앗"도 같이 보내요 → 친구가 받으면 완전히 똑같은 문제가 나와요.
   function challengeUrl(r) {
     const p = new URLSearchParams();
     const name = savedPlayerName();
     if (name) p.set('cn', name);
     p.set('cs', String(r.value));
     p.set('cg', r.mode);
+    if (r.settings && r.settings.ranked && r.seed) p.set('cz', String(r.seed));
     return `${siteBase()}?${p.toString()}`;
   }
 
-  // 주소에 도전장 정보(?cn=이름&cs=점수&cg=게임)가 있으면 읽어서 challenge에 저장하고, 주소는 깨끗하게 되돌려요
+  // 주소에 도전장 정보(?cn=이름&cs=점수&cg=게임&cz=씨앗)가 있으면 읽어서 challenge에 저장하고, 주소는 깨끗하게 되돌려요
   // (앱은 보통 주소로 안 열리지만, PWA로 설치해서 쓰는 경우엔 이 주소를 그대로 받아요)
   function readChallenge() {
     try {
@@ -122,7 +124,11 @@ const App = (() => {
       const score = parseFloat(p.get('cs'));
       if (!MODE_IDS.includes(mode) || !Number.isFinite(score) || score <= 0) return;
       const nameRaw = (p.get('cn') || '').trim();
-      challenge = { mode, score, name: [...nameRaw].slice(0, 12).join('') };
+      const seedRaw = parseInt(p.get('cz'), 10);
+      challenge = {
+        mode, score, name: [...nameRaw].slice(0, 12).join(''),
+        seed: Number.isFinite(seedRaw) && seedRaw > 0 ? seedRaw : null,
+      };
       history.replaceState(null, '', location.pathname + location.hash);
     } catch (e) {}
   }
@@ -134,8 +140,25 @@ const App = (() => {
     if (!challenge) { box.hidden = true; return; }
     const game = modeName(challenge.mode, { time: 60 });
     const v = fmtValue(challenge.mode, challenge.score);
+    const name = challenge.name || t('vsFriend');
     box.hidden = false;
-    $('vsBannerText').textContent = t('vsBanner', { name: challenge.name || t('vsFriend'), game, v });
+    $('vsBannerText').textContent = t(challenge.seed ? 'vsBannerSeed' : 'vsBanner', { name, game, v });
+    $('vsBannerPlay').textContent = t('vsPlay');
+  }
+
+  // 도전장을 받아들여요: 씨앗이 있으면 랭킹전 조건 그대로 바로 시작(완전히 같은 문제),
+  // 씨앗이 없으면(연습 판 공유) 설정 팝업을 열어 직접 골라요.
+  function acceptChallenge() {
+    if (!challenge) return;
+    track(`vs-accept-${challenge.mode}`, '도전장 받기');
+    if (challenge.seed) {
+      closeSetup();
+      const s = { ...RANKED, ops: [...RANKED.ops], ranked: true };
+      Game.start(challenge.mode, s, 0, challenge.seed); // 보너스 없이, 친구와 똑같은 조건으로
+    } else {
+      pendingMode = null;
+      openSetup(challenge.mode);
+    }
   }
 
   // 결과 화면에 "VS 도전장" 비교 문구를 보여줘요
@@ -706,6 +729,7 @@ const App = (() => {
     press($('startBtn'), startPending);
     // 닫기는 손을 뗄 때(click) 처리해요. 누르는 순간(pointerdown) 닫으면 손을 떼는 순간의 클릭이
     // 뒤에 있던 게임 카드에 떨어져서 팝업이 다시 열렸어요(휴대폰에서 X가 안 눌리는 것처럼 보이던 문제).
+    $('vsBannerPlay').addEventListener('click', acceptChallenge);
     $('vsBannerClose').addEventListener('click', () => { challenge = null; $('vsBanner').hidden = true; });
     $('setupClose').addEventListener('click', closeSetup);
     $('setup').addEventListener('click', e => {
