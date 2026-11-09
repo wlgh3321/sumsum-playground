@@ -52,32 +52,36 @@ const KakaoShare = (() => {
   function ready() { return on() && !!window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized(); }
 
   // 점수 문구 카드
-  function sendText({ title, desc }) {
+  // url을 넘기면 "나도 도전하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
+  function sendText({ title, desc, url }) {
     if (!ready()) return false;
+    const link = url || SITE;
     try {
       window.Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
           title, description: desc, imageUrl: OG, imageWidth: 1200, imageHeight: 630,
-          link: { mobileWebUrl: SITE, webUrl: SITE },
+          link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: [{ title: '나도 도전하기', link: { mobileWebUrl: SITE, webUrl: SITE } }],
+        buttons: [{ title: '나도 도전하기', link: { mobileWebUrl: link, webUrl: link } }],
       });
       return true;
     } catch (e) { return false; }
   }
 
   // 자랑 이미지 카드 (이미지를 아직 못 올렸으면 false → 예전 방식)
-  function sendImage({ title, desc }) {
+  // url을 넘기면 "나도 도전하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
+  function sendImage({ title, desc, url }) {
     if (!ready() || !imgUrl) return false;
+    const link = url || SITE;
     try {
       window.Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
           title, description: desc, imageUrl: imgUrl, imageWidth: 1080, imageHeight: 1350,
-          link: { mobileWebUrl: SITE, webUrl: SITE },
+          link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: [{ title: '나도 도전하기', link: { mobileWebUrl: SITE, webUrl: SITE } }],
+        buttons: [{ title: '나도 도전하기', link: { mobileWebUrl: link, webUrl: link } }],
       });
       return true;
     } catch (e) { return false; }

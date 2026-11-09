@@ -20,9 +20,13 @@ const KakaoShare = (() => {
   const isIOSApp = () => isNative() && window.Capacitor.getPlatform && window.Capacitor.getPlatform() === 'ios';
   const on = () => !!KEY && !isIOSApp() && typeof LANG !== 'undefined' && LANG === 'ko';
   // 앱에서 보낸 카드는 '앱 받기' 버튼, 웹에서 보낸 카드는 '나도 도전하기' 버튼
-  const btns = () => isNative()
-    ? [{ title: '앱 받기', link: { mobileWebUrl: SITE + 'get/', webUrl: SITE + 'get/' } }, { title: '웹에서 하기', link: { mobileWebUrl: SITE, webUrl: SITE } }]
-    : [{ title: '나도 도전하기', link: { mobileWebUrl: SITE, webUrl: SITE } }];
+  // url(도전장 링크)이 있으면 '웹에서 하기'·'나도 도전하기'가 그 주소로 가요
+  const btns = url => {
+    const link = url || SITE;
+    return isNative()
+      ? [{ title: '앱 받기', link: { mobileWebUrl: SITE + 'get/', webUrl: SITE + 'get/' } }, { title: '웹에서 하기', link: { mobileWebUrl: link, webUrl: link } }]
+      : [{ title: '나도 도전하기', link: { mobileWebUrl: link, webUrl: link } }];
+  };
 
   function load() {
     if (!KEY) return Promise.reject(new Error('no key'));
@@ -60,32 +64,36 @@ const KakaoShare = (() => {
   function ready() { return on() && !!window.Kakao && window.Kakao.isInitialized && window.Kakao.isInitialized(); }
 
   // 점수 문구 카드
-  function sendText({ title, desc }) {
+  // url을 넘기면 "나도 도전하기"·"웹에서 하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
+  function sendText({ title, desc, url }) {
     if (!ready()) return false;
+    const link = url || SITE;
     try {
       window.Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
           title, description: desc, imageUrl: OG, imageWidth: 1200, imageHeight: 630,
-          link: { mobileWebUrl: SITE, webUrl: SITE },
+          link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: btns(),
+        buttons: btns(url),
       });
       return true;
     } catch (e) { return false; }
   }
 
   // 자랑 이미지 카드 (이미지를 아직 못 올렸으면 false → 예전 방식)
-  function sendImage({ title, desc }) {
+  // url을 넘기면 "나도 도전하기"·"웹에서 하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
+  function sendImage({ title, desc, url }) {
     if (!ready() || !imgUrl) return false;
+    const link = url || SITE;
     try {
       window.Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
           title, description: desc, imageUrl: imgUrl, imageWidth: 1080, imageHeight: 1350,
-          link: { mobileWebUrl: SITE, webUrl: SITE },
+          link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: btns(),
+        buttons: btns(url),
       });
       return true;
     } catch (e) { return false; }

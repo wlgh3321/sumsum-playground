@@ -21,7 +21,7 @@
   <p>셈셈 놀이터로 이동하는 중…</p>
   <a id="ios" href="https://apps.apple.com/app/id6826497198" hidden>App Store에서 받기</a>
   <a id="android" href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum" hidden>Google Play에서 받기</a>
-  <a class="sub" href="/">웹에서 바로 하기</a>
+  <a class="sub" id="web" href="/">웹에서 바로 하기</a>
 </main>
 <script>
   // 스토어에 정식으로 나오면 true 로 바꿔요. 그전에는 웹 게임으로 보내요.
@@ -32,7 +32,10 @@
   var go = ios && LIVE.ios ? 'ios' : android && LIVE.android ? 'android' : null;
   if (LIVE.ios) document.getElementById('ios').hidden = false;
   if (LIVE.android) document.getElementById('android').hidden = false;
-  location.replace(go ? document.getElementById(go).href : '/');
+  // 도전장 정보(?cn=&cs=&cg=)가 있으면 "웹에서 바로 하기" 링크도 그대로 들고 가요
+  document.getElementById('web').href = '/' + location.search;
+  // 앱이 없어서 웹으로 보낼 때도 도전장 정보를 그대로 들고 가요
+  location.replace(go ? document.getElementById(go).href : '/' + location.search);
 </script>
 </body>
 </html>

@@ -36,6 +36,9 @@ const App = (() => {
   let lastResult = null; // 공유하기에 쓰는 마지막 결과
   let pendingMode = null; // 설정 팝업에서 시작하려는 게임
   let toastTimer = 0;
+  let challenge = null; // 친구가 카톡으로 보낸 도전장 { mode, score, name }
+
+  const vsBetter = (mode, a, b) => (mode === 'race' ? a < b : a > b); // 60문제 타임어택은 시간이 짧을수록 위
 
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
   const setPressed = (node, on) => node.setAttribute('aria-pressed', String(!!on));
@@ -87,15 +90,73 @@ const App = (() => {
   }
   window.track = track;
 
+  // 사이트 기본 주소 (앱은 항상 웹사이트 주소로 도전장을 보내요). 영어면 …/en/ 주소로.
+  function siteBase() {
+    const base = location.protocol.startsWith('http')
+      ? location.origin + '/'
+      : 'https://sumsum.studiojhl.com/';
+    return lang === 'en' ? `${base}en/` : base;
+  }
+
+  // 랭킹전 닉네임(있으면)을 내 "도전장" 이름으로 써요
+  function savedPlayerName() {
+    try { return (localStorage.getItem('sumsum:rankName') || '').trim(); } catch (e) { return ''; }
+  }
+
+  // 내 결과로 "도전장" 링크 만들기 (친구가 이 주소로 들어오면 내 점수와 비교돼요)
+  function challengeUrl(r) {
+    const p = new URLSearchParams();
+    const name = savedPlayerName();
+    if (name) p.set('cn', name);
+    p.set('cs', String(r.value));
+    p.set('cg', r.mode);
+    return `${siteBase()}?${p.toString()}`;
+  }
+
+  // 주소에 도전장 정보(?cn=이름&cs=점수&cg=게임)가 있으면 읽어서 challenge에 저장하고, 주소는 깨끗하게 되돌려요
+  // (앱은 보통 주소로 안 열리지만, PWA로 설치해서 쓰는 경우엔 이 주소를 그대로 받아요)
+  function readChallenge() {
+    try {
+      const p = new URLSearchParams(location.search);
+      const mode = p.get('cg');
+      const score = parseFloat(p.get('cs'));
+      if (!MODE_IDS.includes(mode) || !Number.isFinite(score) || score <= 0) return;
+      const nameRaw = (p.get('cn') || '').trim();
+      challenge = { mode, score, name: [...nameRaw].slice(0, 12).join('') };
+      history.replaceState(null, '', location.pathname + location.hash);
+    } catch (e) {}
+  }
+
+  // 홈 화면에 도전장 배너를 보여줘요
+  function renderVsBanner() {
+    const box = $('vsBanner');
+    if (!box) return;
+    if (!challenge) { box.hidden = true; return; }
+    const game = modeName(challenge.mode, { time: 60 });
+    const v = fmtValue(challenge.mode, challenge.score);
+    box.hidden = false;
+    $('vsBannerText').textContent = t('vsBanner', { name: challenge.name || t('vsFriend'), game, v });
+  }
+
+  // 결과 화면에 "VS 도전장" 비교 문구를 보여줘요
+  function renderVsResult(r) {
+    const note = $('vsNote');
+    if (!note) return;
+    if (!challenge || challenge.mode !== r.mode || !(r.value > 0)) { note.hidden = true; return; }
+    const name = challenge.name || t('vsFriend');
+    const mine = fmtValue(r.mode, r.value);
+    const theirs = fmtValue(r.mode, challenge.score);
+    const key = r.value === challenge.score ? 'vsTie' : vsBetter(r.mode, r.value, challenge.score) ? 'vsWin' : 'vsLose';
+    note.className = `result-note vs-note vs-note-${key === 'vsWin' ? 'win' : key === 'vsLose' ? 'lose' : 'tie'}`;
+    note.textContent = t(key, { name, mine, theirs });
+    note.hidden = false;
+  }
+
   // 결과 공유: 휴대폰은 공유 창(카톡·인스타 등)을 띄우고, 안 되면 문구와 링크를 복사해요.
   async function shareResult() {
     const r = lastResult;
     if (!r) return;
-    // 영어로 하고 있으면 영어 미리보기가 뜨는 …/en/ 주소로 보내요.
-    const base = location.protocol.startsWith('http')
-      ? location.origin + '/'
-      : 'https://sumsum.studiojhl.com/';
-    const url = lang === 'en' ? `${base}en/` : base;
+    const url = challengeUrl(r);
     const game = modeName(r.mode, r.settings);
     const v = fmtValue(r.mode, r.value);
     const n = Ranking.placeFor(r);
@@ -103,7 +164,7 @@ const App = (() => {
     const text = `${line}\n${t('shareInvite')}\n${url}`;
     track(`share-${r.mode}`, '결과 공유');
     // 한국어: 카카오톡으로 바로
-    if (KakaoShare.sendText({ title: line.replace(/^\S+\s/, ''), desc: t('shareInvite') })) return;
+    if (KakaoShare.sendText({ title: line.replace(/^\S+\s/, ''), desc: t('shareInvite'), url })) return;
 
     if (navigator.share) {
       try {
@@ -374,6 +435,7 @@ const App = (() => {
     renderSetup();
     renderModes();
     if (homeTab === 'records') renderRecords();
+    renderVsBanner();
     Ranking.renderHome();
   }
 
@@ -485,6 +547,7 @@ const App = (() => {
           .join('')
       : `<li class="miss-none">${t('wrongNone')}</li>`;
 
+    renderVsResult(r);
     show('result');
     Ranking.onResult(r);
     celebrate(Stats.record(r));
@@ -643,6 +706,7 @@ const App = (() => {
     press($('startBtn'), startPending);
     // 닫기는 손을 뗄 때(click) 처리해요. 누르는 순간(pointerdown) 닫으면 손을 떼는 순간의 클릭이
     // 뒤에 있던 게임 카드에 떨어져서 팝업이 다시 열렸어요(휴대폰에서 X가 안 눌리는 것처럼 보이던 문제).
+    $('vsBannerClose').addEventListener('click', () => { challenge = null; $('vsBanner').hidden = true; });
     $('setupClose').addEventListener('click', closeSetup);
     $('setup').addEventListener('click', e => {
       if (e.target === $('setup')) closeSetup();
@@ -671,12 +735,12 @@ const App = (() => {
             title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`,
             desc: t('shareInvite'),
             url: SITE + 'get/',
-            buttons: [{ title: '앱 받기', url: SITE + 'get/' }, { title: '웹에서 하기', url: SITE }],
+            buttons: [{ title: '앱 받기', url: SITE + 'get/' }, { title: '웹에서 하기', url: challengeUrl(r) }],
           });
           return;
         } catch (e) { /* 카톡이 없거나 실패하면 아래 공유 창으로 */ }
       }
-      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite') })) return;
+      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite'), url: r ? challengeUrl(r) : undefined })) return;
       ShareCard.share(() => toast(t('shareImgSaved')));
     });
     // 결과 이미지 저장: 이미지를 크게 보여 주고 저장 버튼
@@ -714,6 +778,7 @@ const App = (() => {
 
   function init() {
     cfg = sanitize(Store.getSettings());
+    readChallenge(); // 친구의 도전장 링크(?cn=&cs=&cg=)로 들어왔으면 읽어 둬요
     // 공유 링크(…/en/ → ?lang=en)로 들어오면 그 언어로 시작하고, 주소에서는 지워요.
     const want = new URLSearchParams(location.search).get('lang');
     if (want === 'ko' || want === 'en') {

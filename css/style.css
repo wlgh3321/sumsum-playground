@@ -849,6 +849,29 @@ input[type="range"] {
   font-size: 15px;
 }
 
+.vs-note {
+  font-weight: bold;
+}
+.vs-note-win { color: var(--ok); }
+.vs-note-lose { color: var(--bad); }
+.vs-note-tie { color: var(--sun); }
+
+/* 홈 화면: 친구의 도전장 배너 */
+.vs-banner {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vs-banner-text {
+  margin: 0;
+  font-size: 15px;
+  font-weight: bold;
+}
+
 .stats {
   margin: 12px 0 16px;
   display: grid;

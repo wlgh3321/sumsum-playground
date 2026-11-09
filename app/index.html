@@ -156,6 +156,11 @@
       </div>
     </header>
 
+    <div class="card vs-banner" id="vsBanner" hidden>
+      <p class="vs-banner-text" id="vsBannerText"></p>
+      <button type="button" class="btn btn-small" id="vsBannerClose" aria-label="Close">✕</button>
+    </div>
+
     <div class="home-scroll" id="homeScroll">
     <!-- 탭 1: 게임 (위: 움직이는 미리보기 / 가운데: 설명·기록·플레이 / 아래: 게임 고르기) -->
     <div class="home-view" id="viewGames" data-view="games">
@@ -270,6 +275,7 @@
       <div class="result-big" id="resBig"></div>
       <div class="badge" id="resBadge"></div>
       <p class="result-note" id="resNote" hidden></p>
+      <p class="result-note vs-note" id="vsNote" hidden></p>
       <div class="rank-box" id="rankBox" hidden></div>
       <div class="stats" id="resStats"></div>
       <h3 class="section-title small" data-i18n="wrongTitle">틀린 문제</h3>
