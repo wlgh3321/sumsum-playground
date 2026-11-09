@@ -103,15 +103,16 @@ const App = (() => {
 
   // 내 결과로 "도전장" 링크 만들기 (친구가 이 주소로 들어오면 내 점수와 비교돼요)
   // 랭킹전 기록이면 문제를 만든 "씨앗"도 같이 보내요 → 친구가 받으면 완전히 똑같은 문제가 나와요.
-  function challengeUrl(r) {
+  function challengeQuery(r) {
     const p = new URLSearchParams();
     const name = savedPlayerName();
     if (name) p.set('cn', name);
     p.set('cs', String(r.value));
     p.set('cg', r.mode);
     if (r.settings && r.settings.ranked && r.seed) p.set('cz', String(r.seed));
-    return `${siteBase()}?${p.toString()}`;
+    return p.toString();
   }
+  function challengeUrl(r) { return `${siteBase()}?${challengeQuery(r)}`; }
 
   // 주소에 도전장 정보(?cn=이름&cs=점수&cg=게임&cz=씨앗)가 있으면 읽어서 challenge에 저장하고, 주소는 깨끗하게 되돌려요
   function readChallenge() {
@@ -183,7 +184,7 @@ const App = (() => {
     const text = `${line}\n${t('shareInvite')}\n${url}`;
     track(`share-${r.mode}`, '결과 공유');
     // 한국어: 카카오톡으로 바로
-    if (KakaoShare.sendText({ title: line.replace(/^\S+\s/, ''), desc: t('shareInvite'), url: challengeUrl(r) })) return;
+    if (KakaoShare.sendText({ title: line.replace(/^\S+\s/, ''), desc: t('shareInvite'), url: challengeUrl(r), exec: challengeQuery(r) })) return;
 
     if (navigator.share) {
       try {
@@ -563,7 +564,7 @@ const App = (() => {
     $('shareImgBtn').addEventListener('click', () => {
       track(`share-img-${lastMode}`, '결과 공유');
       const r = lastResult;
-      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite'), url: r ? challengeUrl(r) : undefined })) return;
+      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite'), url: r ? challengeUrl(r) : undefined, exec: r ? challengeQuery(r) : undefined })) return;
       ShareCard.share(() => toast(t('shareImgSaved')));
     });
     // 결과 이미지 저장: 이미지를 크게 보여 주고 저장 버튼

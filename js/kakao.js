@@ -10,6 +10,18 @@ const KakaoShare = (() => {
   const SITE = 'https://sumsum.studiojhl.com/';
   const OG = 'https://sumsum.studiojhl.com/og.png?v=4';
 
+  // 버튼: '나도 도전하기'(웹) + 도전장이면 '앱으로 도전'(앱이 있으면 앱이 바로 열리고, 없으면 스토어로)
+  // exec = 도전장 정보(cn=&cs=&cg=&cz=). 카톡이 앱을 열면서 이걸 그대로 넘겨줘요.
+  // ★ 앱 업데이트(카톡 도전장으로 앱 열기)가 스토어에 나온 뒤 true 로 바꿔요.
+  //   그 전에 켜면 친구의 옛날 앱이 열리기만 하고 도전장은 안 떠요.
+  const APP_VS = false;
+  const btns = (link, exec) => {
+    const web = { mobileWebUrl: link, webUrl: link };
+    const out = [{ title: '나도 도전하기', link: web }];
+    if (exec && APP_VS) out.push({ title: '앱으로 도전', link: { ...web, androidExecutionParams: exec, iosExecutionParams: exec } });
+    return out;
+  };
+
   let loading = null;
   let imgUrl = null;   // 미리 올려 둔 자랑 이미지 주소
   let imgFor = null;   // 어떤 파일을 올렸는지
@@ -53,7 +65,7 @@ const KakaoShare = (() => {
 
   // 점수 문구 카드
   // url을 넘기면 "나도 도전하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
-  function sendText({ title, desc, url }) {
+  function sendText({ title, desc, url, exec }) {
     if (!ready()) return false;
     const link = url || SITE;
     try {
@@ -63,7 +75,7 @@ const KakaoShare = (() => {
           title, description: desc, imageUrl: OG, imageWidth: 1200, imageHeight: 630,
           link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: [{ title: '나도 도전하기', link: { mobileWebUrl: link, webUrl: link } }],
+        buttons: btns(link, exec),
       });
       return true;
     } catch (e) { return false; }
@@ -71,7 +83,7 @@ const KakaoShare = (() => {
 
   // 자랑 이미지 카드 (이미지를 아직 못 올렸으면 false → 예전 방식)
   // url을 넘기면 "나도 도전하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
-  function sendImage({ title, desc, url }) {
+  function sendImage({ title, desc, url, exec }) {
     if (!ready() || !imgUrl) return false;
     const link = url || SITE;
     try {
@@ -81,7 +93,7 @@ const KakaoShare = (() => {
           title, description: desc, imageUrl: imgUrl, imageWidth: 1080, imageHeight: 1350,
           link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: [{ title: '나도 도전하기', link: { mobileWebUrl: link, webUrl: link } }],
+        buttons: btns(link, exec),
       });
       return true;
     } catch (e) { return false; }

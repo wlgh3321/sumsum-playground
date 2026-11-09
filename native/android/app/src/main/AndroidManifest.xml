@@ -23,6 +23,13 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- 카톡 도전장 '앱으로 도전' 버튼: kakao{네이티브 앱 키}://kakaolink?cn=&cs=&cg=&cz= 로 앱이 열려요 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kakao54d1d873e900c66d439b9ac2723415ad" android:host="kakaolink" />
+            </intent-filter>
         </activity>
 
         <provider

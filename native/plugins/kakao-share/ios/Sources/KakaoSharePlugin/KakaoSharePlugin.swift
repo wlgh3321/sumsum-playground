@@ -39,11 +39,18 @@ public class KakaoSharePlugin: CAPPlugin, CAPBridgedPlugin {
         let title = call.getString("title") ?? ""
         let desc = call.getString("desc") ?? ""
         let url = call.getString("url") ?? "https://sumsum.studiojhl.com/"
-        // 버튼: [{ title, url }] (최대 2개)
+        // 버튼: [{ title, url, exec? }] (최대 2개)
+        // exec(실행 파라미터)가 있으면 '앱 실행' 버튼: 받는 사람 폰에 앱이 있으면 앱이 열리면서
+        // kakao{앱키}://kakaolink?{exec} 로 들어와요. 앱이 없으면 카카오 설정의 스토어로 가요.
         var buttons: [[String: Any]] = []
         for b in (call.getArray("buttons") as? [[String: Any]] ?? []).prefix(2) {
             let u = (b["url"] as? String) ?? url
-            buttons.append(["title": (b["title"] as? String) ?? "", "link": ["web_url": u, "mobile_web_url": u]])
+            var link: [String: Any] = ["web_url": u, "mobile_web_url": u]
+            if let exec = b["exec"] as? String, !exec.isEmpty {
+                link["android_execution_params"] = exec
+                link["ios_execution_params"] = exec
+            }
+            buttons.append(["title": (b["title"] as? String) ?? "", "link": link])
         }
         let width = call.getInt("width") ?? Int(image.size.width * image.scale)
         let height = call.getInt("height") ?? Int(image.size.height * image.scale)

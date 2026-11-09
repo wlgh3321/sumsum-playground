@@ -10,7 +10,7 @@
   if (!C || !C.isNativePlatform || !C.isNativePlatform()) return;
   // 앱에 들어 있는 기능(플러그인)을 이름으로 불러와요 (설치 안 된 건 건너뛰어요)
   const P = {};
-  for (const name of ['Haptics', 'Share', 'Filesystem', 'SplashScreen', 'StatusBar', 'AdMob', 'NativePurchases', 'KakaoShare']) {
+  for (const name of ['Haptics', 'Share', 'Filesystem', 'SplashScreen', 'StatusBar', 'AdMob', 'NativePurchases', 'KakaoShare', 'App']) {
     try { if (C.isPluginAvailable(name)) P[name] = (C.Plugins && C.Plugins[name]) || C.registerPlugin(name); } catch (e) {}
   }
   document.documentElement.classList.add('native', 'native-' + C.getPlatform());
@@ -210,6 +210,29 @@
       if (st.music !== false && typeof Music !== 'undefined') Music.start();
     } catch (e) {}
   });
+
+  /* ---------- 카톡 도전장으로 앱 열기 ----------
+     친구가 보낸 카톡 카드의 '앱으로 도전' 버튼 → kakao{앱키}://kakaolink?cn=&cs=&cg=&cz= 로 앱이 열려요.
+     (앱이 꺼져 있다가 열리면 getLaunchUrl, 켜져 있으면 appUrlOpen) */
+  if (P.App) {
+    let lastUrl = '', lastAt = 0;
+    const handle = url => {
+      if (!url) return;
+      const now = Date.now();
+      if (url === lastUrl && now - lastAt < 5000) return; // 같은 주소가 두 번 오면 한 번만
+      const q = url.indexOf('?');
+      if (q < 0) return;
+      lastUrl = url; lastAt = now;
+      const query = url.slice(q + 1).split('#')[0];
+      const go = (tries = 0) => {
+        if (typeof App !== 'undefined' && App.openChallenge && document.readyState === 'complete') { App.openChallenge(query); return; }
+        if (tries < 50) setTimeout(() => go(tries + 1), 100);
+      };
+      go();
+    };
+    buzz(() => P.App.addListener('appUrlOpen', e => handle(e && e.url)));
+    buzz(() => P.App.getLaunchUrl().then(r => handle(r && r.url)).catch(() => {}));
+  }
 
   /* ---------- 상태 표시줄·시작 화면 ---------- */
   if (P.StatusBar) buzz(() => P.StatusBar.setStyle({ style: 'DARK' }));

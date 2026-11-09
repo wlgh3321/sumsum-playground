@@ -91,8 +91,9 @@ const App = (() => {
   window.track = track;
 
   // 사이트 기본 주소 (앱은 항상 웹사이트 주소로 도전장을 보내요). 영어면 …/en/ 주소로.
+  // (앱 안은 주소가 https://localhost·capacitor://localhost 라서 항상 진짜 사이트 주소를 써요)
   function siteBase() {
-    const base = location.protocol.startsWith('http')
+    const base = /(^|\.)studiojhl\.com$/.test(location.hostname)
       ? location.origin + '/'
       : 'https://sumsum.studiojhl.com/';
     return lang === 'en' ? `${base}en/` : base;
@@ -105,32 +106,55 @@ const App = (() => {
 
   // 내 결과로 "도전장" 링크 만들기 (친구가 이 주소로 들어오면 내 점수와 비교돼요)
   // 랭킹전 기록이면 문제를 만든 "씨앗"도 같이 보내요 → 친구가 받으면 완전히 똑같은 문제가 나와요.
-  function challengeUrl(r) {
+  function challengeQuery(r) {
     const p = new URLSearchParams();
     const name = savedPlayerName();
     if (name) p.set('cn', name);
     p.set('cs', String(r.value));
     p.set('cg', r.mode);
     if (r.settings && r.settings.ranked && r.seed) p.set('cz', String(r.seed));
-    return `${siteBase()}?${p.toString()}`;
+    return p.toString();
   }
+  function challengeUrl(r) { return `${siteBase()}?${challengeQuery(r)}`; }
 
   // 주소에 도전장 정보(?cn=이름&cs=점수&cg=게임&cz=씨앗)가 있으면 읽어서 challenge에 저장하고, 주소는 깨끗하게 되돌려요
   // (앱은 보통 주소로 안 열리지만, PWA로 설치해서 쓰는 경우엔 이 주소를 그대로 받아요)
-  function readChallenge() {
+  function parseChallenge(query) {
     try {
-      const p = new URLSearchParams(location.search);
+      const p = new URLSearchParams(query);
       const mode = p.get('cg');
       const score = parseFloat(p.get('cs'));
-      if (!MODE_IDS.includes(mode) || !Number.isFinite(score) || score <= 0) return;
+      if (!MODE_IDS.includes(mode) || !Number.isFinite(score) || score <= 0) return null;
       const nameRaw = (p.get('cn') || '').trim();
       const seedRaw = parseInt(p.get('cz'), 10);
-      challenge = {
+      return {
         mode, score, name: [...nameRaw].slice(0, 12).join(''),
         seed: Number.isFinite(seedRaw) && seedRaw > 0 ? seedRaw : null,
       };
-      history.replaceState(null, '', location.pathname + location.hash);
-    } catch (e) {}
+    } catch (e) { return null; }
+  }
+  function readChallenge() {
+    const c = parseChallenge(location.search);
+    if (!c) return;
+    challenge = c;
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {}
+  }
+
+  // 카톡 "앱으로 도전" 버튼으로 앱이 열렸을 때 (native.js가 불러요): 도전장을 받고 홈에 배너를 띄워요.
+  // 게임 중이면 판을 끊지 않고 배너만 준비해 두고, 끝나고 홈으로 오면 보여요.
+  function openChallenge(query) {
+    const c = parseChallenge(query);
+    if (!c) return false;
+    challenge = c;
+    track(`vs-open-app-${c.mode}`, '도전장 앱으로 열기');
+    renderVsBanner();
+    const cur = document.querySelector('.screen.active');
+    if (!cur || cur.id !== 'game') {
+      showHome();
+      const sc = $('homeScroll');
+      if (sc) sc.scrollTop = 0;
+    }
+    return true;
   }
 
   // 홈 화면에 도전장 배너를 보여줘요
@@ -187,7 +211,7 @@ const App = (() => {
     const text = `${line}\n${t('shareInvite')}\n${url}`;
     track(`share-${r.mode}`, '결과 공유');
     // 한국어: 카카오톡으로 바로
-    if (KakaoShare.sendText({ title: line.replace(/^\S+\s/, ''), desc: t('shareInvite'), url })) return;
+    if (KakaoShare.sendText({ title: line.replace(/^\S+\s/, ''), desc: t('shareInvite'), url, exec: challengeQuery(r) })) return;
 
     if (navigator.share) {
       try {
@@ -749,22 +773,26 @@ const App = (() => {
     $('shareImgBtn').addEventListener('click', async () => {
       track(`share-img-${lastMode}`, '결과 공유');
       const r = lastResult;
-      // 앱(한국어): 카카오톡으로 점수 이미지 + 앱 받기 버튼 카드를 바로 보내요
+      // 앱(한국어): 카카오톡으로 점수 이미지 + 도전장 버튼(앱으로·웹으로) 카드를 바로 보내요
       const N = window.SumsumNative;
       if (r && N && N.kakao && LANG === 'ko') {
         try {
           const f = await ShareCard.ready();
           const SITE = 'https://sumsum.studiojhl.com/';
+          // '앱으로 도전': 친구 폰에 앱이 있으면 앱이 바로 열려요(exec), 없으면 스토어로 / '웹으로 도전': 브라우저에서 바로
           await N.kakaoImage(f, {
             title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`,
             desc: t('shareInvite'),
-            url: SITE + 'get/',
-            buttons: [{ title: '앱 받기', url: SITE + 'get/' }, { title: '웹에서 하기', url: challengeUrl(r) }],
+            url: challengeUrl(r),
+            buttons: [
+              { title: '앱으로 도전', url: SITE + 'get/?' + challengeQuery(r), exec: challengeQuery(r) },
+              { title: '웹으로 도전', url: challengeUrl(r) },
+            ],
           });
           return;
         } catch (e) { /* 카톡이 없거나 실패하면 아래 공유 창으로 */ }
       }
-      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite'), url: r ? challengeUrl(r) : undefined })) return;
+      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite'), url: r ? challengeUrl(r) : undefined, exec: r ? challengeQuery(r) : undefined })) return;
       ShareCard.share(() => toast(t('shareImgSaved')));
     });
     // 결과 이미지 저장: 이미지를 크게 보여 주고 저장 버튼
@@ -867,7 +895,7 @@ const App = (() => {
     refreshStore();
   }
 
-  return { show, showHome, showResult, init, refreshStore, buyNoAds, restoreNoAds };
+  return { show, showHome, showResult, init, refreshStore, buyNoAds, restoreNoAds, openChallenge };
 })();
 
 App.init();

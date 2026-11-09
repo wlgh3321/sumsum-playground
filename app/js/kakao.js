@@ -19,13 +19,19 @@ const KakaoShare = (() => {
   const isNative = () => !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   const isIOSApp = () => isNative() && window.Capacitor.getPlatform && window.Capacitor.getPlatform() === 'ios';
   const on = () => !!KEY && !isIOSApp() && typeof LANG !== 'undefined' && LANG === 'ko';
-  // 앱에서 보낸 카드는 '앱 받기' 버튼, 웹에서 보낸 카드는 '나도 도전하기' 버튼
-  // url(도전장 링크)이 있으면 '웹에서 하기'·'나도 도전하기'가 그 주소로 가요
-  const btns = url => {
+  // 버튼 두 개: '앱으로 도전'(앱이 있으면 앱이 바로 열리고, 없으면 스토어로) + '웹으로 도전'(브라우저에서 바로)
+  // exec = 도전장 정보(cn=&cs=&cg=&cz=). 카톡이 앱을 열면서 이걸 그대로 넘겨줘요.
+  // 웹사이트에서 보낸 카드는 '나도 도전하기'(웹)가 먼저예요.
+  // ★ 웹(PWA)에서 보낼 때 '앱으로 도전' 버튼: 앱 업데이트가 스토어에 나온 뒤 true 로 (js/kakao.js 와 같이)
+  const APP_VS = false;
+  const btns = (url, exec) => {
     const link = url || SITE;
+    const web = { mobileWebUrl: link, webUrl: link };
+    if (!exec || (!isNative() && !APP_VS)) return [{ title: isNative() ? '웹에서 하기' : '나도 도전하기', link: web }];
+    const app = { ...web, androidExecutionParams: exec, iosExecutionParams: exec };
     return isNative()
-      ? [{ title: '앱 받기', link: { mobileWebUrl: SITE + 'get/', webUrl: SITE + 'get/' } }, { title: '웹에서 하기', link: { mobileWebUrl: link, webUrl: link } }]
-      : [{ title: '나도 도전하기', link: { mobileWebUrl: link, webUrl: link } }];
+      ? [{ title: '앱으로 도전', link: app }, { title: '웹으로 도전', link: web }]
+      : [{ title: '나도 도전하기', link: web }, { title: '앱으로 도전', link: app }];
   };
 
   function load() {
@@ -65,7 +71,7 @@ const KakaoShare = (() => {
 
   // 점수 문구 카드
   // url을 넘기면 "나도 도전하기"·"웹에서 하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
-  function sendText({ title, desc, url }) {
+  function sendText({ title, desc, url, exec }) {
     if (!ready()) return false;
     const link = url || SITE;
     try {
@@ -75,7 +81,7 @@ const KakaoShare = (() => {
           title, description: desc, imageUrl: OG, imageWidth: 1200, imageHeight: 630,
           link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: btns(url),
+        buttons: btns(url, exec),
       });
       return true;
     } catch (e) { return false; }
@@ -83,7 +89,7 @@ const KakaoShare = (() => {
 
   // 자랑 이미지 카드 (이미지를 아직 못 올렸으면 false → 예전 방식)
   // url을 넘기면 "나도 도전하기"·"웹에서 하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
-  function sendImage({ title, desc, url }) {
+  function sendImage({ title, desc, url, exec }) {
     if (!ready() || !imgUrl) return false;
     const link = url || SITE;
     try {
@@ -93,7 +99,7 @@ const KakaoShare = (() => {
           title, description: desc, imageUrl: imgUrl, imageWidth: 1080, imageHeight: 1350,
           link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: btns(url),
+        buttons: btns(url, exec),
       });
       return true;
     } catch (e) { return false; }
