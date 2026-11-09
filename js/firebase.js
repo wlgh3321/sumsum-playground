@@ -28,10 +28,10 @@
       const snap = await scoresOf(mode).orderBy('score', dir(mode)).limit(n).get();
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     },
-    async submit(mode, name, score) {
-      const ref = await scoresOf(mode).add({
-        name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 1,
-      });
+    async submit(mode, name, score, country) {
+      const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 1 };
+      if (country) doc.country = country;
+      const ref = await scoresOf(mode).add(doc);
       return ref.id;
     },
   };
