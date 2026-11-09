@@ -36,20 +36,20 @@
       const snap = await playersOf(mode).orderBy('score', dir(mode)).limit(n).get();
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     },
-    async save(mode, pid, name, score) {
-      await playersOf(mode).doc(pid).set({
-        name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 2,
-      });
+    async save(mode, pid, name, score, country) {
+      const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 2 };
+      if (country) doc.country = country;
+      await playersOf(mode).doc(pid).set(doc);
       return pid;
     },
     async top(mode, n = 10) {
       const snap = await scoresOf(mode).orderBy('score', dir(mode)).limit(n).get();
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     },
-    async submit(mode, name, score) {
-      const ref = await scoresOf(mode).add({
-        name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 1,
-      });
+    async submit(mode, name, score, country) {
+      const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 1 };
+      if (country) doc.country = country;
+      const ref = await scoresOf(mode).add(doc);
       return ref.id;
     },
   };

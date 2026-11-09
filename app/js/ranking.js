@@ -106,6 +106,27 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     ? `${Number(v).toFixed(1)}${t('secUnit')}`
     : `${v}${t('ptsUnit')}`);
 
+  /* ---------- 국기 (닉네임 앞) ----------
+     사람이 직접 입력하는 게 아니라, 기기 언어 설정으로 나라를 자동으로 알아내서 붙여요.
+     "어느 나라가 수학을 잘 풀까" 하는 재미 포인트 + 사람이 국기를 골라서 쓰는 악용을 막아요. */
+  function myCountry() {
+    try {
+      const loc = new Intl.Locale(navigator.language || navigator.userLanguage || 'en');
+      const max = loc.maximize ? loc.maximize() : loc;
+      const region = (max && max.region) || loc.region;
+      if (region && /^[A-Za-z]{2}$/.test(region)) return region.toUpperCase();
+    } catch (e) {}
+    return null;
+  }
+  function flagEmoji(cc) {
+    if (!cc || !/^[A-Za-z]{2}$/.test(cc)) return '';
+    return String.fromCodePoint(...[...cc.toUpperCase()].map(c => 127397 + c.charCodeAt(0)));
+  }
+  const nameWithFlag = r => {
+    const f = flagEmoji(r.country);
+    return f ? `${f} ${r.name}` : r.name;
+  };
+
   /* ---------- 목록 그리기 ---------- */
   function renderRows(list, mode, all, highlightId) {
     list.textContent = '';
@@ -122,7 +143,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = `rank-row r${i + 1}${r.id === highlightId || i === me ? ' me' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(i);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name; Glyph.fit(b, r.name);
+      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = nameWithFlag(r); Glyph.fit(b, r.name);
       if (i === 0) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
       li.append(a, b, c);
@@ -136,7 +157,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = 'rank-row me';
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(me);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = all[me].name; Glyph.fit(b, all[me].name);
+      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = nameWithFlag(all[me]); Glyph.fit(b, all[me].name);
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, all[me].score);
       li.append(a, b, c);
       list.append(dots, li);
@@ -200,7 +221,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     list.className = 'rank-list rank-preview';
     // n = 실제 등수. 10위 안이면 끼워 넣고, 밖이면 맨 끝에 진짜 등수로
     const all = rows.slice(0, SIZE).map((r, i) => ({ ...r, n: i + 1 }));
-    const me = { id: '__me', name: t('rankMe'), score: value, me: true, n: place };
+    const me = { id: '__me', name: t('rankMe'), score: value, me: true, n: place, country: myCountry() };
     if (place <= SIZE) {
       all.splice(place - 1, 0, me);
       all.forEach((r, i) => { r.n = i + 1; });
@@ -223,7 +244,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = `rank-row r${n}${r.me ? ' ghost' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(n - 1);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = r.name; Glyph.fit(b, r.name);
+      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = nameWithFlag(r); Glyph.fit(b, r.name);
       if (n === 1) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
       li.append(a, b, c);
@@ -291,7 +312,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
 
     const save = async name => {
       const b = await board();
-      await b.save(r.mode, pid(), name, r.value);
+      await b.save(r.mode, pid(), name, r.value, myCountry());
       setSavedName(name);
       if (window.track) window.track(`rank-${r.mode}`, '명예의 전당 갱신');
       const fresh = await top(r.mode, true);
