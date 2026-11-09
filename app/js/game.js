@@ -328,6 +328,7 @@ const Game = (() => {
       M: MODES[id],
       s: settings,
       seed: useSeed,
+      fair: !!forceSeed, // 도전장(완전히 같은 문제): 오답노트(기기별로 다름)를 안 섞어요
       sp: SPEED[settings.speed] || 1,
       score: 0,
       correct: 0,
@@ -548,7 +549,7 @@ const Game = (() => {
 
   function spawnFall() {
     const field = $('field');
-    const p = Problems.makeProblem(G.s, G.level, Store.weakList());
+    const p = Problems.makeProblem(G.s, G.level, (G.fair ? [] : Store.weakList()));
     const node = document.createElement('div');
     node.className = 'fall-card';
     node.dataset.op = p.op;
@@ -603,7 +604,7 @@ const Game = (() => {
 
   function minuteNext() {
     G.level = Problems.levelOf(G.correct, 10);
-    const p = Problems.makeProblem(G.s, G.level, Store.weakList());
+    const p = Problems.makeProblem(G.s, G.level, (G.fair ? [] : Store.weakList()));
     G.cur = p;
     G.wrongLogged = false;
     const choices = Problems.makeChoices(p, 12).sort((a, b) => a - b);
@@ -638,7 +639,7 @@ const Game = (() => {
 
   function raceNext() {
     G.level = Problems.levelOf(G.correct, 10);
-    G.cur = Problems.makeProblem(G.s, G.level, Store.weakList());
+    G.cur = Problems.makeProblem(G.s, G.level, (G.fair ? [] : Store.weakList()));
     $('prompt').textContent = Problems.text(G.cur);
   }
 
@@ -668,7 +669,7 @@ const Game = (() => {
     }
     G.balls = [];
     G.wrongLogged = false;
-    G.cur = Problems.makeProblem(G.s, G.level, Store.weakList());
+    G.cur = Problems.makeProblem(G.s, G.level, (G.fair ? [] : Store.weakList()));
     $('prompt').textContent = Problems.text(G.cur);
 
     const field = $('bfield');
@@ -717,7 +718,7 @@ const Game = (() => {
 
   function beatNext() {
     G.level = Problems.levelOf(G.correct, 10);
-    G.cur = Problems.makeProblem(G.s, G.level, Store.weakList());
+    G.cur = Problems.makeProblem(G.s, G.level, (G.fair ? [] : Store.weakList()));
     $('prompt').textContent = Problems.text(G.cur);
     $('choices').innerHTML = Problems.makeChoices(G.cur, 4)
       .map(v => `<button type="button" class="choice" data-v="${v}">${v}</button>`)
@@ -747,7 +748,7 @@ const Game = (() => {
 
   function tfNext() {
     G.level = Problems.levelOf(G.correct, 10);
-    G.cur = Problems.makeTF(G.s, G.level, Store.weakList());
+    G.cur = Problems.makeTF(G.s, G.level, (G.fair ? [] : Store.weakList()));
     $('prompt').textContent = Problems.equation(G.cur, G.cur.shown);
   }
 
