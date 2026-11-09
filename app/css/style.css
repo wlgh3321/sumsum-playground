@@ -858,7 +858,9 @@ input[type="range"] {
 
 /* 홈 화면: 친구의 도전장 배너 */
 .vs-banner {
-  margin-top: 16px;
+  /* 앱 홈: 위(헤더)·아래(게임 카드) 간격을 똑같이 12px로 맞춰요 */
+  margin: 2px 0 10px;
+  flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
