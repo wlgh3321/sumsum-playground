@@ -1590,5 +1590,5 @@ input[type="range"] {
 /* 그룹 경쟁전 버튼: 도전하기는 크게, 공유·홈은 작게 한 줄 */
 .room-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
 .room-actions .room-play { width: 100%; margin: 0; }
-.room-sub-actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+.room-sub-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .room-sub-actions .btn { width: 100%; min-width: 0; margin: 0; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 0.45em; }

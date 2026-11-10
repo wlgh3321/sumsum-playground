@@ -953,9 +953,9 @@ html.intro-on .intro {
 /* 버튼: 도전하기는 크게, 공유·홈은 작게 한 줄 */
 .room-actions { display: flex; flex-direction: column; gap: 8px; flex: none; }
 .room-actions .room-play { width: 100%; margin: 0; }
-.room-sub-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.room-sub-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .room-sub-actions .btn { width: 100%; min-width: 0; margin: 0; white-space: nowrap; }
-.room-sub-actions #roomHome { padding-left: 16px; padding-right: 16px; }
+.room-sub-actions .btn { padding-left: 6px; padding-right: 6px; }
 #room .room-owner { flex: none; margin-top: 0; }
 #room .room-owner-btn { padding: 4px; }
 /* 설정: 닉네임 버튼도 효과음·배경음악 버튼과 같은 폭 */
