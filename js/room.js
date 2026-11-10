@@ -194,6 +194,7 @@ const Room = (() => {
       rows = await R.players(id, tab, season(r));
       touch(id, { name: r.name, host: r.host });
       KakaoShare.prepare(); // 카톡 공유를 미리 불러 둬요 (안 하면 카톡 카드 대신 일반 공유로 나가요)
+      prepCard();
       render();
       renderMine();
     } catch (e) {
@@ -354,6 +355,20 @@ const Room = (() => {
     return new File([blob], 'sumsum-room.png', { type: 'image/png' });
   }
 
+  // 안드로이드 앱(카카오 SDK): 방 카드 그림(로고 들어간 것)을 미리 그려서 카카오에 올려 둬요
+  let cardFile = null, cardFor = '';
+  async function prepCard() {
+    const N = window.SumsumNative;
+    if (!room || (N && N.kakao) || !N || typeof KakaoShare === 'undefined' || !KakaoShare.on || !KakaoShare.on()) return;
+    const key = `${room.id}|${room.name}|${room.host}|${typeof LANG !== 'undefined' ? LANG : ''}`;
+    if (cardFor === key && cardFile) { KakaoShare.prepare(cardFile); return; }
+    try {
+      cardFile = await cardImage(room.name || t('roomKicker'), room.host ? t('roomInvBy', { name: room.host }) : t('roomCardSubAnon'));
+      cardFor = key;
+      KakaoShare.prepare(cardFile);
+    } catch (e) {}
+  }
+
   async function share() {
     if (!room) return;
     const url = roomUrl(room.id);
@@ -377,6 +392,8 @@ const Room = (() => {
         return;
       } catch (e) { /* 카톡이 없거나 실패하면 아래로 */ }
     }
+    // 안드로이드 앱(한국어): 로고 카드 그림이 올라가 있으면 그걸로
+    if (cardFile && KakaoShare.sendImage({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoinWeb')], forFile: cardFile, w: 1200, h: 630 })) return;
     // 안드로이드 앱·웹(한국어): 카카오 SDK 카드
     if (KakaoShare.sendText({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoinWeb')], btn: t('roomJoin') })) return;
     // 그 밖: 글과 링크를 한 덩어리로 (url을 따로 넘기면 카톡에서 사이에 빈 줄이 생겨요)

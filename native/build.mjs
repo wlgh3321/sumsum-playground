@@ -39,7 +39,7 @@ fs.writeFileSync(path.join(FONTS, 'fonts.css'), css);
 // Firebase SDK
 const LIB = path.join(OUT, 'lib');
 fs.mkdirSync(LIB, { recursive: true });
-for (const f of ['firebase-app-compat.js', 'firebase-firestore-compat.js']) {
+for (const f of ['firebase-app-compat.js', 'firebase-firestore-compat.js', 'firebase-auth-compat.js']) {
   fs.copyFileSync(path.join(NM, 'firebase', f), path.join(LIB, f));
 }
 fs.copyFileSync(path.join(import.meta.dirname, 'src', 'native.js'), path.join(OUT, 'js', 'native.js'));
@@ -53,6 +53,7 @@ rep(/<link href="https:\/\/fonts\.googleapis\.com[^>]*>/, '<link rel="stylesheet
 rep(/<link rel="stylesheet" href="https:\/\/cdn\.jsdelivr\.net\/npm\/galmuri[^>]*>\s*/, '');
 rep('https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js', 'lib/firebase-app-compat.js');
 rep('https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js', 'lib/firebase-firestore-compat.js');
+rep('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js', 'lib/firebase-auth-compat.js');
 rep(/<link rel="manifest"[^>]*>\s*/, '');
 // 서비스 워커·방문자 수 스크립트는 앱에서 빼요
 h = h.replace(/<!-- 오프라인에서도[\s\S]*?<\/script>\s*/, '');

@@ -91,17 +91,19 @@ const KakaoShare = (() => {
 
   // 자랑 이미지 카드 (이미지를 아직 못 올렸으면 false → 예전 방식)
   // url을 넘기면 "나도 도전하기"·"웹에서 하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
-  function sendImage({ title, desc, url, exec }) {
+  // forFile: 이 그림을 올려 둔 경우에만 보내요 (다른 그림이 올라가 있으면 false). w·h: 그림 크기
+  function sendImage({ title, desc, url, exec, labels, forFile, w = 1080, h = 1350 }) {
     if (!ready() || !imgUrl) return false;
+    if (forFile && imgFor !== forFile) return false;
     const link = url || SITE;
     try {
       window.Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
-          title, description: desc, imageUrl: imgUrl, imageWidth: 1080, imageHeight: 1350,
+          title, description: desc, imageUrl: imgUrl, imageWidth: w, imageHeight: h,
           link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: btns(url, exec),
+        buttons: btns(url, exec, labels),
       });
       return true;
     } catch (e) { return false; }
