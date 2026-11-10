@@ -182,6 +182,11 @@ const App = (() => {
     note.className = `result-note vs-note vs-note-${key === 'vsWin' ? 'win' : key === 'vsLose' ? 'lose' : 'tie'}`;
     note.textContent = t(key, { name, mine, theirs });
     note.hidden = false;
+    // 도전을 끝까지 했으면 도전장은 끝! 홈에 돌아가도 배너가 다시 안 떠요 (중간에 그만두면 남겨 둬요)
+    if (!(r.badge && r.badge.kind === 'quit')) {
+      challenge = null;
+      $('vsBanner').hidden = true;
+    }
   }
 
   // 결과 공유: 휴대폰은 공유 창(카톡·인스타 등)을 띄우고, 안 되면 문구와 링크를 복사해요.
