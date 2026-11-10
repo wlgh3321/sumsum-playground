@@ -367,9 +367,9 @@ const Game = (() => {
   function restartGame() {
     if (!G) return;
     $('pauseBox').hidden = true;
-    const id = G.id, s = G.s;
+    const id = G.id, s = G.s, seed = G.fair ? G.seed : undefined; // 도전장·경쟁전은 같은 문제로 다시
     G.over = true;
-    start(id, s);
+    start(id, s, seed);
   }
 
   // 다른 앱으로 가거나 화면이 꺼지면 저절로 일시정지해요.

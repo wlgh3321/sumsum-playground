@@ -35,6 +35,7 @@ const App = (() => {
   let pendingMode = null; // 설정 팝업에서 시작하려는 게임
   let toastTimer = 0;
   let challenge = null; // 친구가 카톡으로 보낸 도전장 { mode, score, name }
+  let roomRun = null; // 단톡 경쟁전으로 하는 판 { id, mode, seed }
 
   const vsBetter = (mode, a, b) => (mode === 'race' ? a < b : a > b); // 60문제 타임어택은 시간이 짧을수록 위
 
@@ -161,6 +162,7 @@ const App = (() => {
   function acceptChallenge() {
     if (!challenge) return;
     track(`vs-accept-${challenge.mode}`, '도전장 받기');
+    roomRun = null;
     if (challenge.seed) {
       closeSetup();
       const s = { ...RANKED, ops: [...RANKED.ops], ranked: true };
@@ -330,6 +332,7 @@ const App = (() => {
     renderModes();
     renderWeak();
     renderVsBanner();
+    Room.renderMine();
     Ranking.renderHome();
   }
 
@@ -369,13 +372,23 @@ const App = (() => {
     if (!pendingMode) return;
     const id = pendingMode;
     closeSetup();
+    roomRun = null;
     const s = snapshot(id);
     track(`play-${id}${s.ranked ? '-ranked' : ''}`, `게임 시작: ${modeName(id, s)}`);
     Game.start(id, s);
   }
 
+  // 단톡 경쟁전 도전: 랭킹전 조건 + 방의 씨앗(모두 똑같은 문제)
+  function playRoom(r) {
+    closeSetup();
+    roomRun = { id: r.id, mode: r.mode, seed: r.seed };
+    track(`room-play-${r.mode}`, '단톡 경쟁전 도전');
+    Game.start(r.mode, { ...RANKED, ops: [...RANKED.ops], ranked: true }, r.seed);
+  }
+
   // 결과 화면. Game이 한 판이 끝났을 때 호출해요.
   function showResult(r) {
+    if (roomRun && roomRun.mode === r.mode && roomRun.seed === r.seed) r.room = roomRun.id;
     lastMode = r.mode;
     lastResult = r;
     const noShare = r.badge.kind === 'quit' || !(r.value > 0); // 그만한 판·0점은 공유 버튼을 숨겨요
@@ -427,6 +440,7 @@ const App = (() => {
     renderVsResult(r);
     show('result');
     Ranking.onResult(r);
+    Room.onResult(r);
   }
 
   /* ---------- 설정 변경 ---------- */
@@ -600,7 +614,10 @@ const App = (() => {
     $('saveDl').addEventListener('click', () => ShareCard.save(() => toast(t('shareImgSaved'))));
     $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
     $('saveBox').addEventListener('click', e => { if (e.target === $('saveBox')) $('saveBox').hidden = true; });
-    press($('againBtn'), () => Game.start(lastMode, snapshot(lastMode)));
+    press($('againBtn'), () => {
+      if (lastResult && lastResult.room && roomRun) playRoom(roomRun); // 경쟁전은 같은 방 문제로 다시
+      else Game.start(lastMode, snapshot(lastMode));
+    });
     press($('homeBtn'), () => showHome());
 
     document.addEventListener('keydown', e => {
@@ -630,11 +647,13 @@ const App = (() => {
     setLang(lang);
     Sound.setEnabled(cfg.sound);
     bind();
+    Room.bind();
     applyLang();
     show('home');
+    Room.readLink(); // 단톡 경쟁전 링크(?room=)로 들어왔으면 그 방을 열어요
   }
 
-  return { show, showHome, showResult, init };
+  return { show, showHome, showResult, init, toast, playRoom };
 })();
 
 App.init();

@@ -15,9 +15,9 @@ const KakaoShare = (() => {
   // ★ 앱 업데이트(카톡 도전장으로 앱 열기)가 스토어에 나온 뒤 true 로 바꿔요.
   //   그 전에 켜면 친구의 옛날 앱이 열리기만 하고 도전장은 안 떠요.
   const APP_VS = false;
-  const btns = (link, exec) => {
+  const btns = (link, exec, label) => {
     const web = { mobileWebUrl: link, webUrl: link };
-    const out = [{ title: '도전 받기', link: web }];
+    const out = [{ title: label || '도전 받기', link: web }];
     if (exec && APP_VS) out.push({ title: '앱으로 도전', link: { ...web, androidExecutionParams: exec, iosExecutionParams: exec } });
     return out;
   };
@@ -65,7 +65,7 @@ const KakaoShare = (() => {
 
   // 점수 문구 카드
   // url을 넘기면 "도전 받기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
-  function sendText({ title, desc, url, exec }) {
+  function sendText({ title, desc, url, exec, btn }) {
     if (!ready()) return false;
     const link = url || SITE;
     try {
@@ -75,7 +75,7 @@ const KakaoShare = (() => {
           title, description: desc, imageUrl: OG, imageWidth: 1200, imageHeight: 630,
           link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: btns(link, exec),
+        buttons: btns(link, exec, btn),
       });
       return true;
     } catch (e) { return false; }

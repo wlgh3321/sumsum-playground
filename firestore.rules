@@ -33,6 +33,66 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // 단톡 경쟁전: 링크를 받은 사람끼리만 겨루는 방. 만든 뒤 7일 동안 열려 있어요.
+    // - 방: 게임 종류 + 문제 씨앗(모두 똑같은 문제) + 만든 사람 닉네임
+    // - names/{닉네임}: 이 방에서 그 닉네임을 쓰는 기기 (먼저 쓴 사람 것, 바꿀 수 없음 → 같은 방 닉네임 중복 막기)
+    // - players/{기기}: 기기마다 한 줄, 더 좋은 기록으로만 고칠 수 있어요
+    match /rooms/{rid} {
+      allow read: if true;
+      allow create: if rid.matches('^[A-Za-z0-9]{6,32}$')
+        && request.resource.data.keys().hasOnly(['mode', 'seed', 'host', 'at', 'v'])
+        && request.resource.data.mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf']
+        && request.resource.data.seed is int
+        && request.resource.data.seed > 0
+        && request.resource.data.seed < 2147483648
+        && request.resource.data.host is string
+        && request.resource.data.host.size() <= 8
+        && (request.resource.data.host.size() == 0 || request.resource.data.host.matches('^[가-힣A-Za-z0-9_ ]+$'))
+        && request.resource.data.at == request.time
+        && request.resource.data.v == 1;
+      allow update, delete: if false;
+
+      function room() { return get(/databases/$(database)/documents/rooms/$(rid)).data; }
+      function isOpen() { return request.time < room().at + duration.value(7, 'd'); }
+
+      match /names/{key} {
+        allow read: if true;
+        allow create: if isOpen()
+          && request.resource.data.keys().hasOnly(['pid'])
+          && request.resource.data.pid is string
+          && request.resource.data.pid.matches('^[A-Za-z0-9]{8,64}$');
+        allow update, delete: if false;
+      }
+
+      match /players/{pid} {
+        function ok(d) {
+          return d.keys().hasOnly(['name', 'score', 'at', 'v', 'country'])
+            && d.name is string
+            && d.name.size() >= 1
+            && d.name.size() <= 8
+            && d.name.matches('^[가-힣A-Za-z0-9_ ]+$')
+            && d.score is number
+            && d.at == request.time
+            && d.v == 1
+            && (!('country' in d) || (d.country is string && d.country.matches('^[A-Z]{2}$')))
+            && (
+              (room().mode == 'race' && d.score >= 20 && d.score <= 3600)
+              || (room().mode != 'race' && d.score is int && d.score > 0 && d.score <= 5000000 && d.score % 5 == 0)
+            )
+            // 닉네임 주인이 이 기기여야 해요
+            && getAfter(/databases/$(database)/documents/rooms/$(rid)/names/$(d.name.lower().replace(' ', ''))).data.pid == pid;
+        }
+        allow read: if true;
+        allow create: if pid.matches('^[A-Za-z0-9]{8,64}$') && isOpen() && ok(request.resource.data);
+        allow update: if isOpen() && ok(request.resource.data)
+          && request.resource.data.name == resource.data.name
+          && (room().mode == 'race'
+            ? request.resource.data.score < resource.data.score
+            : request.resource.data.score > resource.data.score);
+        allow delete: if false;
+      }
+    }
+
     // 앱 설정 (전면 광고 횟수 등): 누구나 읽기만, 고치기는 콘솔에서만
     match /config/{name} {
       allow read: if true;

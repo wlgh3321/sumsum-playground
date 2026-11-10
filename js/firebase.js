@@ -57,5 +57,52 @@
       return ref.id;
     },
   };
+
+  // 단톡 경쟁전 방 (rooms/{방}): 7일 동안 링크 받은 사람끼리만 순위를 겨뤄요
+  const rooms = db.collection('rooms');
+  const roomKey = name => String(name || '').toLowerCase().replace(/ /g, ''); // 보안 규칙의 닉네임 열쇠와 똑같이
+  const randId = n => {
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+    let s = '';
+    const r = crypto.getRandomValues(new Uint32Array(n));
+    for (let i = 0; i < n; i++) s += A[r[i] % A.length];
+    return s;
+  };
+  window.Rooms = {
+    WEEK: 7 * 24 * 3600 * 1000,
+    newId: randId,
+    async create(mode, seed, host) {
+      const id = randId(10);
+      await rooms.doc(id).set({ mode, seed, host: host || '', at: firebase.firestore.FieldValue.serverTimestamp(), v: 1 });
+      return id;
+    },
+    async get(id) {
+      const d = await rooms.doc(id).get();
+      if (!d.exists) return null;
+      const x = d.data();
+      const at = x.at && x.at.toMillis ? x.at.toMillis() : Date.now();
+      return { id, mode: x.mode, seed: x.seed, host: x.host || '', at, exp: at + this.WEEK };
+    },
+    async players(id, mode) {
+      const snap = await rooms.doc(id).collection('players').orderBy('score', dir(mode)).limit(200).get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    },
+    // 이 방에서 그 닉네임을 쓰는 기기 (없으면 null)
+    async nameOwner(id, name) {
+      const d = await rooms.doc(id).collection('names').doc(roomKey(name)).get();
+      return d.exists ? d.data().pid : null;
+    },
+    // 기록 남기기: 처음이면 닉네임도 같이 찜해요 (한 번에 저장)
+    async save(id, pid, name, score, country, first) {
+      const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 1 };
+      if (country) doc.country = country;
+      const ref = rooms.doc(id);
+      const b = db.batch();
+      if (first) b.set(ref.collection('names').doc(roomKey(name)), { pid });
+      b.set(ref.collection('players').doc(pid), doc);
+      await b.commit();
+    },
+  };
+
   window.dispatchEvent(new Event('board-ready'));
 })();

@@ -1433,3 +1433,146 @@ input[type="range"] {
     flex: 1 1 100%;
   }
 }
+
+/* ---------- 단톡 경쟁전 ---------- */
+/* 홈: 방 만들기 카드 (명예의 전당 위) */
+.room-entry {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.room-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.room-entry-head .section-title {
+  margin: 0;
+}
+
+.room-entry-desc {
+  margin: 4px 0 0;
+  font-size: 14px;
+  opacity: 0.8;
+  word-break: keep-all;
+}
+
+.room-entry-head .btn {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* 홈: 참여 중인 경쟁전 */
+.room-mine {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.room-mine-btn {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius, 8px);
+  background: var(--paper);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.room-mine-game {
+  font-family: var(--font-title);
+  font-size: 17px;
+}
+
+.room-mine-left {
+  flex: none;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* 방 화면 */
+.room-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  text-align: center;
+}
+
+.room-kicker {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.room-title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 28px;
+  word-break: keep-all;
+}
+
+.room-meta {
+  margin: 0;
+  white-space: pre-line;
+  line-height: 1.5;
+  font-size: 14px;
+  opacity: 0.85;
+  word-break: keep-all;
+}
+
+.room-winner {
+  margin: 4px 0 0;
+  font-family: var(--font-title);
+  font-size: 20px;
+}
+
+.room-list {
+  margin: 6px 0 0;
+  text-align: left;
+}
+
+.room-rule {
+  margin: 0;
+  white-space: pre-line;
+  font-size: 13px;
+  opacity: 0.75;
+  word-break: keep-all;
+}
+
+/* 방 만들기 팝업: 게임 고르기 */
+.room-pick {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.room-pick .chip {
+  min-height: 44px;
+  padding-left: 6px;
+  padding-right: 6px;
+  white-space: nowrap;
+  font-size: clamp(13px, 3.9vw, 16px);
+}
+
+#roomNewBox .play-note {
+  word-break: keep-all;
+}
+
+/* 결과 화면: 경쟁전 기록 */
+.room-box .btn {
+  min-width: 160px;
+}
