@@ -53,5 +53,51 @@
       return ref.id;
     },
   };
+  // 그룹 경쟁전 방 (rooms/{방}): 3일 동안 링크 받은 사람끼리만 순위를 겨뤄요. 방 하나에 게임 6개.
+  const rooms = db.collection('rooms');
+  const roomKey = name => String(name || '').toLowerCase().replace(/ /g, ''); // 보안 규칙의 닉네임 열쇠와 똑같이
+  const randId = n => {
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+    let s = '';
+    const r = crypto.getRandomValues(new Uint32Array(n));
+    for (let i = 0; i < n; i++) s += A[r[i] % A.length];
+    return s;
+  };
+  const boardOf = (id, mode) => rooms.doc(id).collection('boards').doc(mode).collection('players');
+  window.Rooms = {
+    LIFE: 3 * 24 * 3600 * 1000, // 방이 열려 있는 시간 (3일)
+    async create(seed, host) {
+      const id = randId(10);
+      await rooms.doc(id).set({ seed, host: host || '', at: firebase.firestore.FieldValue.serverTimestamp(), v: 2 });
+      return id;
+    },
+    async get(id) {
+      const d = await rooms.doc(id).get();
+      if (!d.exists) return null;
+      const x = d.data();
+      if (x.v !== 2) return null; // 예전 시험용 방
+      const at = x.at && x.at.toMillis ? x.at.toMillis() : Date.now();
+      return { id, seed: x.seed, host: x.host || '', at, exp: at + this.LIFE };
+    },
+    async players(id, mode) {
+      const snap = await boardOf(id, mode).orderBy('score', dir(mode)).limit(200).get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    },
+    // 이 방에서 그 닉네임을 쓰는 기기 (없으면 null)
+    async nameOwner(id, name) {
+      const d = await rooms.doc(id).collection('names').doc(roomKey(name)).get();
+      return d.exists ? d.data().pid : null;
+    },
+    // 기록 남기기: 처음이면 닉네임도 같이 찜해요 (한 번에 저장)
+    async save(id, mode, pid, name, score, country, first) {
+      const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 2 };
+      if (country) doc.country = country;
+      const b = db.batch();
+      if (first) b.set(rooms.doc(id).collection('names').doc(roomKey(name)), { pid });
+      b.set(boardOf(id, mode).doc(pid), doc);
+      await b.commit();
+    },
+  };
+
   window.dispatchEvent(new Event('board-ready'));
 })();

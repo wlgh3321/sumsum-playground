@@ -37,6 +37,7 @@ const App = (() => {
   let pendingMode = null; // 설정 팝업에서 시작하려는 게임
   let toastTimer = 0;
   let challenge = null; // 친구가 카톡으로 보낸 도전장 { mode, score, name }
+  let roomRun = null; // 그룹 경쟁전으로 하는 판 { id, mode, seed }
 
   const vsBetter = (mode, a, b) => (mode === 'race' ? a < b : a > b); // 60문제 타임어택은 시간이 짧을수록 위
 
@@ -155,6 +156,7 @@ const App = (() => {
   // 카톡 "앱으로 도전" 버튼으로 앱이 열렸을 때 (native.js가 불러요): 도전장을 받고 홈에 배너를 띄워요.
   // 게임 중이면 판을 끊지 않고 배너만 준비해 두고, 끝나고 홈으로 오면 보여요.
   function openChallenge(query) {
+    if (Room.openQuery(query)) return true; // 그룹 경쟁전 링크(room=)
     const c = parseChallenge(query);
     if (!c) return false;
     challenge = c;
@@ -187,6 +189,7 @@ const App = (() => {
   function acceptChallenge() {
     if (!challenge) return;
     track(`vs-accept-${challenge.mode}`, '도전장 받기');
+    roomRun = null;
     if (challenge.seed) {
       closeSetup();
       const s = { ...RANKED, ops: [...RANKED.ops], ranked: true };
@@ -335,7 +338,7 @@ const App = (() => {
     homeTab = name;
     document.querySelectorAll('.home-view').forEach(v => { v.hidden = v.dataset.view !== name; });
     document.querySelectorAll('#tabbar [data-tab]').forEach(b => setPressed(b, b.dataset.tab === name));
-    if (name === 'ranks') Ranking.renderHome();
+    if (name === 'ranks') { Ranking.renderHome(); Room.renderMine(); }
     if (name === 'records') renderRecords();
     if (name === 'more') refreshStore();
     if (name === 'games') playPreview();
@@ -500,6 +503,7 @@ const App = (() => {
     renderModes();
     if (homeTab === 'records') renderRecords();
     renderVsBanner();
+    Room.renderMine();
     Ranking.renderHome();
   }
 
@@ -553,6 +557,7 @@ const App = (() => {
     if (!pendingMode) return;
     const id = pendingMode;
     closeSetup();
+    roomRun = null;
     const s = snapshot(id);
     track(`play-${id}${s.ranked ? '-ranked' : ''}`, `게임 시작: ${modeName(id, s)}`);
     const usedAd = adBonus;
@@ -561,8 +566,17 @@ const App = (() => {
     if (usedAd) Bonus.markRewarded(); // 시작 전에 광고를 본 판은 끝나고 전면 광고를 쉬어요
   }
 
+  // 그룹 경쟁전 도전: 랭킹전 조건 + 방의 씨앗(모두 똑같은 문제), 보너스 없이
+  function playRoom(r) {
+    closeSetup();
+    roomRun = { id: r.id, mode: r.mode, seed: r.seed };
+    track(`room-play-${r.mode}`, '그룹 경쟁전 도전');
+    Game.start(r.mode, { ...RANKED, ops: [...RANKED.ops], ranked: true }, 0, r.seed);
+  }
+
   // 결과 화면. Game이 한 판이 끝났을 때 호출해요.
   function showResult(r) {
+    if (roomRun && roomRun.mode === r.mode && roomRun.seed === r.seed) r.room = roomRun.id;
     lastMode = r.mode;
     lastResult = r;
     const noShare = r.badge.kind === 'quit' || !(r.value > 0); // 그만한 판·0점은 공유 버튼을 숨겨요
@@ -614,6 +628,7 @@ const App = (() => {
     renderVsResult(r);
     show('result');
     Ranking.onResult(r);
+    Room.onResult(r);
     celebrate(Stats.record(r));
     if (r.badge.kind !== 'quit') Bonus.gameDone();
   }
@@ -834,7 +849,10 @@ const App = (() => {
       try { await Bonus.maybeInterstitial(); } finally { leaving = false; }
       go();
     };
-    press($('againBtn'), () => leaveResult(() => startWithBonus(lastMode, snapshot(lastMode), false))); // 다시 하기: 배지·출석 보너스만 (광고 보상은 다시 안 붙어요)
+    press($('againBtn'), () => leaveResult(() => {
+      if (lastResult && lastResult.room && roomRun) playRoom(roomRun); // 그룹 경쟁전은 같은 방 문제로 다시
+      else startWithBonus(lastMode, snapshot(lastMode), false);
+    })); // 다시 하기: 배지·출석 보너스만 (광고 보상은 다시 안 붙어요)
     press($('homeBtn'), () => leaveResult(() => showHome()));
 
     document.addEventListener('keydown', e => {
@@ -865,8 +883,10 @@ const App = (() => {
     Sound.setEnabled(cfg.sound);
     Demo.mount($('pvScreen'));
     bind();
+    Room.bind();
     applyLang();
     show('home');
+    Room.readLink(); // 그룹 경쟁전 링크(?room=)로 들어왔으면 그 방을 열어요 (웹 앱)
     celebrate(Stats.visit());
   }
 
@@ -913,7 +933,7 @@ const App = (() => {
     refreshStore();
   }
 
-  return { show, showHome, showResult, init, refreshStore, buyNoAds, restoreNoAds, openChallenge };
+  return { show, showHome, showResult, init, refreshStore, buyNoAds, restoreNoAds, openChallenge, toast, playRoom };
 })();
 
 App.init();

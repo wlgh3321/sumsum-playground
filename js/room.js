@@ -162,6 +162,7 @@ const Room = (() => {
       rows = await R.players(id, tab);
       remember(id, { exp: r.exp, host: r.host });
       $('roomShare').hidden = false;
+      if ($('roomApp')) $('roomApp').href = `/get/?room=${id}`; // 아이폰은 앱스토어로, 그 밖은 이 방으로 돌아와요
       KakaoShare.prepare(); // 카톡 공유를 미리 불러 둬요 (안 하면 카톡 카드 대신 일반 공유로 나가요)
       render();
       renderMine();
@@ -186,7 +187,7 @@ const Room = (() => {
   async function create() {
     if (busy) return;
     busy = true;
-    const btn = $('roomNew');
+    const btn = $('roomNew') || {};
     btn.disabled = true;
     try {
       const R = await api();
@@ -369,7 +370,8 @@ const Room = (() => {
 
   /* ---------- 연결 ---------- */
   function bind() {
-    $('roomNew').addEventListener('click', create);
+    // 방 만들기는 앱에서만 (웹 홈에는 버튼이 없어요). 웹은 받은 링크로 참가만 해요.
+    if ($('roomNew')) $('roomNew').addEventListener('click', create);
     $('roomPlay').addEventListener('click', () => {
       if (!room || ended()) return;
       remember(room.id, { tab });
@@ -377,7 +379,7 @@ const Room = (() => {
     });
     $('roomShare').addEventListener('click', share);
     $('roomHome').addEventListener('click', () => App.showHome());
-    $('roomMine').addEventListener('click', e => {
+    if ($('roomMine')) $('roomMine').addEventListener('click', e => {
       const b = e.target.closest('[data-room-id]');
       if (b) open(b.dataset.roomId);
     });

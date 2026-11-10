@@ -758,3 +758,149 @@ html.intro-on .intro {
 .set-label.set-sub { font-size: 13px; color: var(--text-dim); }
 /* 도트 국기 (닉네임 앞) — img/flags.png 16×12 도트를 1.5배로 */
 .rank-name .flag { display: inline-block; width: 24px; height: 18px; margin-right: 6px; vertical-align: -2px; background: url(../img/flags.png) no-repeat; background-size: 384px 306px; image-rendering: pixelated; filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.6)); }
+
+
+/* ---------- 그룹 경쟁전 ---------- */
+/* 홈: 방 만들기 카드 (명예의 전당 위) */
+.room-entry {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.room-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.room-entry-head .section-title {
+  margin: 0;
+}
+
+.room-entry-desc {
+  margin: 4px 0 0;
+  white-space: pre-line;
+  font-size: 14px;
+  opacity: 0.8;
+  word-break: keep-all;
+}
+
+.room-entry-head .btn {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* 홈: 참여 중인 경쟁전 */
+.room-mine {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.room-mine-btn {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius, 8px);
+  background: var(--paper);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.room-mine-game {
+  font-family: var(--font-title);
+  font-size: 17px;
+}
+
+.room-mine-left {
+  flex: none;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* 방 화면 */
+.room-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  text-align: center;
+}
+
+.room-kicker {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.room-title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 28px;
+  word-break: keep-all;
+}
+
+.room-meta {
+  margin: 0;
+  white-space: pre-line;
+  line-height: 1.5;
+  font-size: 14px;
+  opacity: 0.85;
+  word-break: keep-all;
+}
+
+.room-tabs {
+  margin-top: 4px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.room-tabs .rank-tab {
+  min-height: 44px;
+  padding-left: 6px;
+  padding-right: 6px;
+  white-space: nowrap;
+  font-size: clamp(13px, 3.9vw, 16px);
+}
+
+.room-count {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 18px;
+}
+
+.room-list {
+  margin: 6px 0 0;
+  text-align: left;
+}
+
+.room-rule {
+  margin: 0;
+  white-space: pre-line;
+  font-size: 13px;
+  opacity: 0.75;
+  word-break: keep-all;
+}
+
+/* 결과 화면: 경쟁전 기록 */
+.room-box .btn {
+  min-width: 160px;
+}
+
+/* 앱: 그룹 경쟁전 칸은 랭킹 탭 맨 위, 명예의 전당과 간격 */
+#viewRanks .room-entry { margin: 0 0 22px; }
+/* 앱: 방 화면의 게임 버튼 (2칸씩 세 줄 — 카드 안이 좁아서 긴 이름도 한 줄에 들어가게) */
+.room-tabs .rank-tab { --bev: 3px; justify-content: center; text-align: center; }

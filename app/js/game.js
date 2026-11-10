@@ -475,9 +475,11 @@ const Game = (() => {
     if (!G) return;
     $('pauseBox').hidden = true;
     const id = G.id, s = G.s;
-    const bonus = Bonus.kindOf(id) ? Bonus.units() : 0; // 처음부터 다시: 광고 보상은 빼고 다시 계산
+    // 도전장·그룹 경쟁전은 보너스 없이 같은 문제로 다시
+    const seed = G.fair ? G.seed : undefined;
+    const bonus = seed ? 0 : (Bonus.kindOf(id) ? Bonus.units() : 0); // 처음부터 다시: 광고 보상은 빼고 다시 계산
     G.over = true;
-    start(id, s, bonus);
+    start(id, s, bonus, seed);
   }
 
   // 다른 앱으로 가거나 화면이 꺼지면 저절로 일시정지해요.

@@ -1573,3 +1573,13 @@ input[type="range"] {
 .room-box .btn {
   min-width: 160px;
 }
+
+/* 웹 방 화면: 앱 받기 안내 */
+.room-app {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--mint);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  word-break: keep-all;
+}

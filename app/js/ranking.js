@@ -425,5 +425,5 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     return n <= SIZE ? n : null;
   }
 
-  return { renderHome, onResult, placeFor, estimateFor, rankOf, myRank, CROWN, top1, setTab: m => { tab = m; } };
+  return { renderHome, onResult, placeFor, estimateFor, rankOf, myRank, CROWN, top1, setTab: m => { tab = m; }, cleanName, setName, myCountry, getSavedName, setSavedName, ordinal, fmt, pid };
 })();

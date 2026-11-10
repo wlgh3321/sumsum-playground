@@ -24,14 +24,16 @@ const KakaoShare = (() => {
   // 웹사이트에서 보낸 카드는 '도전 받기'(웹)가 먼저예요.
   // ★ 웹(PWA)에서 보낼 때 '앱으로 도전' 버튼: 앱 업데이트가 스토어에 나온 뒤 true 로 (js/kakao.js 와 같이)
   const APP_VS = false;
-  const btns = (url, exec) => {
+  // labels = [앱 버튼, 웹 버튼] 글자를 바꿀 때 (그룹 경쟁전: '앱으로 참가', '웹으로 참가')
+  const btns = (url, exec, labels) => {
     const link = url || SITE;
     const web = { mobileWebUrl: link, webUrl: link };
-    if (!exec || (!isNative() && !APP_VS)) return [{ title: isNative() ? '웹에서 하기' : '도전 받기', link: web }];
+    const L = labels || ['앱으로 도전', '웹으로 도전'];
+    if (!exec || (!isNative() && !APP_VS)) return [{ title: isNative() ? '웹에서 하기' : (labels ? L[1] : '도전 받기'), link: web }];
     const app = { ...web, androidExecutionParams: exec, iosExecutionParams: exec };
     return isNative()
-      ? [{ title: '앱으로 도전', link: app }, { title: '웹으로 도전', link: web }]
-      : [{ title: '도전 받기', link: web }, { title: '앱으로 도전', link: app }];
+      ? [{ title: L[0], link: app }, { title: L[1], link: web }]
+      : [{ title: labels ? L[1] : '도전 받기', link: web }, { title: L[0], link: app }];
   };
 
   function load() {
@@ -71,7 +73,7 @@ const KakaoShare = (() => {
 
   // 점수 문구 카드
   // url을 넘기면 "나도 도전하기"·"웹에서 하기"가 그 주소로 가요 (도전장 링크: 내 점수를 담은 주소)
-  function sendText({ title, desc, url, exec }) {
+  function sendText({ title, desc, url, exec, labels }) {
     if (!ready()) return false;
     const link = url || SITE;
     try {
@@ -81,7 +83,7 @@ const KakaoShare = (() => {
           title, description: desc, imageUrl: OG, imageWidth: 1200, imageHeight: 630,
           link: { mobileWebUrl: link, webUrl: link },
         },
-        buttons: btns(url, exec),
+        buttons: btns(url, exec, labels),
       });
       return true;
     } catch (e) { return false; }
