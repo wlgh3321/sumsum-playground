@@ -229,6 +229,11 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     if (!$('result').classList.contains('active')) return;
     box.hidden = false;
 
+    // 같은 닉네임은 최고 기록 한 줄만 남으니까, 내 예전 기록(이번 판보다 나쁜 것)은 빼고 순위를 계산해요.
+    const key = window.Board ? Board.nameKey : (n => String(n || '').toLowerCase().replace(/\s+/g, ''));
+    const myKey = key(getSavedName());
+    if (myKey) rows = rows.filter(x => !(key(x.name) === myKey && better(r.mode, r.value, x.score)));
+
     // 지금 몇 위쯤인지 먼저 보여 줘요 (연습 판도 참고로 보여 줘요).
     const place = placeOf(r.mode, r.value, rows);
     const inTop = place <= SIZE;
@@ -285,6 +290,17 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       err.hidden = true;
       try {
         const b = await board();
+        // 이 닉네임에 이미 같거나 더 좋은 기록이 있으면 새로 올리지 않아요 (닉네임마다 최고 기록 하나)
+        const now = await top(r.mode, true);
+        const mine = now.findIndex(x => key(x.name) === key(c.name));
+        if (mine >= 0 && !better(r.mode, r.value, now[mine].score)) {
+          setSavedName(c.name);
+          busy = false;
+          btn.disabled = false;
+          err.textContent = t('rankKept', { n: mine + 1 });
+          err.hidden = false;
+          return;
+        }
         const id = await b.submit(r.mode, c.name, r.value, myCountry());
         setSavedName(c.name);
         if (window.track) window.track(`rank-${r.mode}`, '명예의 전당 등록');

@@ -23,10 +23,32 @@
   const dir = mode => (mode === 'race' ? 'asc' : 'desc');
   const scoresOf = mode => db.collection('boards').doc(mode).collection('scores');
 
+  // 같은 닉네임이면 한 사람으로 봐요 (대소문자·띄어쓰기 무시)
+  const nameKey = name => String(name || '').toLowerCase().replace(/\s+/g, '');
+
   window.Board = {
+    nameKey,
+    // 닉네임마다 가장 좋은 기록 한 줄만 (앱 명예의 전당처럼)
+    // 위에서부터 30개씩 읽으면서, 서로 다른 닉네임 n명이 모일 때까지 더 읽어요.
     async top(mode, n = 10) {
-      const snap = await scoresOf(mode).orderBy('score', dir(mode)).limit(n).get();
-      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const PAGE = 30;
+      const seen = new Set();
+      const rows = [];
+      let q = scoresOf(mode).orderBy('score', dir(mode)).limit(PAGE);
+      for (let page = 0; page < 6 && rows.length < n; page++) {
+        const snap = await q.get();
+        for (const d of snap.docs) {
+          const r = { id: d.id, ...d.data() };
+          const k = nameKey(r.name);
+          if (seen.has(k)) continue; // 같은 사람의 더 낮은 기록은 숨겨요
+          seen.add(k);
+          rows.push(r);
+          if (rows.length >= n) break;
+        }
+        if (snap.docs.length < PAGE) break;
+        q = scoresOf(mode).orderBy('score', dir(mode)).startAfter(snap.docs[snap.docs.length - 1]).limit(PAGE);
+      }
+      return rows;
     },
     async submit(mode, name, score, country) {
       const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 1 };
