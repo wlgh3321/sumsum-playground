@@ -9,7 +9,7 @@ service cloud.firestore {
       allow read: if mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf'];
 
       allow create: if mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf']
-        && request.resource.data.keys().hasOnly(['name', 'score', 'at', 'v'])
+        && request.resource.data.keys().hasOnly(['name', 'score', 'at', 'v', 'country'])
         && request.resource.data.name is string
         && request.resource.data.name.size() >= 1
         && request.resource.data.name.size() <= 8
@@ -17,6 +17,8 @@ service cloud.firestore {
         && request.resource.data.score is number
         && request.resource.data.at == request.time
         && request.resource.data.v == 1
+        && (!('country' in request.resource.data)
+          || (request.resource.data.country is string && request.resource.data.country.matches('^[A-Z]{2}$')))
         && (
           (mode == 'race'
             && request.resource.data.score >= 20
@@ -41,7 +43,7 @@ service cloud.firestore {
     match /boards/{mode}/players/{pid} {
       function okMode() { return mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf']; }
       function ok(d) {
-        return d.keys().hasOnly(['name', 'score', 'at', 'v'])
+        return d.keys().hasOnly(['name', 'score', 'at', 'v', 'country'])
           && d.name is string
           && d.name.size() >= 1
           && d.name.size() <= 8
@@ -49,6 +51,7 @@ service cloud.firestore {
           && d.score is number
           && d.at == request.time
           && d.v == 2
+          && (!('country' in d) || (d.country is string && d.country.matches('^[A-Z]{2}$')))
           && (
             (mode == 'race' && d.score >= 20 && d.score <= 3600)
             || (mode != 'race' && d.score is int && d.score > 0 && d.score <= 5000000 && d.score % 5 == 0)
