@@ -3,6 +3,7 @@ CATS = {
     'games': 'Game guides',
     'learn': 'Math practice tips',
     'app': 'The app',
+    'find': 'Find a game',
     'story': 'Behind the game',
     'help': 'Help',
 }
@@ -865,5 +866,253 @@ PAGES += [
 <p>After a week your count will be clearly higher than on day one, and because scores are saved you can see it in numbers. For keeping it going, see <a href="/en/guide/five-minute-habit/">The five-minute habit</a>.</p>
 
 <div class="tip"><p><b>Estimate first</b> — the most useful habit is thinking "roughly how much" before the exact answer. You will also notice straight away when you mistype a digit on a calculator.</p></div>
+'''},
+]
+
+PAGES += [
+{
+'slug': 'arithmetic-games', 'cat': 'find', 'mins': 4,
+'title': 'Arithmetic games — 6 free games you can play right now',
+'desc': 'Six free arithmetic games with no install and no sign-up. Practice addition, subtraction, multiplication and division with falling problems, balloons, true or false and time attacks, and find the one that suits you.',
+'body': '''
+<p class="lead">If you are looking for arithmetic games, you can play six of them on SumSum Playground right now. They turn addition, subtraction, multiplication and division into arcade games, free, with no sign-up and nothing to install. They run on phones, tablets and computers.</p>
+
+<h2>The six games at a glance</h2>
+<div class="table-wrap"><table>
+  <tr><th>Falling Problems</th><td>Type the answer before a problem reaches the floor. The level goes up every 20 correct answers.</td></tr>
+  <tr><th>Time Challenge</th><td>Pick the right answer from 12 choices before time runs out. A wrong pick costs 5 points.</td></tr>
+  <tr><th>60-Question Race</th><td>Timed until you get 60 right. Lower is better.</td></tr>
+  <tr><th>Balloon Pop</th><td>Pop the balloon carrying the right answer as they float up.</td></tr>
+  <tr><th>Beat the Clock</th><td>A right answer adds 2 seconds, a wrong one takes 3. See how long you last.</td></tr>
+  <tr><th>True or False</th><td>Tap O if the equation is right, X if it is wrong. The fastest of the six.</td></tr>
+</table></div>
+
+<h2>Which one should you play?</h2>
+<h3>You just want to try it</h3>
+<p>Start with <a href="/en/guide/true-or-false/">True or False</a>. Two buttons, nothing to learn.</p>
+<h3>You want arcade tension</h3>
+<p><a href="/en/guide/falling-problems/">Falling Problems</a> puts several problems on screen at once, so you have to decide which to clear first. Higher levels are worth more points.</p>
+<h3>You want a number for your speed</h3>
+<p>The <a href="/en/guide/sixty-question-race/">60-Question Race</a> records a time, which makes it the easiest to compare with last week.</p>
+<h3>You want better accuracy</h3>
+<p><a href="/en/guide/beat-the-clock/">Beat the Clock</a> punishes mistakes heavily, which is good for breaking the habit of rushing.</p>
+<h3>You are playing with a young child</h3>
+<p><a href="/en/guide/balloon-pop/">Balloon Pop</a> needs no typing, only tapping.</p>
+
+<h2>Choose the operations and difficulty</h2>
+<p>In Practice you can switch each of the four operations on or off. Pick Easy, Normal or Hard, or set the number range yourself.</p>
+<ul>
+  <li><b>Easy</b>: addition and subtraction up to 10, multiplication and division up to the 5 times table</li>
+  <li><b>Normal</b>: up to 20, and up to the 9 times table</li>
+  <li><b>Hard</b>: up to 50, and up to the 12 times table</li>
+</ul>
+<p>There are five speeds from Very slow to Very fast. Division problems always divide evenly.</p>
+
+<h2>Compete with others</h2>
+<p>Ranked mode gives everyone identical conditions. A good score puts your nickname in the <b>Hall of Fame</b>. To compete only with people you know, create a room with the app's <a href="/en/guide/group-match/">group challenge</a>.</p>
+
+<h2>Missed problems come back</h2>
+<p>Problems you get wrong are remembered and appear more often in later games until you get them right. Just playing gives your weak spots extra repetition.</p>
+
+<div class="tip"><p><b>There is an app too</b> — get it for iPhone and iPad on the <a href="https://apps.apple.com/app/id6826497198">App Store</a>. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p></div>
+'''},
+{
+'slug': 'times-table-game', 'cat': 'find', 'mins': 4,
+'title': 'Times tables game — learn them by playing, not chanting',
+'desc': 'How to practice the times tables as a game. Set SumSum Playground to multiplication only, step up from the 5s to the 9s to the 12s, and pick from four games that suit multiplication facts.',
+'body': '''
+<p class="lead">Knowing the times tables means answering mixed-up questions instantly, not reciting them in order. Games shuffle the questions and keep them coming, which is exactly the practice multiplication facts need. Here is how to use SumSum Playground as a times tables game.</p>
+
+<h2>Setting it up</h2>
+<ol>
+  <li>Pick any game on the home screen.</li>
+  <li>Choose <b>Practice</b> and switch on <b>Multiply</b> only.</li>
+  <li>Choose a level. <b>Easy</b> goes up to the 5 times table, <b>Normal</b> to the 9s, <b>Hard</b> to the 12s.</li>
+  <li>Choose a speed and tap <b>Play</b>.</li>
+</ol>
+<p>You can also drag the number range slider to stop wherever you like, for example at the 7s.</p>
+
+<h2>Four games that suit times tables</h2>
+<div class="table-wrap"><table>
+  <tr><th>Balloon Pop</th><td>For beginners. You only choose from the answers shown.</td></tr>
+  <tr><th>True or False</th><td>Is "6 × 7 = 48" right? Trains you to spot near-miss answers.</td></tr>
+  <tr><th>Time Challenge</th><td>How many in a minute? Easy to compare day to day.</td></tr>
+  <tr><th>60-Question Race</th><td>You type each answer. The final check that the facts are automatic.</td></tr>
+</table></div>
+
+<h2>A step-by-step order</h2>
+<h3>Step 1: 2s and 5s first (Easy)</h3>
+<p>The 2s are doubling and the 5s end in 0 or 5. The patterns are visible, which builds confidence.</p>
+<h3>Step 2: up to the 9s (Normal)</h3>
+<p>Most people slow down at the 6s, 7s and 8s, especially 6 × 7, 6 × 8 and 7 × 8. Because missed problems come back more often, you will meet exactly those again and again.</p>
+<h3>Step 3: mix in division</h3>
+<p>Switch on both Multiply and Divide. Seeing 56 ÷ 7 and thinking of 7 × 8 makes the facts stick from both sides.</p>
+<h3>Step 4: up to the 12s (Hard)</h3>
+<p>The 11s and 12s help with time, dozens and quantities. Once 12 × 12 comes instantly, mental math gets noticeably easier.</p>
+
+<h2>Adults too</h2>
+<p>After a long break, adults stall at 7 × 8 as well. It comes back within days. Try Time Challenge on Multiply and Normal, and make 30 in a minute your first goal.</p>
+
+<div class="tip"><p><b>Read more</b> — see <a href="/en/guide/times-tables/">the times tables guide</a> for understanding the facts, and <a href="/en/guide/division-help/">the division guide</a> for linking them to division.</p></div>
+'''},
+{
+'slug': 'mental-math-game', 'cat': 'find', 'mins': 4,
+'title': 'Mental math game — a three-minute daily routine',
+'desc': 'How to use mental math games to build both speed and accuracy: the difference between choosing and typing answers, three-minute routines by level, and how to tell you are improving.',
+'body': '''
+<p class="lead">Mental math is more about repetition than tricks. You do the same kind of calculation often enough that the answer arrives without effort. A mental math game packs many problems into a short time, which is what that practice needs.</p>
+
+<h2>Two kinds of mental math game</h2>
+<div class="table-wrap"><table>
+  <tr><th>Choosing</th><td>Time Challenge, Balloon Pop, True or False. You find the answer among options. Good for speed and for reading expressions quickly.</td></tr>
+  <tr><th>Typing</th><td>Falling Problems, 60-Question Race. You enter the number yourself, so you must finish the calculation exactly. This shows your real level.</td></tr>
+</table></div>
+<p>Only choosing leads to guessing by estimate. Only typing gets tiring. Mix the two.</p>
+
+<h2>Three-minute routines by level</h2>
+<h3>It has been a while</h3>
+<ol>
+  <li>True or False · Add and Subtract · Easy (1 minute)</li>
+  <li>Time Challenge · Add and Subtract · Normal (1 minute)</li>
+  <li>Balloon Pop · Multiply · Easy (1 minute)</li>
+</ol>
+<h3>The basics are fine, you want speed</h3>
+<ol>
+  <li>Time Challenge · all four operations · Normal (1 minute)</li>
+  <li>Beat the Clock · all four operations · Normal (as long as you last)</li>
+  <li>60-Question Race · Multiply and Divide · Normal</li>
+</ol>
+<h3>You are confident</h3>
+<ol>
+  <li>Falling Problems · all four operations · Hard · Fast</li>
+  <li>Ranked mode, aiming for the Hall of Fame</li>
+</ol>
+
+<h2>How to tell you are improving</h2>
+<ul>
+  <li><b>90% accuracy</b>: when the result screen shows over 90%, raise the level or the speed one step.</li>
+  <li><b>Time Challenge count</b>: same settings, more correct than a week ago.</li>
+  <li><b>60-Question time</b>: a falling time means basic facts are becoming automatic.</li>
+  <li><b>Missed list</b>: problems that stay on it are your current weak spots.</li>
+</ul>
+
+<h2>The common mistake</h2>
+<p>Going faster at the cost of accuracy makes you slower, because fixing a wrong answer takes longer than getting it right. Speed follows once accuracy is settled. See <a href="/en/guide/speed-and-accuracy/">speed and accuracy</a>.</p>
+
+<div class="tip"><p><b>Tricks as well</b> — adding from the left, making tens and more are in <a href="/en/guide/mental-math-tips/">Mental math tips</a> and <a href="/en/guide/mental-math-for-adults/">Mental math for adults</a>.</p></div>
+'''},
+{
+'slug': 'brain-game', 'cat': 'find', 'mins': 3,
+'title': 'Brain game — a one-minute workout with numbers',
+'desc': 'A light number-based brain game for commutes and breaks. See which of the six SumSum Playground games uses focus, quick judgment or steady nerves, and when each one fits.',
+'body': '''
+<p class="lead">A brain game does not have to be a long, hard puzzle. Doing easy calculations quickly, one after another, already keeps your head busy. A game on SumSum Playground lasts about a minute, so it fits into any gap in the day.</p>
+
+<h2>Each game uses something different</h2>
+<div class="table-wrap"><table>
+  <tr><th>True or False</th><td>Snap judgment. Decide at once whether an equation holds.</td></tr>
+  <tr><th>Falling Problems</th><td>Prioritizing. Deal with the most urgent of several problems.</td></tr>
+  <tr><th>Balloon Pop</th><td>Hand-eye coordination. Find and tap the answer among moving balloons.</td></tr>
+  <tr><th>Beat the Clock</th><td>Staying calm. Avoid mistakes while the time drains away.</td></tr>
+  <tr><th>Time Challenge</th><td>Fast scanning. Find one answer among 12.</td></tr>
+  <tr><th>60-Question Race</th><td>Stamina. Hold the same focus from start to finish.</td></tr>
+</table></div>
+
+<h2>When to play</h2>
+<ul>
+  <li><b>Slow morning</b>: one game of True or False is enough.</li>
+  <li><b>Sleepy after lunch</b>: you cannot sit still in Falling Problems.</li>
+  <li><b>Cannot settle into work</b>: the 60-Question Race brings back the feeling of doing one thing only.</li>
+  <li><b>Winding down</b>: Balloon Pop at a slow speed.</li>
+</ul>
+
+<h2>Same rules for everyone</h2>
+<p>SumSum Playground is not divided by age. Children, office workers and grandparents play on the same screen with the same rules. You choose the difficulty in Practice, and Ranked is identical for all. Families can compete in one room with a <a href="/en/guide/group-match/">group challenge</a>.</p>
+
+<h2>Keeping it up</h2>
+<p>Short and often beats long and rare. Attach it to a fixed moment of the day, like brushing your teeth. The app counts the days you play in a row and adds a bonus heart on a 7-day streak. More in <a href="/en/guide/five-minute-habit/">The five-minute habit</a>.</p>
+
+<div class="tip"><p><b>Note</b> — SumSum Playground is a game played for fun. It gives you calculation practice and a minute of focus, and it is not a program for preventing or treating any condition.</p></div>
+'''},
+{
+'slug': 'addition-subtraction-game', 'cat': 'find', 'mins': 4,
+'title': 'Addition and subtraction game — up to 10, 20 and 50',
+'desc': 'How to set up a game with only addition and subtraction, what changes at each number range (10, 20, 50), and which games are best for practicing carrying and borrowing.',
+'body': '''
+<p class="lead">Addition and subtraction are the base of all calculation. On SumSum Playground you can play with addition only, subtraction only, or both. What you practice changes with the number range, so choose the step that fits.</p>
+
+<h2>Setting it up</h2>
+<ol>
+  <li>Pick a game and choose <b>Practice</b>.</li>
+  <li>Switch on only <b>Add</b> and <b>Subtract</b>, or just one of them.</li>
+  <li>Choose a level, or drag the number range slider.</li>
+</ol>
+
+<h2>What each range practices</h2>
+<div class="table-wrap"><table>
+  <tr><th>Up to 10 (Easy)</th><td>Single-digit sums like 3 + 4 and 9 − 5. No carrying. This builds number sense.</td></tr>
+  <tr><th>Up to 20 (Normal)</th><td>8 + 7 and 15 − 9 bring in carrying and borrowing. The step worth the most time.</td></tr>
+  <tr><th>Up to 50 (Hard)</th><td>Two-digit sums like 27 + 18 and 43 − 26. Mental strategies start to matter.</td></tr>
+</table></div>
+
+<h2>Games for each step</h2>
+<h3>Up to 10: Balloon Pop</h3>
+<p>No typing, only choosing. Set the speed to Very slow for time to think.</p>
+<h3>Up to 20: Falling Problems and Time Challenge</h3>
+<p>For 8 + 7, give 2 to the 8 to make 10, then add the remaining 5. Practice that by typing answers in Falling Problems, and check your speed in Time Challenge. The method is explained in <a href="/en/guide/carrying-and-borrowing/">carrying and borrowing</a>.</p>
+<h3>Up to 50: 60-Question Race</h3>
+<p>Add the tens first. 27 + 18 is 20 + 10 = 30, then 7 + 8 = 15, so 45. After 60 of these the steps get clearly faster.</p>
+
+<h2>If subtraction is the hard part</h2>
+<p>It is normal for subtraction to be slower. Try two things.</p>
+<ul>
+  <li><b>Think of it as addition</b>: 15 − 9 becomes "9 plus what makes 15?"</li>
+  <li><b>Play subtraction only</b>: in a mix you score with the additions. Switch on Subtract alone and work up from Easy.</li>
+</ul>
+
+<h2>For adults</h2>
+<p>Try Beat the Clock on Hard. Keeping a run of two-digit sums going without a slip is not easy for adults either, and it speeds up estimating a total while shopping.</p>
+
+<div class="tip"><p><b>Next step</b> — once this is comfortable, move on to the <a href="/en/guide/times-table-game/">times tables game</a>.</p></div>
+'''},
+{
+'slug': 'math-game-with-friends', 'cat': 'find', 'mins': 3,
+'title': 'Math games to play with friends — 3 ways to compete',
+'desc': 'Three ways to compete at math games with friends, family or classmates: the Ranked Hall of Fame, invite-only group challenges, and taking turns on one device.',
+'body': '''
+<p class="lead">Alone, a calculation game is practice. With other people, it is a contest. Here are the ways to compete on SumSum Playground, by situation.</p>
+
+<h2>1. Against everyone: Ranked and the Hall of Fame</h2>
+<p>Pick a game and start it in <b>Ranked</b>. Everyone gets identical conditions: Normal level, all four operations, default speed. A top score lets you put a nickname in the <b>Hall of Fame</b>. Each of the six games has its own board, so being good at one is enough.</p>
+
+<h2>2. Against people you know: group challenge</h2>
+<p>Create a room in the app and send the link. Only people with the link are ranked.</p>
+<ul>
+  <li>One room covers all six games.</li>
+  <li>Everyone gets the same problems for the day, so it is fair.</li>
+  <li>The ranking restarts every 3 days, so anyone can take first place again.</li>
+  <li>Invited players can join on the web without the app.</li>
+</ul>
+<p>Post the link in a group chat and people will play a game when it suits them and check the standings. Details are in the <a href="/en/guide/group-match/">group challenge guide</a>.</p>
+
+<h2>3. In the same room: take turns</h2>
+<p>With one device, take turns. Use the same Practice settings and compare scores.</p>
+<ul>
+  <li><b>One-minute duel</b>: Time Challenge lasts exactly a minute, so nobody waits long.</li>
+  <li><b>60-question relay</b>: two people alternate every 10 problems for a team time.</li>
+  <li><b>True or False with hands</b>: put it on a big screen and have everyone signal O or X.</li>
+</ul>
+
+<h2>When skill levels differ</h2>
+<p>An adult against a child, or an expert against a beginner, stops being fun quickly. Give each player a different level in Practice, one on Hard and one on Easy, and compare the scores.</p>
+
+<h2>Ideas for stakes</h2>
+<ul>
+  <li>Last place when the 3-day round ends buys the coffee</li>
+  <li>The family room winner picks dinner</li>
+  <li>Write each round's winner on the classroom board</li>
+</ul>
+
+<div class="tip"><p><b>Share a result</b> — after a Ranked game you can send a challenge with your score and ask a friend to beat it.</p></div>
 '''},
 ]
