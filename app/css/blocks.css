@@ -958,3 +958,6 @@ html.intro-on .intro {
 .room-sub-actions #roomHome { padding-left: 16px; padding-right: 16px; }
 #room .room-owner { flex: none; margin-top: 0; }
 #room .room-owner-btn { padding: 4px; }
+/* 설정: 닉네임 버튼도 효과음·배경음악 버튼과 같은 폭 */
+#nickBtn, #soundBtn, #musicBtn { min-width: 96px; justify-content: center; }
+#nickTxt { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
