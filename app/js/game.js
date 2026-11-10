@@ -285,7 +285,7 @@ const Game = (() => {
   function stop() {
     cancelAnimationFrame(rafId);
     rafId = 0;
-    if (G) G.timers.forEach(clearTimeout);
+    if (G) { G.timers.forEach(clearTimeout); (G.resumeTimers || []).forEach(clearTimeout); G.resuming = false; }
   }
 
   function countdown() {
@@ -449,6 +449,7 @@ const Game = (() => {
   // 일시정지하면 시간과 움직임이 모두 멈추고, 문제가 보이지 않게 화면을 가려요.
   function pause() {
     if (!G || G.over || G.askCont) return;
+    if (stopResume()) return;
     if (!G.running && !G.paused) {
       // 카운트다운 중에는 바로 홈으로 나가요.
       quit();
@@ -462,13 +463,43 @@ const Game = (() => {
     setTimeout(() => $('resumeBtn').focus({ preventScroll: true }), 0);
   }
 
+  // 이어 하기: 바로 시작하면 타이밍을 놓쳐서 3·2·1 세고 다시 움직여요
   function resume() {
-    if (!G || G.over || !G.paused) return;
+    if (!G || G.over || !G.paused || G.resuming) return;
     $('pauseBox').hidden = true;
     G.paused = false;
-    G.running = true;
-    Sound.resume();
-    lastTs = performance.now();
+    G.resuming = true;
+    const box = $('countdown');
+    const num = $('countNum');
+    const steps = ['3', '2', '1'];
+    box.hidden = false;
+    const g = G;
+    g.resumeTimers = [];
+    const step = i => {
+      num.textContent = steps[i];
+      restart(num, 'pop');
+      Sound.count();
+      g.resumeTimers.push(setTimeout(() => {
+        if (G !== g || g.over || !g.resuming) return;
+        if (i < steps.length - 1) { step(i + 1); return; }
+        box.hidden = true;
+        g.resuming = false;
+        g.running = true;
+        Sound.resume();
+        lastTs = performance.now();
+      }, 700));
+    };
+    step(0);
+  }
+  // 3·2·1 세는 중에 다시 일시정지하면 세기를 멈추고 일시정지 창으로
+  function stopResume() {
+    if (!G || !G.resuming) return false;
+    (G.resumeTimers || []).forEach(clearTimeout);
+    G.resuming = false;
+    G.paused = true;
+    $('countdown').hidden = true;
+    $('pauseBox').hidden = false;
+    return true;
   }
 
   function restartGame() {
@@ -484,7 +515,7 @@ const Game = (() => {
 
   // 다른 앱으로 가거나 화면이 꺼지면 저절로 일시정지해요.
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden && G && G.running && !G.over) pause();
+    if (document.hidden && G && (G.running || G.resuming) && !G.over) pause();
   });
 
   function quit() {

@@ -425,5 +425,17 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     return n <= SIZE ? n : null;
   }
 
-  return { renderHome, onResult, placeFor, estimateFor, rankOf, myRank, CROWN, top1, setTab: m => { tab = m; }, cleanName, setName, myCountry, getSavedName, setSavedName, ordinal, fmt, pid };
+  // 닉네임 바꾸기: 저장된 이름 + 명예의 전당 내 줄들의 이름 (기록은 그대로)
+  async function renameAll(name) {
+    const b = await board();
+    const me = pid();
+    for (const m of MODES) {
+      const d = await b.mine(m, me).catch(() => null);
+      if (d && d.name !== name) await b.save(m, me, name, d.score, d.country || myCountry());
+      delete cache[m];
+    }
+    setSavedName(name);
+  }
+
+  return { renderHome, onResult, placeFor, estimateFor, rankOf, myRank, CROWN, top1, setTab: m => { tab = m; }, cleanName, setName, myCountry, getSavedName, setSavedName, ordinal, fmt, pid, renameAll };
 })();

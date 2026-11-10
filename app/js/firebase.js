@@ -36,6 +36,11 @@
       const snap = await playersOf(mode).orderBy('score', dir(mode)).limit(n).get();
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     },
+    // 이 기기의 명예의 전당 줄 (없으면 null)
+    async mine(mode, pid) {
+      const d = await playersOf(mode).doc(pid).get();
+      return d.exists ? d.data() : null;
+    },
     async save(mode, pid, name, score, country) {
       const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 2 };
       if (country) doc.country = country;
@@ -54,7 +59,7 @@
     },
   };
   // 그룹 경쟁전 방 (rooms/{방}): 링크 받은 사람끼리만 겨뤄요. 방 하나에 게임 6개.
-  // - 문제는 매일(한국 시간 자정) 바뀌고, 3일마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
+  // - 문제는 24시간마다 바뀌고, 72시간(3일)마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
   // - 방 만들기·이름 바꾸기·지우기는 방장만 (익명 로그인 번호로 확인해요)
   const rooms = db.collection('rooms');
   const roomKey = name => String(name || '').toLowerCase().replace(/ /g, ''); // 보안 규칙의 닉네임 열쇠와 똑같이
@@ -115,6 +120,22 @@
     async nameOwner(id, name) {
       const d = await rooms.doc(id).collection('names').doc(roomKey(name)).get();
       return d.exists ? d.data().pid : null;
+    },
+    // 이 방·회차·게임에서 내 줄 (없으면 null)
+    async myDoc(id, mode, season, pid) {
+      const d = await boardOf(id, mode, season).doc(pid).get();
+      return d.exists ? d.data() : null;
+    },
+    // 닉네임 바꾸기: 새 닉네임을 찜하고(처음이면), 이번 회차 내 줄들의 이름만 바꿔요 (기록은 그대로)
+    async renameMe(id, season, pid, name, first, docs) {
+      const b = db.batch();
+      if (first) b.set(rooms.doc(id).collection('names').doc(roomKey(name)), { pid });
+      for (const { mode, old } of docs) {
+        const doc = { name, score: old.score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 3 };
+        if (old.country) doc.country = old.country;
+        b.set(boardOf(id, mode, season).doc(pid), doc);
+      }
+      await b.commit();
     },
     // 기록 남기기: 처음이면 닉네임도 같이 찜해요 (한 번에 저장)
     async save(id, mode, season, pid, name, score, country, first) {

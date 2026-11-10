@@ -290,6 +290,7 @@ const App = (() => {
   function renderHeader() {
     document.querySelectorAll('[data-lang]').forEach(b =>
       setPressed(b, b.dataset.lang === lang));
+    $('nickTxt').textContent = Ranking.getSavedName() || t('nickNone');
     $('soundTxt').textContent = cfg.sound ? t('soundOn') : t('soundOff');
     setPressed($('soundBtn'), cfg.sound);
     $('musicTxt').textContent = cfg.music ? t('musicOn') : t('musicOff');
@@ -821,6 +822,43 @@ const App = (() => {
       img.src = await new Promise(res => { const rd = new FileReader(); rd.onload = () => res(rd.result); rd.readAsDataURL(f); });
       $('saveBox').hidden = false;
     });
+    // 닉네임 바꾸기 (설정)
+    const openNick = () => {
+      $('nickInput').value = Ranking.getSavedName();
+      $('nickInput').placeholder = t('rankPlaceholder');
+      $('nickErr').hidden = true;
+      $('nickBox').hidden = false;
+    };
+    let nickBusy = false;
+    const saveNick = async () => {
+      if (nickBusy) return;
+      const c = Ranking.cleanName($('nickInput').value);
+      if (c.err) { $('nickErr').textContent = t(c.err); $('nickErr').hidden = false; return; }
+      if (c.name === Ranking.getSavedName()) { $('nickBox').hidden = true; return; }
+      nickBusy = true;
+      const btn = $('nickSave');
+      btn.disabled = true;
+      $('nickErr').hidden = true;
+      try {
+        await Ranking.renameAll(c.name);
+        const skipped = await Room.renameNick(c.name);
+        $('nickBox').hidden = true;
+        toast(skipped.length ? t('nickSome', { rooms: skipped.join(', ') }) : t('nickDone'));
+        track('nick-change', '닉네임 바꾸기');
+        renderHeader();
+        Ranking.renderHome();
+      } catch (e) {
+        $('nickErr').textContent = t('nickFail');
+        $('nickErr').hidden = false;
+      }
+      nickBusy = false;
+      btn.disabled = false;
+    };
+    $('nickBtn').addEventListener('click', openNick);
+    $('nickClose').addEventListener('click', () => { $('nickBox').hidden = true; });
+    $('nickBox').addEventListener('click', e => { if (e.target === $('nickBox')) $('nickBox').hidden = true; });
+    $('nickSave').addEventListener('click', saveNick);
+    $('nickInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); saveNick(); } });
     $('saveDl').addEventListener('click', () => ShareCard.save(() => toast(t('shareImgSaved'))));
     $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
     $('saveBox').addEventListener('click', e => { if (e.target === $('saveBox')) $('saveBox').hidden = true; });

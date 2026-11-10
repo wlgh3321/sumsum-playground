@@ -938,3 +938,23 @@ html.intro-on .intro {
   background: var(--paper); color: var(--text);
   font-family: var(--font-title); font-size: 19px;
 }
+
+/* 그룹 경쟁전 방 화면 v2: 화면에 딱 맞게 (방 화면 자체는 스크롤 없음, 순위표만 스크롤) */
+#room.screen.active { height: calc(100dvh - 26px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display: flex !important; flex-direction: column; overflow: hidden; }
+#room.screen.active .room-card { flex: 1 1 auto; min-height: 0; width: 100%; box-sizing: border-box; margin: 0 auto !important; gap: 8px; overflow: hidden; }
+#room .room-title { font-size: 24px; }
+#room .room-meta { font-size: 13px; line-height: 1.45; }
+#room .room-count { font-size: 16px; }
+/* 게임 버튼: 3칸씩 두 줄 */
+#room .room-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+#room .room-tabs .rank-tab { min-height: 36px; padding: 6px 0; font-size: clamp(11px, 3.2vw, 13px); letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+/* 순위표가 남는 공간을 다 써요 */
+#room .room-list { flex: 1 1 auto; min-height: 120px; max-height: none; margin: 2px 0 0; }
+/* 버튼: 도전하기는 크게, 공유·홈은 작게 한 줄 */
+.room-actions { display: flex; flex-direction: column; gap: 8px; flex: none; }
+.room-actions .room-play { width: 100%; margin: 0; }
+.room-sub-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.room-sub-actions .btn { width: 100%; min-width: 0; margin: 0; white-space: nowrap; }
+.room-sub-actions #roomHome { padding-left: 16px; padding-right: 16px; }
+#room .room-owner { flex: none; margin-top: 0; }
+#room .room-owner-btn { padding: 4px; }

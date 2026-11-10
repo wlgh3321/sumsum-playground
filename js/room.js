@@ -2,8 +2,8 @@
  * 그룹 경쟁전 (앱·웹이 같은 파일을 써요: app/js/room.js → js/room.js 로 복사)
  * - 방을 만들면 링크(…/?room=방번호)가 생겨요. 그 링크로 들어온 사람끼리만 순위를 겨뤄요.
  * - 방 하나에서 게임 6개를 겨뤄요 (게임마다 따로 순위).
- * - 모두 🏆 랭킹전 조건. 문제는 매일(한국 시간 자정) 바뀌고, 같은 날엔 모두 똑같은 문제예요.
- * - 3일마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
+ * - 모두 🏆 랭킹전 조건. 문제는 방을 만든 때부터 24시간마다 바뀌고, 그 24시간 동안은 모두 똑같은 문제예요.
+ * - 72시간(3일)마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
  * - 같은 방 안에서는 닉네임이 겹칠 수 없어요 (먼저 쓴 사람 것). 회차·게임마다 최고 기록 한 줄만 남아요.
  * - 방 만들기·이름 바꾸기·지우기는 앱에서만 (웹은 받은 링크로 참가만 해요).
  */
@@ -13,7 +13,6 @@ const Room = (() => {
   const MINE_KEY = 'sumsum:rooms'; // 이 기기가 들어가 본 방 { 방번호: { name, host, own, last, nick } }
   const SITE = 'https://sumsum.studiojhl.com/';
   const DAY = 86400000;
-  const KST = 9 * 3600000;
   const SEASON_DAYS = 3;
 
   let room = null;     // 지금 보고 있는 방 { id, seed, host, name, owner, at }
@@ -28,10 +27,10 @@ const Room = (() => {
   const gameName = mode => modeName(mode, { time: 60 });
 
   /* ---------- 날짜·회차·오늘의 문제 ---------- */
-  const kday = ms => Math.floor((ms + KST) / DAY);
-  const dayIdx = r => Math.max(0, kday(Date.now()) - kday(r.at));
+  // 방을 만든 시각부터 24시간마다 문제가 바뀌고, 72시간(3일)마다 순위가 새로 시작해요
+  const dayIdx = r => Math.max(0, Math.floor((Date.now() - r.at) / DAY));
   const season = r => Math.floor(dayIdx(r) / SEASON_DAYS);
-  const seasonEnd = r => (kday(r.at) + SEASON_DAYS * (season(r) + 1)) * DAY - KST; // 이번 회차가 끝나는 시각
+  const seasonEnd = r => r.at + SEASON_DAYS * DAY * (season(r) + 1); // 이번 회차가 끝나는 시각
   // 오늘의 문제 씨앗: 첫날은 방 씨앗 그대로(결과 화면에서 만든 방은 방금 판 = 첫날 문제), 다음 날부터 섞어요
   function todaySeed(r) {
     const d = dayIdx(r);
@@ -144,7 +143,6 @@ const Room = (() => {
     $('roomCount').hidden = false;
     $('roomCount').textContent = t('roomCount', { game: gameName(tab), n: rows.length });
     $('roomPlay').hidden = false;
-    $('roomRule').hidden = false;
     $('roomShare').hidden = false;
     if ($('roomOwner')) $('roomOwner').hidden = !isOwner();
     renderList($('roomList'), tab, pid());
@@ -158,7 +156,6 @@ const Room = (() => {
     $('roomCount').hidden = true;
     $('roomPlay').hidden = true;
     $('roomShare').hidden = true;
-    $('roomRule').hidden = true;
     if ($('roomOwner')) $('roomOwner').hidden = true;
     const list = $('roomList');
     list.textContent = '';
@@ -444,7 +441,7 @@ const Room = (() => {
     box.hidden = true;
     if (!room || r.room !== room.id || r.badge.kind === 'quit' || !(r.value > 0)) return;
     box.hidden = false;
-    // 자정이 지나 문제가 바뀐 뒤에 끝난 판은 기록하지 않아요
+    // 24시간이 지나 문제가 바뀐 뒤에 끝난 판은 기록하지 않아요
     if (r.seed !== todaySeed(room)) { note(box, t('roomStaleNote')); return; }
 
     const mode = r.mode;
@@ -533,6 +530,35 @@ const Room = (() => {
     });
   }
 
+  /* ---------- 닉네임 바꾸기 (설정) ---------- */
+  // 내가 들어간 방마다: 새 닉네임을 찜하고, 이번 회차 내 기록들의 이름을 바꿔요.
+  // 그 방에서 이미 다른 사람이 쓰는 이름이면 그 방은 예전 이름 그대로 둬요 (방 이름 목록을 돌려줘요)
+  async function renameNick(name) {
+    const skipped = [];
+    const R = await api().catch(() => null);
+    if (!R) return skipped;
+    const me = pid();
+    for (const [id, v] of Object.entries(mine())) {
+      if (!v || !v.nick || v.nick === name) continue;
+      try {
+        const r = await R.get(id);
+        if (!r) continue;
+        const owner = await R.nameOwner(id, name);
+        if (owner && owner !== me) { skipped.push(r.name || t('roomKicker')); continue; }
+        const ssn = season(r);
+        const docs = [];
+        for (const m of MODES) {
+          const old = await R.myDoc(id, m, ssn, me);
+          if (old && old.name !== name) docs.push({ mode: m, old });
+        }
+        await R.renameMe(id, ssn, me, name, owner !== me, docs);
+        remember(id, { nick: name });
+      } catch (e) { skipped.push(v.name || t('roomKicker')); }
+    }
+    if (room) render();
+    return skipped;
+  }
+
   /* ---------- 연결 ---------- */
   function bind() {
     if ($('roomNew')) $('roomNew').addEventListener('click', () => openNew());
@@ -558,5 +584,5 @@ const Room = (() => {
     });
   }
 
-  return { bind, readLink, openQuery, open, openNew, share, onResult, renderMine, cardImage, current: () => room };
+  return { bind, readLink, openQuery, open, openNew, share, onResult, renderMine, cardImage, renameNick, current: () => room };
 })();

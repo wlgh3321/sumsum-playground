@@ -34,7 +34,7 @@ service cloud.firestore {
     }
 
     // 그룹 경쟁전: 링크를 받은 사람끼리만 겨루는 방. 방 하나에서 게임 6개를 모두 겨뤄요.
-    // - 문제는 매일(한국 시간) 바뀌고, 3일마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
+    // - 문제는 24시간마다 바뀌고, 72시간(3일)마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
     // - 방: 문제 씨앗 + 방 이름 + 만든 사람 닉네임 + 방장(익명 로그인 번호)
     // - names/{닉네임}: 이 방에서 그 닉네임을 쓰는 기기 (먼저 쓴 사람 것 → 같은 방 닉네임 중복 막기)
     // - boards/{게임_회차}/players/{기기}: 회차·게임마다 기기당 한 줄, 더 좋은 기록으로만 고칠 수 있어요
@@ -61,9 +61,8 @@ service cloud.firestore {
       allow delete: if request.auth != null && resource.data.owner == request.auth.uid;
 
       function room() { return get(/databases/$(database)/documents/rooms/$(rid)).data; }
-      // 한국 시간 날짜 번호, 지금 회차(3일씩)
-      function kday(t) { return math.floor((t.toMillis() + 32400000) / 86400000.0); }
-      function season() { return math.floor((kday(request.time) - kday(room().at)) / 3.0); }
+      // 지금 회차: 방을 만든 때부터 72시간(3일)마다 1씩
+      function season() { return math.floor((request.time.toMillis() - room().at.toMillis()) / 259200000.0); }
 
       match /names/{key} {
         allow read: if true;
@@ -97,11 +96,16 @@ service cloud.firestore {
         }
         allow read: if true;
         allow create: if pid.matches('^[A-Za-z0-9]{8,64}$') && ok(request.resource.data);
+        // 고치기: 같은 이름으로 더 좋은 기록, 또는 기록은 그대로 두고 닉네임만 바꾸기
         allow update: if ok(request.resource.data)
-          && request.resource.data.name == resource.data.name
-          && (mode() == 'race'
-            ? request.resource.data.score < resource.data.score
-            : request.resource.data.score > resource.data.score);
+          && (
+            (request.resource.data.name == resource.data.name
+              && (mode() == 'race'
+                ? request.resource.data.score < resource.data.score
+                : request.resource.data.score > resource.data.score))
+            || (request.resource.data.name != resource.data.name
+              && request.resource.data.score == resource.data.score)
+          );
         allow delete: if false;
       }
     }
