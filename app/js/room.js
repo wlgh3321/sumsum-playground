@@ -95,7 +95,7 @@ const Room = (() => {
   function render() {
     if (!room) return;
     $('roomTitle').textContent = t('roomKicker');
-    $('roomMeta').textContent = `${roomName(room.host)}\n${leftText(room.exp)}`;
+    $('roomMeta').textContent = room.host ? `${t('roomBy', { name: room.host })}\n${leftText(room.exp)}` : leftText(room.exp);
     $('roomTabs').hidden = false;
     renderTabs();
     const over = ended();
