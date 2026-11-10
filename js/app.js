@@ -35,7 +35,7 @@ const App = (() => {
   let pendingMode = null; // 설정 팝업에서 시작하려는 게임
   let toastTimer = 0;
   let challenge = null; // 친구가 카톡으로 보낸 도전장 { mode, score, name }
-  let roomRun = null; // 단톡 경쟁전으로 하는 판 { id, mode, seed }
+  let roomRun = null; // 그룹 경쟁전으로 하는 판 { id, mode, seed }
 
   const vsBetter = (mode, a, b) => (mode === 'race' ? a < b : a > b); // 60문제 타임어택은 시간이 짧을수록 위
 
@@ -378,11 +378,11 @@ const App = (() => {
     Game.start(id, s);
   }
 
-  // 단톡 경쟁전 도전: 랭킹전 조건 + 방의 씨앗(모두 똑같은 문제)
+  // 그룹 경쟁전 도전: 랭킹전 조건 + 방의 씨앗(모두 똑같은 문제)
   function playRoom(r) {
     closeSetup();
     roomRun = { id: r.id, mode: r.mode, seed: r.seed };
-    track(`room-play-${r.mode}`, '단톡 경쟁전 도전');
+    track(`room-play-${r.mode}`, '그룹 경쟁전 도전');
     Game.start(r.mode, { ...RANKED, ops: [...RANKED.ops], ranked: true }, r.seed);
   }
 
@@ -650,7 +650,7 @@ const App = (() => {
     Room.bind();
     applyLang();
     show('home');
-    Room.readLink(); // 단톡 경쟁전 링크(?room=)로 들어왔으면 그 방을 열어요
+    Room.readLink(); // 그룹 경쟁전 링크(?room=)로 들어왔으면 그 방을 열어요
   }
 
   return { show, showHome, showResult, init, toast, playRoom };

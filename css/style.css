@@ -1434,7 +1434,7 @@ input[type="range"] {
   }
 }
 
-/* ---------- 단톡 경쟁전 ---------- */
+/* ---------- 그룹 경쟁전 ---------- */
 /* 홈: 방 만들기 카드 (명예의 전당 위) */
 .room-entry {
   margin-top: 20px;
@@ -1456,6 +1456,7 @@ input[type="range"] {
 
 .room-entry-desc {
   margin: 4px 0 0;
+  white-space: pre-line;
   font-size: 14px;
   opacity: 0.8;
   word-break: keep-all;
@@ -1534,10 +1535,25 @@ input[type="range"] {
   word-break: keep-all;
 }
 
-.room-winner {
-  margin: 4px 0 0;
+.room-tabs {
+  margin-top: 4px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.room-tabs .rank-tab {
+  min-height: 44px;
+  padding-left: 6px;
+  padding-right: 6px;
+  white-space: nowrap;
+  font-size: clamp(13px, 3.9vw, 16px);
+}
+
+.room-count {
+  margin: 0;
   font-family: var(--font-title);
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .room-list {
@@ -1550,25 +1566,6 @@ input[type="range"] {
   white-space: pre-line;
   font-size: 13px;
   opacity: 0.75;
-  word-break: keep-all;
-}
-
-/* 방 만들기 팝업: 게임 고르기 */
-.room-pick {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.room-pick .chip {
-  min-height: 44px;
-  padding-left: 6px;
-  padding-right: 6px;
-  white-space: nowrap;
-  font-size: clamp(13px, 3.9vw, 16px);
-}
-
-#roomNewBox .play-note {
   word-break: keep-all;
 }
 

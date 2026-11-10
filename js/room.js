@@ -1,20 +1,21 @@
 /*
- * 단톡 경쟁전
- * - 방을 만들면 링크(…/?room=방번호)가 생겨요. 단톡방에 올리면 그 링크로 들어온 사람끼리만 순위를 겨뤄요.
+ * 그룹 경쟁전
+ * - 방을 만들면 링크(…/?room=방번호)가 생겨요. 단톡방 등에 올리면 그 링크로 들어온 사람끼리만 순위를 겨뤄요.
+ * - 방 하나에서 게임 6개를 모두 겨뤄요 (게임마다 따로 순위).
  * - 모두 🏆 랭킹전 조건 + 완전히 같은 문제(방의 씨앗)로 해요.
- * - 방은 3일 동안 열려 있어요. 여러 번 해도 사람마다 최고 기록 한 줄만 남아요.
+ * - 방은 3일 동안 열려 있어요. 여러 번 해도 게임마다 최고 기록 한 줄만 남아요.
  * - 같은 방 안에서는 닉네임이 겹칠 수 없어요 (먼저 쓴 사람 것).
  */
 const Room = (() => {
   const $ = id => document.getElementById(id);
   const MODES = ['fall', 'minute', 'race', 'balloon', 'beat', 'tf'];
-  const MINE_KEY = 'sumsum:rooms'; // 이 기기가 들어가 본 방 { 방번호: { mode, exp, name } }
+  const MINE_KEY = 'sumsum:rooms'; // 이 기기가 들어가 본 방 { 방번호: { exp, host, name } }
   const PID_KEY = 'sumsum:pid';    // 이 기기의 번호 (방마다 내 줄을 찾을 때 써요)
   const SITE = 'https://sumsum.studiojhl.com/';
 
-  let room = null;     // 지금 보고 있는 방 { id, mode, seed, host, at, exp }
-  let rows = [];       // 그 방의 순위 (좋은 기록 순)
-  let pickMode = 'race';
+  let room = null;     // 지금 보고 있는 방 { id, seed, host, at, exp }
+  let tab = 'fall';    // 방 화면에서 보고 있는 게임
+  let rows = [];       // 그 게임의 순위 (좋은 기록 순)
   let busy = false;
 
   const better = (mode, a, b) => (mode === 'race' ? a < b : a > b);
@@ -28,7 +29,7 @@ const Room = (() => {
     const all = mine();
     all[id] = { ...(all[id] || {}), ...patch };
     // 마감된 지 하루 넘은 방은 정리해요
-    for (const k of Object.keys(all)) if (all[k].exp && all[k].exp < Date.now() - 86400000) delete all[k];
+    for (const k of Object.keys(all)) if (!all[k].exp || all[k].exp < Date.now() - 86400000) delete all[k];
     try { localStorage.setItem(MINE_KEY, JSON.stringify(all)); } catch (e) {}
   }
   function pid() {
@@ -61,10 +62,11 @@ const Room = (() => {
   }
   const roomUrl = id => `${location.protocol.startsWith('http') ? location.origin + '/' : SITE}?room=${id}`;
   const ended = () => room && room.exp <= Date.now();
+  const roomName = host => (host ? t('roomBy', { name: host }) : t('roomKicker'));
 
   /* ---------- 순위 그리기 ---------- */
   // idx: 보여 줄 줄 번호들 (없으면 전부)
-  function renderList(list, highlight, idx) {
+  function renderList(list, mode, highlight, idx) {
     list.textContent = '';
     if (!rows.length) {
       const li = document.createElement('li');
@@ -80,31 +82,47 @@ const Room = (() => {
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = Ranking.ordinal(i);
       const b = document.createElement('span'); b.className = 'rank-name'; Ranking.setName(b, r);
       if (i === 0) b.insertAdjacentHTML('afterbegin', Ranking.CROWN);
-      const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = Ranking.fmt(room.mode, r.score);
+      const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = Ranking.fmt(mode, r.score);
       li.append(a, b, c);
       list.appendChild(li);
     });
   }
 
+  function renderTabs() {
+    const box = $('roomTabs');
+    box.textContent = '';
+    for (const m of MODES) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip rank-tab';
+      b.textContent = gameName(m);
+      b.setAttribute('aria-pressed', String(m === tab));
+      b.addEventListener('click', () => loadTab(m));
+      box.appendChild(b);
+    }
+  }
+
   function render() {
     if (!room) return;
-    $('roomTitle').textContent = gameName(room.mode);
-    const meta = [];
-    if (room.host) meta.push(t('roomBy', { name: room.host }));
-    meta.push(t('roomCount', { n: rows.length }));
-    $('roomMeta').textContent = `${meta.join(' · ')}\n${leftText(room.exp)}`; // 마감 시간은 둘째 줄
+    $('roomTitle').textContent = t('roomKicker');
+    $('roomMeta').textContent = `${roomName(room.host)}\n${leftText(room.exp)}`;
+    $('roomTabs').hidden = false;
+    renderTabs();
     const over = ended();
-    $('roomWinner').hidden = !(over && rows.length);
-    if (over && rows.length) $('roomWinner').textContent = t('roomWinner', { name: rows[0].name, v: Ranking.fmt(room.mode, rows[0].score) });
+    $('roomCount').hidden = false;
+    $('roomCount').textContent = over && rows.length
+      ? t('roomWinner', { name: rows[0].name, v: Ranking.fmt(tab, rows[0].score) })
+      : t('roomCount', { game: gameName(tab), n: rows.length });
     $('roomPlay').hidden = over;
     $('roomRule').hidden = over;
-    renderList($('roomList'), pid());
+    renderList($('roomList'), tab, pid());
   }
 
   function message(key) {
     $('roomTitle').textContent = t('roomKicker');
     $('roomMeta').textContent = '';
-    $('roomWinner').hidden = true;
+    $('roomTabs').hidden = true;
+    $('roomCount').hidden = true;
     $('roomPlay').hidden = true;
     $('roomShare').hidden = true;
     $('roomRule').hidden = true;
@@ -116,17 +134,33 @@ const Room = (() => {
     list.appendChild(li);
   }
 
+  async function loadTab(m) {
+    tab = m;
+    renderTabs();
+    const want = m;
+    try {
+      const R = await api();
+      const got = await R.players(room.id, m);
+      if (want !== tab) return;
+      rows = got;
+      render();
+    } catch (e) {
+      if (want === tab) { rows = []; render(); }
+    }
+  }
+
   /* ---------- 방 열기 ---------- */
-  async function open(id) {
+  async function open(id, mode) {
     App.show('room');
     message('roomLoading');
     try {
       const R = await api();
       const r = await R.get(id);
-      if (!r || !MODES.includes(r.mode)) { message('roomNotFound'); return; }
+      if (!r) { message('roomNotFound'); return; }
       room = r;
-      rows = await R.players(id, r.mode);
-      remember(id, { mode: r.mode, exp: r.exp });
+      tab = MODES.includes(mode) ? mode : (mine()[id] || {}).tab || 'fall';
+      rows = await R.players(id, tab);
+      remember(id, { exp: r.exp, host: r.host });
       $('roomShare').hidden = false;
       KakaoShare.prepare(); // 카톡 공유를 미리 불러 둬요 (안 하면 카톡 카드 대신 일반 공유로 나가요)
       render();
@@ -142,43 +176,29 @@ const Room = (() => {
       const id = new URLSearchParams(location.search).get('room');
       if (!id || !/^[A-Za-z0-9]{6,32}$/.test(id)) return false;
       history.replaceState(null, '', location.pathname + location.hash);
-      if (window.track) window.track('room-open', '단톡 경쟁전 열기');
+      if (window.track) window.track('room-open', '그룹 경쟁전 열기');
       open(id);
       return true;
     } catch (e) { return false; }
   }
 
-  /* ---------- 방 만들기 ---------- */
-  function openNew() {
-    pickMode = 'race';
-    $('roomNewErr').hidden = true;
-    renderPick();
-    $('roomNewBox').hidden = false;
-  }
-  function closeNew() { $('roomNewBox').hidden = true; }
-  function renderPick() {
-    $('roomPick').innerHTML = MODES.map(m =>
-      `<button type="button" class="chip" data-room-mode="${m}" aria-pressed="${m === pickMode}">${gameName(m)}</button>`).join('');
-  }
+  /* ---------- 방 만들기 (누르면 바로 만들어져요) ---------- */
   async function create() {
     if (busy) return;
     busy = true;
-    const btn = $('roomCreate');
+    const btn = $('roomNew');
     btn.disabled = true;
-    $('roomNewErr').hidden = true;
     try {
       const R = await api();
       const seed = 1 + Math.floor(Math.random() * 2147483646);
       const host = Ranking.getSavedName();
-      const id = await R.create(pickMode, seed, host);
-      remember(id, { mode: pickMode, exp: Date.now() + R.WEEK, host: true });
-      if (window.track) window.track(`room-new-${pickMode}`, '단톡 경쟁전 만들기');
-      closeNew();
+      const id = await R.create(seed, host);
+      remember(id, { exp: Date.now() + R.LIFE, host, own: true });
+      if (window.track) window.track('room-new', '그룹 경쟁전 만들기');
       await open(id);
       App.toast(t('roomCreated'));
     } catch (e) {
-      $('roomNewErr').textContent = t('roomCreateFail');
-      $('roomNewErr').hidden = false;
+      App.toast(t('roomCreateFail'));
     } finally {
       busy = false;
       btn.disabled = false;
@@ -189,12 +209,9 @@ const Room = (() => {
   async function share() {
     if (!room) return;
     const url = roomUrl(room.id);
-    const game = gameName(room.mode);
     const title = room.host ? t('roomCardTitle', { name: room.host }) : t('roomCardTitleAnon');
-    const desc = rows.length
-      ? t('roomCardLead', { game, name: rows[0].name, v: Ranking.fmt(room.mode, rows[0].score) })
-      : t('roomCardDesc', { game });
-    if (window.track) window.track(`room-share-${room.mode}`, '단톡 경쟁전 공유');
+    const desc = t('roomCardDesc');
+    if (window.track) window.track('room-share', '그룹 경쟁전 공유');
     if (KakaoShare.sendText({ title, desc, url, btn: t('roomJoin') })) return;
     // 글과 링크를 한 덩어리로 (url을 따로 넘기면 카톡에서 사이에 빈 줄이 생겨요)
     const text = `${title}\n${desc}\n${url}`;
@@ -208,17 +225,23 @@ const Room = (() => {
   function renderMine() {
     const box = $('roomMine');
     if (!box) return;
-    const all = mine();
-    const live = Object.entries(all).filter(([, v]) => v.exp > Date.now() && MODES.includes(v.mode))
+    const live = Object.entries(mine()).filter(([, v]) => v.exp > Date.now())
       .sort((a, b) => b[1].exp - a[1].exp).slice(0, 3);
     box.hidden = !live.length;
-    box.innerHTML = live.map(([id, v]) => `
-      <li class="room-mine-row">
-        <button type="button" class="room-mine-btn" data-room-id="${id}">
-          <span class="room-mine-game">${gameName(v.mode)}</span>
-          <span class="room-mine-left">${leftText(v.exp)}</span>
-        </button>
-      </li>`).join('');
+    box.innerHTML = '';
+    for (const [id, v] of live) {
+      const li = document.createElement('li');
+      li.className = 'room-mine-row';
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'room-mine-btn';
+      b.dataset.roomId = id;
+      const n = document.createElement('span'); n.className = 'room-mine-game'; n.textContent = v.own ? t('roomMineOwn') : roomName(v.host);
+      const l = document.createElement('span'); l.className = 'room-mine-left'; l.textContent = leftText(v.exp);
+      b.append(n, l);
+      li.appendChild(b);
+      box.appendChild(li);
+    }
   }
 
   /* ---------- 결과 화면: 경쟁전 기록 남기기 ---------- */
@@ -231,7 +254,7 @@ const Room = (() => {
   }
 
   // 내 순위 문구 + 위쪽 5명(내가 밖이면 나까지) + "방 순위 보기"
-  function showPlaced(box, myId, head) {
+  function showPlaced(box, mode, myId, head) {
     box.textContent = '';
     const n = rows.findIndex(x => x.id === myId) + 1;
     if (head) note(box, head, 'rank-hi');
@@ -240,13 +263,13 @@ const Room = (() => {
     list.className = 'rank-list';
     const idx = rows.slice(0, 5).map((_, i) => i);
     if (n > 5) idx.push(n - 1);
-    renderList(list, myId, idx);
+    renderList(list, mode, myId, idx);
     box.appendChild(list);
     const view = document.createElement('button');
     view.type = 'button';
     view.className = 'btn btn-small';
     view.textContent = t('roomView');
-    view.addEventListener('click', () => { render(); App.show('room'); });
+    view.addEventListener('click', () => { tab = mode; render(); App.show('room'); });
     box.appendChild(view);
   }
 
@@ -259,27 +282,30 @@ const Room = (() => {
     box.hidden = false;
     if (ended()) { note(box, t('roomExpiredNote')); return; }
 
+    const mode = r.mode;
     const me = pid();
     const known = (mine()[room.id] || {}).name;
     const R = await api().catch(() => null);
     if (!R) { note(box, t('roomOffline')); return; }
 
     async function submit(name, first) {
-      await R.save(room.id, me, name, r.value, Ranking.myCountry(), first);
-      remember(room.id, { name });
+      await R.save(room.id, mode, me, name, r.value, Ranking.myCountry(), first);
+      remember(room.id, { name, tab: mode });
       Ranking.setSavedName(name);
-      rows = await R.players(room.id, room.mode);
-      showPlaced(box, me);
+      rows = await R.players(room.id, mode);
+      tab = mode;
+      showPlaced(box, mode, me);
     }
 
-    // 이 방에 이미 이름을 남겼으면: 더 좋은 기록일 때만 자동으로 고쳐요
-    try { rows = await R.players(room.id, room.mode); } catch (e) { note(box, t('roomOffline')); return; }
+    try { rows = await R.players(room.id, mode); } catch (e) { note(box, t('roomOffline')); return; }
+    tab = mode;
     const old = rows.find(x => x.id === me);
+    // 이 방에 이미 이름을 남겼으면: 같은 이름으로 자동 기록 (더 좋은 기록일 때만 바뀌어요)
     if (known || old) {
       const name = old ? old.name : known;
-      if (old && !better(room.mode, r.value, old.score)) {
+      if (old && !better(mode, r.value, old.score)) {
         const n = rows.indexOf(old) + 1;
-        showPlaced(box, me, t('roomKept', { n, v: Ranking.fmt(room.mode, old.score) }));
+        showPlaced(box, mode, me, t('roomKept', { n, v: Ranking.fmt(mode, old.score) }));
         return;
       }
       try {
@@ -331,7 +357,7 @@ const Room = (() => {
           return;
         }
         await submit(c.name, owner !== me);
-        if (window.track) window.track(`room-save-${room.mode}`, '단톡 경쟁전 기록');
+        if (window.track) window.track(`room-save-${mode}`, '그룹 경쟁전 기록');
       } catch (e2) {
         sending = false;
         btn.disabled = false;
@@ -343,17 +369,12 @@ const Room = (() => {
 
   /* ---------- 연결 ---------- */
   function bind() {
-    $('roomNew').addEventListener('click', openNew);
-    $('roomNewClose').addEventListener('click', closeNew);
-    $('roomNewBox').addEventListener('click', e => { if (e.target === $('roomNewBox')) closeNew(); });
-    $('roomPick').addEventListener('click', e => {
-      const b = e.target.closest('[data-room-mode]');
-      if (!b) return;
-      pickMode = b.dataset.roomMode;
-      renderPick();
+    $('roomNew').addEventListener('click', create);
+    $('roomPlay').addEventListener('click', () => {
+      if (!room || ended()) return;
+      remember(room.id, { tab });
+      App.playRoom({ id: room.id, mode: tab, seed: room.seed });
     });
-    $('roomCreate').addEventListener('click', create);
-    $('roomPlay').addEventListener('click', () => { if (room && !ended()) App.playRoom(room); });
     $('roomShare').addEventListener('click', share);
     $('roomHome').addEventListener('click', () => App.showHome());
     $('roomMine').addEventListener('click', e => {
