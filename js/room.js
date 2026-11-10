@@ -354,7 +354,7 @@ const Room = (() => {
     // 아이폰 앱(한국어): 카톡으로 그림 카드 + [앱으로 참가][웹으로 참가]
     if (N && N.kakao && typeof LANG !== 'undefined' && LANG === 'ko') {
       try {
-        const f = await cardImage(nm, room.host ? t('roomBy', { name: room.host }) : t('roomCardSubAnon'));
+        const f = await cardImage(nm, room.host ? t('roomInvBy', { name: room.host }) : t('roomCardSubAnon'));
         await N.kakaoImage(f, {
           title, desc, url,
           buttons: [
