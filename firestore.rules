@@ -33,39 +33,52 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // 그룹 경쟁전: 링크를 받은 사람끼리만 겨루는 방. 방 하나에서 게임 6개를 모두 겨뤄요. 만든 뒤 3일 동안 열려 있어요.
-    // - 방: 문제 씨앗(모두 똑같은 문제) + 만든 사람 닉네임
-    // - names/{닉네임}: 이 방에서 그 닉네임을 쓰는 기기 (먼저 쓴 사람 것, 바꿀 수 없음 → 같은 방 닉네임 중복 막기)
-    // - boards/{게임}/players/{기기}: 게임마다 기기당 한 줄, 더 좋은 기록으로만 고칠 수 있어요
+    // 그룹 경쟁전: 링크를 받은 사람끼리만 겨루는 방. 방 하나에서 게임 6개를 모두 겨뤄요.
+    // - 문제는 매일(한국 시간) 바뀌고, 3일마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
+    // - 방: 문제 씨앗 + 방 이름 + 만든 사람 닉네임 + 방장(익명 로그인 번호)
+    // - names/{닉네임}: 이 방에서 그 닉네임을 쓰는 기기 (먼저 쓴 사람 것 → 같은 방 닉네임 중복 막기)
+    // - boards/{게임_회차}/players/{기기}: 회차·게임마다 기기당 한 줄, 더 좋은 기록으로만 고칠 수 있어요
     match /rooms/{rid} {
+      function okName(n) { return n is string && n.size() >= 1 && n.size() <= 20; }
       allow read: if true;
       allow create: if rid.matches('^[A-Za-z0-9]{6,32}$')
-        && request.resource.data.keys().hasOnly(['seed', 'host', 'at', 'v'])
+        && request.auth != null
+        && request.resource.data.keys().hasOnly(['seed', 'host', 'name', 'owner', 'at', 'v'])
         && request.resource.data.seed is int
         && request.resource.data.seed > 0
         && request.resource.data.seed < 2147483648
         && request.resource.data.host is string
         && request.resource.data.host.size() <= 8
         && (request.resource.data.host.size() == 0 || request.resource.data.host.matches('^[가-힣A-Za-z0-9_ ]+$'))
+        && okName(request.resource.data.name)
+        && request.resource.data.owner == request.auth.uid
         && request.resource.data.at == request.time
-        && request.resource.data.v == 2;
-      allow update, delete: if false;
+        && request.resource.data.v == 3;
+      // 방장만: 이름 바꾸기, 방 지우기
+      allow update: if request.auth != null && resource.data.owner == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
+        && okName(request.resource.data.name);
+      allow delete: if request.auth != null && resource.data.owner == request.auth.uid;
 
       function room() { return get(/databases/$(database)/documents/rooms/$(rid)).data; }
-      function isOpen() { return request.time < room().at + duration.value(3, 'd'); }
+      // 한국 시간 날짜 번호, 지금 회차(3일씩)
+      function kday(t) { return math.floor((t.toMillis() + 32400000) / 86400000.0); }
+      function season() { return math.floor((kday(request.time) - kday(room().at)) / 3.0); }
 
       match /names/{key} {
         allow read: if true;
-        allow create: if isOpen()
+        allow create: if room().v == 3
           && request.resource.data.keys().hasOnly(['pid'])
           && request.resource.data.pid is string
           && request.resource.data.pid.matches('^[A-Za-z0-9]{8,64}$');
         allow update, delete: if false;
       }
 
-      match /boards/{mode}/players/{pid} {
+      match /boards/{bid}/players/{pid} {
+        function mode() { return bid.split('_')[0]; }
         function ok(d) {
-          return mode in ['fall', 'minute', 'race', 'balloon', 'beat', 'tf']
+          return bid.matches('^(fall|minute|race|balloon|beat|tf)_[0-9]{1,5}$')
+            && int(bid.split('_')[1]) == season()
             && d.keys().hasOnly(['name', 'score', 'at', 'v', 'country'])
             && d.name is string
             && d.name.size() >= 1
@@ -73,20 +86,20 @@ service cloud.firestore {
             && d.name.matches('^[가-힣A-Za-z0-9_ ]+$')
             && d.score is number
             && d.at == request.time
-            && d.v == 2
+            && d.v == 3
             && (!('country' in d) || (d.country is string && d.country.matches('^[A-Z]{2}$')))
             && (
-              (mode == 'race' && d.score >= 20 && d.score <= 3600)
-              || (mode != 'race' && d.score is int && d.score > 0 && d.score <= 5000000 && d.score % 5 == 0)
+              (mode() == 'race' && d.score >= 20 && d.score <= 3600)
+              || (mode() != 'race' && d.score is int && d.score > 0 && d.score <= 5000000 && d.score % 5 == 0)
             )
             // 닉네임 주인이 이 기기여야 해요
             && getAfter(/databases/$(database)/documents/rooms/$(rid)/names/$(d.name.lower().replace(' ', ''))).data.pid == pid;
         }
         allow read: if true;
-        allow create: if pid.matches('^[A-Za-z0-9]{8,64}$') && isOpen() && ok(request.resource.data);
-        allow update: if isOpen() && ok(request.resource.data)
+        allow create: if pid.matches('^[A-Za-z0-9]{8,64}$') && ok(request.resource.data);
+        allow update: if ok(request.resource.data)
           && request.resource.data.name == resource.data.name
-          && (mode == 'race'
+          && (mode() == 'race'
             ? request.resource.data.score < resource.data.score
             : request.resource.data.score > resource.data.score);
         allow delete: if false;

@@ -58,7 +58,9 @@
     },
   };
 
-  // 그룹 경쟁전 방 (rooms/{방}): 3일 동안 링크 받은 사람끼리만 순위를 겨뤄요. 방 하나에 게임 6개.
+  // 그룹 경쟁전 방 (rooms/{방}): 링크 받은 사람끼리만 겨뤄요. 방 하나에 게임 6개.
+  // - 문제는 매일(한국 시간 자정) 바뀌고, 3일마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
+  // - 방 만들기·이름 바꾸기·지우기는 방장만 (익명 로그인 번호로 확인해요)
   const rooms = db.collection('rooms');
   const roomKey = name => String(name || '').toLowerCase().replace(/ /g, ''); // 보안 규칙의 닉네임 열쇠와 똑같이
   const randId = n => {
@@ -68,24 +70,50 @@
     for (let i = 0; i < n; i++) s += A[r[i] % A.length];
     return s;
   };
-  const boardOf = (id, mode) => rooms.doc(id).collection('boards').doc(mode).collection('players');
+  const boardOf = (id, mode, season) => rooms.doc(id).collection('boards').doc(`${mode}_${season}`).collection('players');
+  // 방장 확인용 익명 로그인 (앱에서만 불러와요)
+  let authP = null;
+  function me() {
+    if (!firebase.auth) return Promise.reject(new Error('no auth'));
+    if (!authP) {
+      authP = new Promise((res, rej) => {
+        const a = firebase.auth();
+        if (a.currentUser) return res(a.currentUser.uid);
+        const off = a.onAuthStateChanged(u => {
+          if (u) { off(); res(u.uid); }
+        });
+        a.signInAnonymously().catch(e => { off(); authP = null; rej(e); });
+      });
+    }
+    return authP;
+  }
   window.Rooms = {
-    LIFE: 3 * 24 * 3600 * 1000, // 방이 열려 있는 시간 (3일)
-    async create(seed, host) {
+    me,
+    myUid: () => (firebase.auth && firebase.auth().currentUser ? firebase.auth().currentUser.uid : null),
+    async create(seed, host, name) {
+      const owner = await me();
       const id = randId(10);
-      await rooms.doc(id).set({ seed, host: host || '', at: firebase.firestore.FieldValue.serverTimestamp(), v: 2 });
+      await rooms.doc(id).set({ seed, host: host || '', name, owner, at: firebase.firestore.FieldValue.serverTimestamp(), v: 3 });
       return id;
+    },
+    async rename(id, name) {
+      await me();
+      await rooms.doc(id).update({ name });
+    },
+    async remove(id) {
+      await me();
+      await rooms.doc(id).delete();
     },
     async get(id) {
       const d = await rooms.doc(id).get();
       if (!d.exists) return null;
       const x = d.data();
-      if (x.v !== 2) return null; // 예전 시험용 방
+      if (x.v !== 3) return null; // 예전 시험용 방
       const at = x.at && x.at.toMillis ? x.at.toMillis() : Date.now();
-      return { id, seed: x.seed, host: x.host || '', at, exp: at + this.LIFE };
+      return { id, seed: x.seed, host: x.host || '', name: x.name || '', owner: x.owner || '', at };
     },
-    async players(id, mode) {
-      const snap = await boardOf(id, mode).orderBy('score', dir(mode)).limit(200).get();
+    async players(id, mode, season) {
+      const snap = await boardOf(id, mode, season).orderBy('score', dir(mode)).limit(200).get();
       return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     },
     // 이 방에서 그 닉네임을 쓰는 기기 (없으면 null)
@@ -94,12 +122,12 @@
       return d.exists ? d.data().pid : null;
     },
     // 기록 남기기: 처음이면 닉네임도 같이 찜해요 (한 번에 저장)
-    async save(id, mode, pid, name, score, country, first) {
-      const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 2 };
+    async save(id, mode, season, pid, name, score, country, first) {
+      const doc = { name, score, at: firebase.firestore.FieldValue.serverTimestamp(), v: 3 };
       if (country) doc.country = country;
       const b = db.batch();
       if (first) b.set(rooms.doc(id).collection('names').doc(roomKey(name)), { pid });
-      b.set(boardOf(id, mode).doc(pid), doc);
+      b.set(boardOf(id, mode, season).doc(pid), doc);
       await b.commit();
     },
   };

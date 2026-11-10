@@ -1,37 +1,77 @@
 /*
- * 그룹 경쟁전 (앱)
- * - 방을 만들면 링크(…/?room=방번호)가 생겨요. 단톡방 등에 올리면 그 링크로 들어온 사람끼리만 순위를 겨뤄요.
- * - 방 하나에서 게임 6개를 모두 겨뤄요 (게임마다 따로 순위).
- * - 모두 🏆 랭킹전 조건 + 완전히 같은 문제(방의 씨앗)로 해요.
- * - 방은 3일 동안 열려 있어요. 여러 번 해도 게임마다 최고 기록 한 줄만 남아요.
- * - 같은 방 안에서는 닉네임이 겹칠 수 없어요 (먼저 쓴 사람 것).
+ * 그룹 경쟁전 (앱·웹이 같은 파일을 써요: app/js/room.js → js/room.js 로 복사)
+ * - 방을 만들면 링크(…/?room=방번호)가 생겨요. 그 링크로 들어온 사람끼리만 순위를 겨뤄요.
+ * - 방 하나에서 게임 6개를 겨뤄요 (게임마다 따로 순위).
+ * - 모두 🏆 랭킹전 조건. 문제는 매일(한국 시간 자정) 바뀌고, 같은 날엔 모두 똑같은 문제예요.
+ * - 3일마다 순위만 새로 시작해요(회차). 방은 방장이 지울 때까지 남아요.
+ * - 같은 방 안에서는 닉네임이 겹칠 수 없어요 (먼저 쓴 사람 것). 회차·게임마다 최고 기록 한 줄만 남아요.
+ * - 방 만들기·이름 바꾸기·지우기는 앱에서만 (웹은 받은 링크로 참가만 해요).
  */
 const Room = (() => {
   const $ = id => document.getElementById(id);
   const MODES = ['fall', 'minute', 'race', 'balloon', 'beat', 'tf'];
-  const MINE_KEY = 'sumsum:rooms'; // 이 기기가 들어가 본 방 { 방번호: { exp, host, name } }
+  const MINE_KEY = 'sumsum:rooms'; // 이 기기가 들어가 본 방 { 방번호: { name, host, own, last, nick } }
   const SITE = 'https://sumsum.studiojhl.com/';
+  const DAY = 86400000;
+  const KST = 9 * 3600000;
+  const SEASON_DAYS = 3;
 
-  let room = null;     // 지금 보고 있는 방 { id, seed, host, at, exp }
+  let room = null;     // 지금 보고 있는 방 { id, seed, host, name, owner, at }
   let tab = 'fall';    // 방 화면에서 보고 있는 게임
-  let rows = [];       // 그 게임의 순위 (좋은 기록 순)
+  let rows = [];       // 그 게임의 이번 회차 순위 (좋은 기록 순)
   let busy = false;
+  let mineOpen = false; // 홈: '내 방 보기' 펼침
+  let pending = null;   // 방 만들기 창: { result } (결과 화면에서 열었으면 그 판 기록을 첫 기록으로)
+  let renaming = false;
 
   const better = (mode, a, b) => (mode === 'race' ? a < b : a > b);
   const gameName = mode => modeName(mode, { time: 60 });
+
+  /* ---------- 날짜·회차·오늘의 문제 ---------- */
+  const kday = ms => Math.floor((ms + KST) / DAY);
+  const dayIdx = r => Math.max(0, kday(Date.now()) - kday(r.at));
+  const season = r => Math.floor(dayIdx(r) / SEASON_DAYS);
+  const seasonEnd = r => (kday(r.at) + SEASON_DAYS * (season(r) + 1)) * DAY - KST; // 이번 회차가 끝나는 시각
+  // 오늘의 문제 씨앗: 첫날은 방 씨앗 그대로(결과 화면에서 만든 방은 방금 판 = 첫날 문제), 다음 날부터 섞어요
+  function todaySeed(r) {
+    const d = dayIdx(r);
+    if (d === 0) return r.seed;
+    let x = (r.seed ^ Math.imul(d + 1, 0x9E3779B1)) >>> 0;
+    x = Math.imul(x ^ (x >>> 16), 0x85EBCA6B) >>> 0;
+    x = (x ^ (x >>> 13)) >>> 0;
+    return 1 + (x % 2147483646);
+  }
 
   /* ---------- 이 기기에 저장 ---------- */
   function mine() {
     try { return JSON.parse(localStorage.getItem(MINE_KEY)) || {}; } catch (e) { return {}; }
   }
+  function saveMine(all) {
+    try { localStorage.setItem(MINE_KEY, JSON.stringify(all)); } catch (e) {}
+  }
   function remember(id, patch) {
     const all = mine();
     all[id] = { ...(all[id] || {}), ...patch };
-    // 마감된 지 하루 넘은 방은 정리해요
-    for (const k of Object.keys(all)) if (!all[k].exp || all[k].exp < Date.now() - 86400000) delete all[k];
-    try { localStorage.setItem(MINE_KEY, JSON.stringify(all)); } catch (e) {}
+    saveMine(all);
   }
-  const pid = () => Ranking.pid(); // 앱: 명예의 전당과 같은 기기 번호
+  function forget(id) {
+    const all = mine();
+    delete all[id];
+    saveMine(all);
+  }
+  const touch = (id, patch = {}) => remember(id, { ...patch, last: Date.now() }); // 최근에 한 방이 맨 위로
+
+  function pid() {
+    if (typeof Ranking !== 'undefined' && Ranking.pid) return Ranking.pid(); // 앱: 명예의 전당과 같은 기기 번호
+    try {
+      let p = localStorage.getItem('sumsum:pid');
+      if (!p || !/^[A-Za-z0-9]{8,64}$/.test(p)) {
+        p = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => (b % 36).toString(36)).join('') + Date.now().toString(36);
+        localStorage.setItem('sumsum:pid', p);
+      }
+      return p;
+    } catch (e) { return 'anon' + Date.now().toString(36); }
+  }
 
   /* ---------- Firebase 준비 기다리기 ---------- */
   function api() {
@@ -43,16 +83,16 @@ const Room = (() => {
   }
 
   /* ---------- 글자 ---------- */
-  function leftText(exp) {
-    const ms = exp - Date.now();
-    if (ms <= 0) return t('roomEnded');
-    const h = Math.floor(ms / 3600000);
-    if (h >= 24) return t('roomLeftD', { d: Math.floor(h / 24), h: h % 24 });
-    return t('roomLeftH', { h, m: Math.floor((ms % 3600000) / 60000) });
+  function leftText(end) {
+    const ms = end - Date.now();
+    const h = Math.max(0, Math.floor(ms / 3600000));
+    if (h >= 24) return t('roomResetD', { d: Math.floor(h / 24), h: h % 24 });
+    return t('roomResetH', { h, m: Math.max(0, Math.floor((ms % 3600000) / 60000)) });
   }
-  const roomUrl = id => `${SITE}?room=${id}`; // 앱이 없는 친구는 웹에서 참가해요
-  const ended = () => room && room.exp <= Date.now();
-  const roomName = host => (host ? t('roomBy', { name: host }) : t('roomKicker'));
+  const roomUrl = id => `${SITE}?room=${id}`;
+  const isOwner = () => !!(room && room.owner && window.Rooms && Rooms.myUid && Rooms.myUid() === room.owner);
+  const canCreate = () => !!$('roomNewBox');
+  const fit = (el, name) => { if (typeof Glyph !== 'undefined') Glyph.fit(el, name); };
 
   /* ---------- 순위 그리기 ---------- */
   // idx: 보여 줄 줄 번호들 (없으면 전부)
@@ -70,7 +110,7 @@ const Room = (() => {
       const li = document.createElement('li');
       li.className = `rank-row r${i + 1}${r.id === highlight ? ' me' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = Ranking.ordinal(i);
-      const b = document.createElement('span'); b.className = 'rank-name'; Ranking.setName(b, r); Glyph.fit(b, r.name);
+      const b = document.createElement('span'); b.className = 'rank-name'; Ranking.setName(b, r); fit(b, r.name);
       if (i === 0) b.insertAdjacentHTML('afterbegin', Ranking.CROWN);
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = Ranking.fmt(mode, r.score);
       li.append(a, b, c);
@@ -94,18 +134,21 @@ const Room = (() => {
 
   function render() {
     if (!room) return;
-    $('roomTitle').textContent = t('roomKicker');
-    $('roomMeta').textContent = room.host ? `${t('roomBy', { name: room.host })}\n${leftText(room.exp)}` : leftText(room.exp);
+    $('roomTitle').textContent = room.name || t('roomKicker');
+    const lines = [];
+    if (room.host) lines.push(t('roomBy', { name: room.host }));
+    lines.push(`${t('roomRound', { n: season(room) + 1 })} · ${leftText(seasonEnd(room))}`);
+    $('roomMeta').textContent = lines.join('\n');
     $('roomTabs').hidden = false;
     renderTabs();
-    const over = ended();
     $('roomCount').hidden = false;
-    $('roomCount').textContent = over && rows.length
-      ? t('roomWinner', { name: rows[0].name, v: Ranking.fmt(tab, rows[0].score) })
-      : t('roomCount', { game: gameName(tab), n: rows.length });
-    $('roomPlay').hidden = over;
-    $('roomRule').hidden = over;
+    $('roomCount').textContent = t('roomCount', { game: gameName(tab), n: rows.length });
+    $('roomPlay').hidden = false;
+    $('roomRule').hidden = false;
+    $('roomShare').hidden = false;
+    if ($('roomOwner')) $('roomOwner').hidden = !isOwner();
     renderList($('roomList'), tab, pid());
+    $('roomList').scrollTop = 0;
   }
 
   function message(key) {
@@ -116,6 +159,7 @@ const Room = (() => {
     $('roomPlay').hidden = true;
     $('roomShare').hidden = true;
     $('roomRule').hidden = true;
+    if ($('roomOwner')) $('roomOwner').hidden = true;
     const list = $('roomList');
     list.textContent = '';
     const li = document.createElement('li');
@@ -130,7 +174,7 @@ const Room = (() => {
     const want = m;
     try {
       const R = await api();
-      const got = await R.players(room.id, m);
+      const got = await R.players(room.id, m, season(room));
       if (want !== tab) return;
       rows = got;
       render();
@@ -145,13 +189,13 @@ const Room = (() => {
     message('roomLoading');
     try {
       const R = await api();
+      if (R.me) R.me().then(() => { if (room && room.id === id && $('roomOwner')) $('roomOwner').hidden = !isOwner(); }).catch(() => {});
       const r = await R.get(id);
-      if (!r) { message('roomNotFound'); return; }
+      if (!r) { forget(id); renderMine(); message('roomNotFound'); return; }
       room = r;
       tab = MODES.includes(mode) ? mode : (mine()[id] || {}).tab || 'fall';
-      rows = await R.players(id, tab);
-      remember(id, { exp: r.exp, host: r.host });
-      $('roomShare').hidden = false;
+      rows = await R.players(id, tab, season(r));
+      touch(id, { name: r.name, host: r.host });
       KakaoShare.prepare(); // 카톡 공유를 미리 불러 둬요 (안 하면 카톡 카드 대신 일반 공유로 나가요)
       render();
       renderMine();
@@ -171,33 +215,111 @@ const Room = (() => {
       return true;
     } catch (e) { return false; }
   }
+  // 카톡 '앱으로 참가'로 앱이 열렸을 때 (App.openChallenge 가 불러요)
+  function openQuery(query) {
+    try {
+      const id = new URLSearchParams(query).get('room');
+      if (!id || !/^[A-Za-z0-9]{6,32}$/.test(id)) return false;
+      if (window.track) window.track('room-open-app', '그룹 경쟁전 앱으로 열기');
+      open(id);
+      return true;
+    } catch (e) { return false; }
+  }
 
-  /* ---------- 방 만들기 (누르면 바로 만들어져요) ---------- */
-  async function create() {
+  /* ---------- 방 만들기·이름 바꾸기 창 (앱) ---------- */
+  const cleanRoomName = s => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 20);
+  function openNew(opts = {}) {
+    if (!canCreate()) return;
+    renaming = !!opts.rename;
+    pending = opts.result ? { result: opts.result } : null;
+    const nick = Ranking.getSavedName();
+    $('roomNewTitle').textContent = t(renaming ? 'roomRenameTitle' : (pending ? 'roomFromResultTitle' : 'roomNewTitle'));
+    $('roomNewNote').textContent = renaming ? '' : t(pending && pending.result.settings && pending.result.settings.ranked ? 'roomFromResultNote' : 'roomNewNote');
+    $('roomNewNote').hidden = renaming;
+    $('roomNameInput').value = renaming ? (room.name || '') : '';
+    $('roomNameInput').placeholder = t('roomNamePh', { name: nick || t('roomNameMe') });
+    $('roomNickField').hidden = renaming || !!nick;
+    $('roomNickInput').value = '';
+    $('roomNickInput').placeholder = t('rankPlaceholder');
+    $('roomNewErr').hidden = true;
+    $('roomCreate').textContent = t(renaming ? 'roomRenameSave' : 'roomCreate');
+    $('roomNewBox').hidden = false;
+  }
+  function closeNew() { if ($('roomNewBox')) $('roomNewBox').hidden = true; pending = null; }
+  function newErr(key) {
+    $('roomNewErr').textContent = t(key);
+    $('roomNewErr').hidden = false;
+  }
+
+  async function submitNew() {
     if (busy) return;
+    const nick0 = Ranking.getSavedName();
+    let name = cleanRoomName($('roomNameInput').value) || t('roomNameDefault', { name: nick0 || t('roomNameMe') });
+    if (renaming) {
+      if (!room) return;
+      busy = true;
+      try {
+        const R = await api();
+        await R.rename(room.id, name);
+        room.name = name;
+        touch(room.id, { name });
+        closeNew();
+        render();
+        renderMine();
+      } catch (e) { newErr('roomRenameFail'); }
+      busy = false;
+      return;
+    }
+    let nick = nick0;
+    if (!nick) {
+      const c = Ranking.cleanName($('roomNickInput').value);
+      if (c.err) { newErr(c.err); return; }
+      nick = c.name;
+    }
     busy = true;
-    const btn = $('roomNew') || {};
-    btn.disabled = true;
+    $('roomCreate').disabled = true;
+    const res = pending && pending.result;
     try {
       const R = await api();
-      const seed = 1 + Math.floor(Math.random() * 2147483646);
-      const host = Ranking.getSavedName();
-      const id = await R.create(seed, host);
-      remember(id, { exp: Date.now() + R.LIFE, host, own: true });
-      if (window.track) window.track('room-new', '그룹 경쟁전 만들기');
-      await open(id);
+      const ranked = !!(res && res.settings && res.settings.ranked && res.seed && res.value > 0);
+      // 결과 화면에서 랭킹전 판으로 만들면: 방의 첫날 문제 = 방금 그 판 → 내 기록이 첫 기록으로 들어가요
+      const seed = ranked ? res.seed : 1 + Math.floor(Math.random() * 2147483646);
+      const id = await R.create(seed, nick, name);
+      Ranking.setSavedName(nick);
+      touch(id, { name, host: nick, own: true, nick, tab: ranked ? res.mode : 'fall' });
+      if (ranked) {
+        try {
+          await R.save(id, res.mode, 0, pid(), nick, res.value, Ranking.myCountry(), true);
+        } catch (e) { /* 기록은 못 올려도 방은 만들어졌어요 */ }
+      }
+      if (window.track) window.track(ranked ? 'room-new-result' : 'room-new', '그룹 경쟁전 만들기');
+      closeNew();
+      await open(id, ranked ? res.mode : undefined);
       App.toast(t('roomCreated'));
     } catch (e) {
-      App.toast(t('roomCreateFail'));
+      newErr('roomCreateFail');
     } finally {
       busy = false;
-      btn.disabled = false;
+      $('roomCreate').disabled = false;
     }
+  }
+
+  async function removeRoom() {
+    if (!room || !isOwner()) return;
+    if (!window.confirm(t('roomDeleteAsk', { name: room.name || t('roomKicker') }))) return;
+    try {
+      const R = await api();
+      await R.remove(room.id);
+      forget(room.id);
+      room = null;
+      App.toast(t('roomDeleted'));
+      App.showHome();
+    } catch (e) { App.toast(t('roomDeleteFail')); }
   }
 
   /* ---------- 공유 ---------- */
   // 카톡 카드 그림 (1200×630): 아이폰 앱은 카톡에 그림을 꼭 올려야 해서 직접 그려요
-  async function cardImage(title) {
+  async function cardImage(title, sub) {
     try { await document.fonts.ready; } catch (e) {}
     const c = document.createElement('canvas');
     c.width = 1200; c.height = 630;
@@ -208,14 +330,17 @@ const Room = (() => {
     for (let i = 0; i <= 630; i += 40) { x.beginPath(); x.moveTo(0, i); x.lineTo(1200, i); x.stroke(); }
     x.strokeStyle = '#6a4dff'; x.lineWidth = 10; x.strokeRect(40, 40, 1120, 550);
     x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillStyle = '#4de1ff'; x.font = '34px "Press Start 2P", monospace';
-    x.fillText('SUMSUM', 600, 150);
-    x.fillStyle = '#ffe14d'; x.font = '150px "Do Hyeon", sans-serif';
-    x.fillText(t('roomKicker'), 600, 300);
-    x.fillStyle = '#f2eeff'; x.font = '52px "Do Hyeon", sans-serif';
-    x.fillText(title, 600, 430);
-    x.fillStyle = '#9d93c9'; x.font = '40px "Do Hyeon", sans-serif';
-    x.fillText(t('roomCardSub'), 600, 505);
+    x.fillStyle = '#4de1ff'; x.font = '40px "Do Hyeon", sans-serif';
+    x.fillText(t('roomKicker'), 600, 150);
+    x.fillStyle = '#ffe14d';
+    let size = 130;
+    x.font = `${size}px "Do Hyeon", sans-serif`;
+    while (x.measureText(title).width > 1000 && size > 60) { size -= 6; x.font = `${size}px "Do Hyeon", sans-serif`; }
+    x.fillText(title, 600, 290);
+    x.fillStyle = '#f2eeff'; x.font = '48px "Do Hyeon", sans-serif';
+    x.fillText(sub, 600, 420);
+    x.fillStyle = '#9d93c9'; x.font = '38px "Do Hyeon", sans-serif';
+    x.fillText(t('roomCardSub'), 600, 495);
     const blob = await new Promise(res => c.toBlob(res, 'image/png'));
     return new File([blob], 'sumsum-room.png', { type: 'image/png' });
   }
@@ -224,14 +349,15 @@ const Room = (() => {
     if (!room) return;
     const url = roomUrl(room.id);
     const exec = `room=${room.id}`;
-    const title = room.host ? t('roomCardTitle', { name: room.host }) : t('roomCardTitleAnon');
+    const nm = room.name || t('roomKicker');
+    const title = room.host ? t('roomCardTitle', { name: room.host, room: nm }) : t('roomCardTitleAnon', { room: nm });
     const desc = t('roomCardDesc');
     if (window.track) window.track('room-share', '그룹 경쟁전 공유');
     const N = window.SumsumNative;
     // 아이폰 앱(한국어): 카톡으로 그림 카드 + [앱으로 참가][웹으로 참가]
-    if (N && N.kakao && LANG === 'ko') {
+    if (N && N.kakao && typeof LANG !== 'undefined' && LANG === 'ko') {
       try {
-        const f = await cardImage(room.host ? t('roomBy', { name: room.host }) : t('roomCardSubAnon'));
+        const f = await cardImage(nm, room.host ? t('roomBy', { name: room.host }) : t('roomCardSubAnon'));
         await N.kakaoImage(f, {
           title, desc, url,
           buttons: [
@@ -243,7 +369,7 @@ const Room = (() => {
       } catch (e) { /* 카톡이 없거나 실패하면 아래로 */ }
     }
     // 안드로이드 앱·웹(한국어): 카카오 SDK 카드
-    if (KakaoShare.sendText({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoinWeb')] })) return;
+    if (KakaoShare.sendText({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoinWeb')], btn: t('roomJoin') })) return;
     // 그 밖: 글과 링크를 한 덩어리로 (url을 따로 넘기면 카톡에서 사이에 빈 줄이 생겨요)
     const text = `${title}\n${desc}\n${url}`;
     if (navigator.share) {
@@ -252,23 +378,30 @@ const Room = (() => {
     try { await navigator.clipboard.writeText(text); App.toast(t('shareCopied')); } catch (e) { App.toast(t('shareFail')); }
   }
 
-  /* ---------- 홈: 참여 중인 경쟁전 ---------- */
+  /* ---------- 홈: 내 방 보기 (최근에 한 방이 맨 위) ---------- */
   function renderMine() {
     const box = $('roomMine');
+    const tog = $('roomMineToggle');
     if (!box) return;
-    const live = Object.entries(mine()).filter(([, v]) => v.exp > Date.now())
-      .sort((a, b) => b[1].exp - a[1].exp).slice(0, 3);
-    box.hidden = !live.length;
+    const list = Object.entries(mine()).filter(([, v]) => v && v.last)
+      .sort((a, b) => b[1].last - a[1].last);
+    if (tog) {
+      tog.hidden = !list.length;
+      tog.textContent = t(mineOpen ? 'roomMineHide' : 'roomMineShow', { n: list.length });
+      tog.setAttribute('aria-expanded', String(mineOpen));
+    }
+    box.hidden = !list.length || (tog ? !mineOpen : false);
     box.innerHTML = '';
-    for (const [id, v] of live) {
+    for (const [id, v] of list) {
       const li = document.createElement('li');
       li.className = 'room-mine-row';
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'room-mine-btn';
       b.dataset.roomId = id;
-      const n = document.createElement('span'); n.className = 'room-mine-game'; n.textContent = v.own ? t('roomMineOwn') : roomName(v.host);
-      const l = document.createElement('span'); l.className = 'room-mine-left'; l.textContent = leftText(v.exp);
+      const n = document.createElement('span'); n.className = 'room-mine-game'; n.textContent = v.name || t('roomKicker');
+      const l = document.createElement('span'); l.className = 'room-mine-left';
+      l.textContent = v.own ? t('roomMineOwn') : (v.host ? t('roomBy', { name: v.host }) : '');
       b.append(n, l);
       li.appendChild(b);
       box.appendChild(li);
@@ -311,24 +444,26 @@ const Room = (() => {
     box.hidden = true;
     if (!room || r.room !== room.id || r.badge.kind === 'quit' || !(r.value > 0)) return;
     box.hidden = false;
-    if (ended()) { note(box, t('roomExpiredNote')); return; }
+    // 자정이 지나 문제가 바뀐 뒤에 끝난 판은 기록하지 않아요
+    if (r.seed !== todaySeed(room)) { note(box, t('roomStaleNote')); return; }
 
     const mode = r.mode;
+    const ssn = season(room);
     const me = pid();
-    const known = (mine()[room.id] || {}).name;
+    const known = (mine()[room.id] || {}).nick;
     const R = await api().catch(() => null);
     if (!R) { note(box, t('roomOffline')); return; }
 
     async function submit(name, first) {
-      await R.save(room.id, mode, me, name, r.value, Ranking.myCountry(), first);
-      remember(room.id, { name, tab: mode });
+      await R.save(room.id, mode, ssn, me, name, r.value, Ranking.myCountry(), first);
+      touch(room.id, { nick: name, tab: mode });
       Ranking.setSavedName(name);
-      rows = await R.players(room.id, mode);
+      rows = await R.players(room.id, mode, ssn);
       tab = mode;
       showPlaced(box, mode, me);
     }
 
-    try { rows = await R.players(room.id, mode); } catch (e) { note(box, t('roomOffline')); return; }
+    try { rows = await R.players(room.id, mode, ssn); } catch (e) { note(box, t('roomOffline')); return; }
     tab = mode;
     const old = rows.find(x => x.id === me);
     // 이 방에 이미 이름을 남겼으면: 같은 이름으로 자동 기록 (더 좋은 기록일 때만 바뀌어요)
@@ -400,31 +535,28 @@ const Room = (() => {
 
   /* ---------- 연결 ---------- */
   function bind() {
-    // 방 만들기는 앱에서만 (웹 홈에는 버튼이 없어요). 웹은 받은 링크로 참가만 해요.
-    if ($('roomNew')) $('roomNew').addEventListener('click', create);
+    if ($('roomNew')) $('roomNew').addEventListener('click', () => openNew());
+    if ($('roomNewBox')) {
+      $('roomNewClose').addEventListener('click', closeNew);
+      $('roomNewBox').addEventListener('click', e => { if (e.target === $('roomNewBox')) closeNew(); });
+      $('roomCreate').addEventListener('click', submitNew);
+      $('roomNameInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submitNew(); } });
+    }
+    if ($('roomRename')) $('roomRename').addEventListener('click', () => { if (isOwner()) openNew({ rename: true }); });
+    if ($('roomDelete')) $('roomDelete').addEventListener('click', removeRoom);
     $('roomPlay').addEventListener('click', () => {
-      if (!room || ended()) return;
-      remember(room.id, { tab });
-      App.playRoom({ id: room.id, mode: tab, seed: room.seed });
+      if (!room) return;
+      touch(room.id, { tab });
+      App.playRoom({ id: room.id, mode: tab, seed: todaySeed(room) });
     });
     $('roomShare').addEventListener('click', share);
     $('roomHome').addEventListener('click', () => App.showHome());
+    if ($('roomMineToggle')) $('roomMineToggle').addEventListener('click', () => { mineOpen = !mineOpen; renderMine(); });
     if ($('roomMine')) $('roomMine').addEventListener('click', e => {
       const b = e.target.closest('[data-room-id]');
       if (b) open(b.dataset.roomId);
     });
   }
 
-  // 카톡 '앱으로 참가'로 앱이 열렸을 때 (App.openChallenge 가 불러요)
-  function openQuery(query) {
-    try {
-      const id = new URLSearchParams(query).get('room');
-      if (!id || !/^[A-Za-z0-9]{6,32}$/.test(id)) return false;
-      if (window.track) window.track('room-open-app', '그룹 경쟁전 앱으로 열기');
-      open(id);
-      return true;
-    } catch (e) { return false; }
-  }
-
-  return { bind, readLink, openQuery, open, onResult, renderMine, cardImage, current: () => room };
+  return { bind, readLink, openQuery, open, openNew, share, onResult, renderMine, cardImage, current: () => room };
 })();

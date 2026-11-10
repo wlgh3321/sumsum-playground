@@ -1583,3 +1583,6 @@ input[type="range"] {
   text-underline-offset: 3px;
   word-break: keep-all;
 }
+
+/* 그룹 경쟁전: 순위는 6명까지 보이고 더 많으면 그 안에서만 스크롤 */
+.room-list { max-height: 282px; overflow-y: auto; overscroll-behavior: contain; }

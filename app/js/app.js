@@ -802,31 +802,14 @@ const App = (() => {
     $('quitBtn').addEventListener('click', () => Game.quit());
     // 공유 창은 브라우저 정책상 터치를 뗄 때(click) 열어야 아이폰에서도 떠요.
     // 친구에게 도전장 보내기: 한국어는 카톡 도전장 카드(점수 이미지 + "OO님에게서 도전장이 왔어요!"), 아니면 공유 창으로 이미지·문구·링크
-    $('shareImgBtn').addEventListener('click', async () => {
-      track(`share-img-${lastMode}`, '도전장 보내기');
+    // 친구들과 겨루기: 경쟁전 판이면 그 방을 공유, 아니면 방을 만들어요 (랭킹전 판이면 방금 기록이 첫 기록으로)
+    // (예전 1:1 도전장 링크를 받는 쪽은 그대로 돼요)
+    $('shareImgBtn').addEventListener('click', () => {
       const r = lastResult;
-      // 앱(한국어): 카카오톡으로 점수 이미지 + 도전장 버튼(앱으로·웹으로) 카드를 바로 보내요
-      const N = window.SumsumNative;
-      if (r && N && N.kakao && LANG === 'ko') {
-        try {
-          const f = await ShareCard.ready();
-          const SITE = 'https://sumsum.studiojhl.com/';
-          // '앱으로 도전': 친구 폰에 앱이 있으면 앱이 바로 열려요(exec), 없으면 스토어로 / '웹으로 도전': 브라우저에서 바로
-          await N.kakaoImage(f, {
-            ...challengeMsg(r),
-            url: challengeUrl(r),
-            buttons: [
-              { title: '앱으로 도전', url: SITE + 'get/?' + challengeQuery(r), exec: challengeQuery(r) },
-              { title: '웹으로 도전', url: challengeUrl(r) },
-            ],
-          });
-          return;
-        } catch (e) { /* 카톡이 없거나 실패하면 아래 공유 창으로 */ }
-      }
-      if (r && KakaoShare.sendImage({ ...challengeMsg(r), url: challengeUrl(r), exec: challengeQuery(r) })) return;
       if (!r) return;
-      const m = challengeMsg(r);
-      ShareCard.share(() => toast(t('shareImgSaved')), { text: `${m.title}\n${m.desc}`, url: challengeUrl(r) }, () => toast(t('shareCopied')));
+      track(`room-from-result-${lastMode}`, '친구들과 겨루기');
+      if (r.room && Room.current() && Room.current().id === r.room) { Room.share(); return; }
+      Room.openNew({ result: r });
     });
     // 결과 이미지 저장: 이미지를 크게 보여 주고 저장 버튼
     $('shareBtn').addEventListener('click', async () => {
