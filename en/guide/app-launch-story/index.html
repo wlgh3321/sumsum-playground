@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0a1c">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="/site.webmanifest">
+  <title>How I shipped a math game app on my own · SumSum Playground</title>
+  <meta name="description" content="A solo developer on building the arithmetic web game SumSum Playground and releasing it on the App Store: the idea, the redesign, getting ready for review, and why Android came later.">
+  <link rel="canonical" href="https://sumsum.studiojhl.com/en/guide/app-launch-story/">
+  <link rel="alternate" hreflang="ko" href="https://sumsum.studiojhl.com/guide/app-launch-story/">
+  <link rel="alternate" hreflang="en" href="https://sumsum.studiojhl.com/en/guide/app-launch-story/">
+  <link rel="alternate" hreflang="x-default" href="https://sumsum.studiojhl.com/guide/app-launch-story/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="SumSum Playground">
+  <meta property="og:title" content="How I shipped a math game app on my own">
+  <meta property="og:description" content="A solo developer on building the arithmetic web game SumSum Playground and releasing it on the App Store: the idea, the redesign, getting ready for review, and why Android came later.">
+  <meta property="og:url" content="https://sumsum.studiojhl.com/en/guide/app-launch-story/">
+  <meta property="og:image" content="https://sumsum.studiojhl.com/og-en.png?v=4">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=Do+Hyeon&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+  <link rel="stylesheet" href="/css/theme.css?v=20261110a">
+  <link rel="stylesheet" href="/css/style.css?v=20261110a">
+  <link rel="stylesheet" href="/css/arcade.css?v=20261110a">
+  <link rel="stylesheet" href="/css/page.css?v=20261110a">
+  <link rel="stylesheet" href="/css/guide.css?v=20261110a">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How I shipped a math game app on my own", "description": "A solo developer on building the arithmetic web game SumSum Playground and releasing it on the App Store: the idea, the redesign, getting ready for review, and why Android came later.", "inLanguage": "en", "datePublished": "2026-11-10", "dateModified": "2026-11-10", "author": {"@type": "Organization", "name": "JHL STUDIO"}, "publisher": {"@type": "Organization", "name": "JHL STUDIO"}, "mainEntityOfPage": "https://sumsum.studiojhl.com/en/guide/app-launch-story/"}</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6048734887508367" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="app">
+<main class="doc">
+  <div class="doc-top">
+    <a class="doc-back" href="/?lang=en">← Back to the games</a>
+    <a class="chip lang-link" href="/guide/app-launch-story/" hreflang="ko" lang="ko">한국어</a>
+  </div>
+  <nav class="crumbs" aria-label="breadcrumb">
+    <a href="/?lang=en">SumSum Playground</a><span class="sep">›</span>
+    <a href="/en/guide/">Learning Guide</a><span class="sep">›</span>
+    <span>Behind the game</span>
+  </nav>
+
+  <article class="card">
+    <h1>How I shipped a math game app on my own</h1>
+    <p class="meta">Behind the game · 7 min read · November 10, 2026</p>
+<p class="lead">SumSum Playground is made by one person, under the name JHL STUDIO. It started as a website in the fall of 2026 and reached the App Store as an iPhone and iPad app on November 3. This is what happened along the way, written down in order, in case it helps someone preparing their own first release.</p>
+
+<h2>It began with a one-minute times table test</h2>
+<p>The first idea was simple: a website where you practice addition, subtraction, multiplication and division as games. One where problems fall and you answer before they land. One where you answer as many as you can before time runs out. One that times how long you take to get 60 right. Those became Falling Problems, Time Challenge and the 60-Question Race. Balloon Pop, Beat the Clock and True or False came later, making six.</p>
+<p>The code was written by talking with an AI, the approach people call vibe coding. My job was to keep saying how things should feel. Two buttons have different widths. That line breaks in an awkward place. The game resumes instantly after a pause and I miss the timing. Fixing small annoyances like those, one at a time, was most of the work.</p>
+
+<h2>Design before revenue</h2>
+<p>The first version looked clean and was easy to forget. I decided to redo the design before thinking about ads, and chose a retro arcade direction: a logo made of stacked blocks, pixel type, neon colors on a dark background. Arithmetic practice makes people think of worksheets. I wanted it to feel like standing in front of an arcade cabinet.</p>
+<p>I also set one rule then: <b>a game for everyone</b>. Kids play it, but it should not feel odd for an office worker on the subway or a grandparent keeping their mind active. So there are no mascots and no gold-star stickers.</p>
+
+<h2>What the Hall of Fame changed</h2>
+<p>A math game played alone gets old quickly. "One more game" only appeared after I added the Hall of Fame, where a nickname puts your score on the board. That is also when Ranked mode was split off: change the difficulty freely in Practice, but scores only count under identical conditions.</p>
+<p>The leaderboard brought new problems right away. How do you stop made-up scores? What about inappropriate nicknames? I added server rules that only accept scores that make sense, and limited nickname length and characters. These invisible parts took longer than the games.</p>
+
+<h2>From web to app</h2>
+<p>A web game's strength is that a link is all you need. Its weakness is getting people to come back. An icon on the home screen is what reminds you to play again, so I decided to make an app.</p>
+<p>I did not rebuild it from scratch. The web game is wrapped in an app shell, so one set of game code serves both. The app screens were designed separately, though: buttons repositioned for a tall screen with no address bar, and features that give you a reason to return every day, like records and badges, added only to the app.</p>
+
+<h2>Everything besides the game</h2>
+<p>Making a game and releasing an app turned out to be different jobs. The list looked like this.</p>
+<ul>
+  <li><b>Developer accounts</b>: I joined the Apple Developer Program and paid the annual fee. The Google Play account needed identity and device verification.</li>
+  <li><b>Business paperwork</b>: selling "Remove ads" inside the app requires business details, so I registered as a sole proprietor and filed the online sales registration required in Korea.</li>
+  <li><b>Store pages</b>: name, description, search keywords and screenshots, in Korean and English. The store name says what the game is, so people searching for an arithmetic game can find it.</li>
+  <li><b>Privacy policy</b>: required even with no sign-up, including what the ads use.</li>
+  <li><b>Ads and purchases</b>: ads never interrupt a game. They appear only after one ends, and only sometimes. Ads that give an extra heart are entirely optional.</li>
+</ul>
+
+<h2>Review, then release</h2>
+<p>Waiting for App Store review felt like the longest part. On November 3, 2026 the approval email arrived. I searched the store for the name of my own app, saw the icon appear, and stared at the screen for a while.</p>
+
+<h2>Why Android came later</h2>
+<p>The plan was to launch on Android first. But Google Play requires new personal developer accounts to run a closed test with at least 12 testers for 14 days before a public release. For someone working alone, finding 12 people is a bigger task than it sounds. So the iPhone app went out first while the testers were gathered. The Android app will be released once testing is done.</p>
+
+<h2>What I learned after launch</h2>
+<p>Launch was the start, not the end, because people who actually played it began sending ideas. "It would be fun if only people with a link competed" became the <a href="/en/guide/group-match/">group challenge</a>. Badges turned out to be too easy to collect, so 12 became 24. A 3-2-1 countdown now runs when you resume from pause.</p>
+<p>Working alone is slow because every decision is yours. But when someone says something is annoying, you can fix it that same day. That is the best part of doing it solo.</p>
+
+<h2>What's next</h2>
+<p>The Android release and new game modes. If something bothers you or you have an idea, write to <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>. Messages are read, and what can be fixed gets fixed.</p>
+
+<div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">SumSum Playground on the App Store</a>. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p></div>
+  </article>
+
+  <section class="card cta">
+    <p>Put what you just read into practice.</p>
+    <a class="btn-go" href="/?lang=en">Play now ▶</a>
+  </section>
+
+  <section class="card">
+    <h2 class="rel-h">Keep reading</h2>
+    <ul class="post-list">
+      <li><a href="/en/guide/math-game-for-everyone/"><span class="t">Why this is a math game for adults too</span><span class="d">Why SumSum Playground is built as an arcade game for all ages instead of a learning program for one age group, and the design rules that follow from that.</span></a></li>
+      <li><a href="/en/guide/falling-problems/"><span class="t">Falling Problems — how to stop the rain</span><span class="d">Rules, scoring, hearts and levels in the SumSum Playground game &quot;Falling Problems&quot;, plus tips for getting a higher score.</span></a></li>
+    </ul>
+  </section>
+  <nav class="site-foot" aria-label="Site">
+    <a href="/about.html">About</a><span class="dot">·</span>
+    <a href="/en/guide/">Learning Guide</a><span class="dot">·</span>
+    <a href="/privacy.html">Privacy</a><span class="dot">·</span>
+    <a href="mailto:jhl.studio.00@gmail.com">Contact</a>
+  </nav>
+</main>
+</div>
+</body>
+</html>

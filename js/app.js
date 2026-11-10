@@ -344,6 +344,8 @@ const App = (() => {
     // 학습 가이드 링크는 언어에 맞는 주소로
     const g = document.getElementById('footGuide');
     if (g) g.href = lang === 'en' ? 'en/guide/' : 'guide/';
+    const am = document.getElementById('appBannerMore');
+    if (am) am.href = lang === 'en' ? 'en/guide/app-vs-web/' : 'guide/app-vs-web/';
     renderAll();
   }
 

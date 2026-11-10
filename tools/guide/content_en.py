@@ -2,13 +2,15 @@
 CATS = {
     'games': 'Game guides',
     'learn': 'Math practice tips',
+    'app': 'The app',
+    'story': 'Behind the game',
     'help': 'Help',
 }
 
 HUB = {
     'title': 'Learning Guide',
-    'desc': 'How to play all six SumSum Playground games, plus practical tips for learning addition, subtraction, multiplication and division faster and with fewer mistakes.',
-    'lead': 'Get more out of SumSum Playground and build solid arithmetic skills. Read these with your child, or use them as classroom material.',
+    'desc': 'How to play all six SumSum Playground games, practical mental math tips, a guide to the app and group challenges, and the story of how a solo developer shipped it.',
+    'lead': 'Get more out of SumSum Playground, sharpen your mental math, and read the news and stories behind the game. Good for reading alone, or with family and friends.',
 }
 
 PAGES = [
@@ -525,7 +527,7 @@ Answer: 25</div>
 <p>It is free and there is no sign-up. Open the site and start playing.</p>
 
 <h2>Which devices does it work on?</h2>
-<p>Any phone, tablet or computer browser. On a computer you can type answers with the number keys. iPhone and Android apps are also on the way.</p>
+<p>Any phone, tablet or computer browser. On a computer you can type answers with the number keys. The iPhone and iPad app is on the <a href="https://apps.apple.com/app/id6826497198">App Store</a>, and the Android app is on the way. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p>
 
 <h2>Where are my records saved?</h2>
 <p>Best records, badges and missed problems are saved in your browser on this device, so each device has its own records. Clearing your browser's site data also clears them.</p>
@@ -553,5 +555,315 @@ Answer: 25</div>
 
 <h2>I found a bug or have an idea.</h2>
 <p>Send it to <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>. Telling us the device and game helps us fix it faster.</p>
+'''},
+]
+
+PAGES += [
+{
+'slug': 'app-vs-web', 'cat': 'app', 'mins': 4,
+'title': 'SumSum Playground is now an app — 7 things the app adds',
+'desc': 'SumSum Playground is out on iPhone and iPad. Here is what the app adds over the website: creating group challenge rooms, badges and records, bonus hearts, continues and more.',
+'body': '''
+<p class="lead">SumSum Playground is now an app. It passed App Store review on November 3, 2026 and is free on iPhone and iPad. The six games are the same as on the website, and the app adds several features on top.</p>
+
+<div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">Download SumSum Playground on the App Store</a> (iPhone and iPad, free). The Android version will follow once testing is finished.</p></div>
+
+<h2>Side by side</h2>
+<div class="table-wrap"><table class="cmp">
+  <tr><th>Feature</th><th>Web</th><th>App</th></tr>
+  <tr><th>6 games · Practice · Ranked</th><td>Yes</td><td>Yes</td></tr>
+  <tr><th>Hall of Fame</th><td>Top 10</td><td>Top 10 + your own rank, best score updates in place</td></tr>
+  <tr><th>Group challenge</th><td>Join a room you were invited to</td><td>Create, rename and keep a list of rooms</td></tr>
+  <tr><th>24 badges · Records</th><td>No</td><td>Yes</td></tr>
+  <tr><th>Bonus hearts · Continue</th><td>No</td><td>Yes</td></tr>
+  <tr><th>Change nickname</th><td>No</td><td>Yes</td></tr>
+  <tr><th>Launch from the home screen</th><td>Open a browser</td><td>One tap</td></tr>
+</table></div>
+
+<h2>1. Create group challenge rooms</h2>
+<p>A private leaderboard for your family, friends or coworkers. Create a room, send the link, and only the people with that link compete across all six games. Problems change every 24 hours and the ranking restarts every 3 days. Rooms are created in the app; invited players can also join on the web. See the <a href="/en/guide/group-match/">group challenge guide</a>.</p>
+
+<h2>2. 24 badges and a records page</h2>
+<p>The app keeps track of how many games you have played, how many problems you have solved and how many days in a row you have shown up. Hit a goal and a badge unlocks. Collect all 24 to unlock the golden block theme. The full list is in <a href="/en/guide/badges-and-hearts/">Badges and bonus hearts</a>.</p>
+
+<h2>3. Bonus hearts</h2>
+<p>With 8 badges you start each game with an extra half heart; with 16, a full extra heart. A 7-day streak adds another half. In timed games each half heart becomes 3 seconds. It is a small reward for showing up regularly.</p>
+
+<h2>4. One more chance</h2>
+<p>When a game ends you can watch a short ad and continue from where you stopped, which matters most when you were just short of your best. When you tap Play again you can also choose to start with one more heart. Skip it if you prefer, and if you buy "Remove ads" once, you get the bonus with no ads at all.</p>
+
+<h2>5. See your own rank</h2>
+<p>The website shows the top 10. The app also shows where you stand even when you are outside it. Each player has a single row, so a better score simply replaces your old one.</p>
+
+<h2>6. Change your nickname</h2>
+<p>Change it in Settings and it updates in the Hall of Fame and in every group room you are in.</p>
+
+<h2>7. Full screen, one tap away</h2>
+<p>No address bar, so problems and the number pad are larger. Tap the icon and you are playing, which makes a one-minute game at the bus stop easy.</p>
+
+<h2>When the website is better</h2>
+<ul>
+  <li>You want to type fast on a computer keyboard</li>
+  <li>You just want one quick game without installing anything</li>
+  <li>You are showing it on a classroom TV or whiteboard</li>
+</ul>
+<p>Web and app records are stored separately. If you plan to keep playing, start in the app.</p>
+'''},
+{
+'slug': 'group-match', 'cat': 'app', 'mins': 4,
+'title': 'Group challenge — a private leaderboard for friends and family',
+'desc': 'How SumSum Playground group challenges work: create a room, invite people with a link, play the same problems for 24 hours, and start a fresh ranking every 3 days.',
+'body': '''
+<p class="lead">The Hall of Fame is open to the whole world, so getting on it is hard. A group challenge is a small leaderboard for only the people you invite. Drop one link in your group chat and it starts.</p>
+
+<h2>The rules at a glance</h2>
+<div class="table-wrap"><table>
+  <tr><th>Games</th><td>One room covers all six games</td></tr>
+  <tr><th>Problems</th><td>They change every 24 hours from when the room was made; until then everyone gets the same ones</td></tr>
+  <tr><th>Ranking</th><td>Restarts every 3 days (72 hours). The room itself stays</td></tr>
+  <tr><th>Scores</th><td>Play as often as you like; only your best counts</td></tr>
+  <tr><th>Nicknames</th><td>Each nickname can be used by one person per room</td></tr>
+</table></div>
+
+<h2>Creating a room (app)</h2>
+<ol>
+  <li>In the app, open the <b>Ranking</b> tab and tap <b>Group challenge → Create</b>.</li>
+  <li>Type a room name and your nickname, for example "Family Math Champs".</li>
+  <li>Tap <b>Create room</b>, then use <b>Invite friends</b> to send the link.</li>
+</ol>
+<p>You can also create a room from the result screen after a Ranked game. In that case the score you just made becomes the first record in the room.</p>
+
+<h2>When you are invited</h2>
+<p>Tap the link to open the room. You can join in the app if you have it, or on the web if you do not. Pick a game at the top, tap <b>Play</b>, and you get that room's problems. When you finish, enter a nickname to save your record. Rooms you have joined are listed in the app, most recent first.</p>
+
+<h2>Why do the problems change every day?</h2>
+<p>Everyone needs the same problems for it to be fair, but if they never changed, people could memorize them. So problems stay the same for a day and are replaced the next. A game started just before the change and finished after it is not recorded.</p>
+
+<h2>Why does the ranking restart every 3 days?</h2>
+<p>One huge score on day one can make everyone else give up. A fresh start every 3 days gives late joiners, and whoever came last, another shot at first place.</p>
+
+<h2>Ideas</h2>
+<ul>
+  <li><b>Family room</b>: one game each after dinner. Parents do lose to their kids on times tables.</li>
+  <li><b>Friends or coworkers</b>: loser buys the coffee.</li>
+  <li><b>Class or club</b>: treat every 3 days as a round and name a winner each time.</li>
+</ul>
+
+<h2>What the room owner can do</h2>
+<p>The person who created the room can rename it or delete it. Deleting a room removes its rankings and cannot be undone.</p>
+
+<div class="tip"><p><b>There are badges too</b> — saving a record in a group challenge unlocks "Let's play", and finishing first unlocks "Room champion". Group challenges need the latest version of the app; if you do not see the menu, update the app from the store.</p></div>
+'''},
+{
+'slug': 'badges-and-hearts', 'cat': 'app', 'mins': 4,
+'title': 'All 24 badges and how bonus hearts work',
+'desc': 'The full list of 24 badges in the SumSum Playground app and how to unlock them, the bonus hearts and golden block theme you earn, and the fastest order to collect them.',
+'body': '''
+<p class="lead">The SumSum Playground app has 24 badges. Some unlock after a single game and one takes a full month of daily visits. The more you collect, the bigger the head start you get.</p>
+
+<h2>What badges give you</h2>
+<div class="table-wrap"><table>
+  <tr><th>8 badges</th><td>Start with an extra half heart</td></tr>
+  <tr><th>16 badges</th><td>Start with an extra full heart</td></tr>
+  <tr><th>24 badges</th><td>Golden block theme</td></tr>
+  <tr><th>On a 7-day streak</th><td>Another half heart</td></tr>
+</table></div>
+<p>Games with hearts (Falling Problems, Balloon Pop) give you hearts. Timed games (Time Challenge, Beat the Clock, True or False) give you 3 seconds per half heart. The 60-Question Race has no bonus.</p>
+
+<h2>The list</h2>
+<h3>Games played</h3>
+<div class="table-wrap"><table>
+  <tr><th>First game</th><td>Play any game once</td></tr>
+  <tr><th>Explorer</th><td>Try all 6 games</td></tr>
+  <tr><th>Regular</th><td>10 games</td></tr>
+  <tr><th>Arcade boss</th><td>50 games</td></tr>
+  <tr><th>VIP</th><td>100 games</td></tr>
+  <tr><th>Arcade legend</th><td>300 games</td></tr>
+</table></div>
+<h3>Problems solved</h3>
+<div class="table-wrap"><table>
+  <tr><th>100 solved</th><td>100 correct answers</td></tr>
+  <tr><th>1000 solved</th><td>1,000 correct answers</td></tr>
+  <tr><th>5000 solved</th><td>5,000 correct answers</td></tr>
+  <tr><th>Math master</th><td>20,000 correct answers</td></tr>
+</table></div>
+<h3>Streaks and flawless games</h3>
+<div class="table-wrap"><table>
+  <tr><th>Streak 20 · 50 · 100</th><td>That many right in a row in one game</td></tr>
+  <tr><th>Flawless</th><td>20 or more right with no mistakes</td></tr>
+  <tr><th>Perfectionist</th><td>10 flawless games</td></tr>
+</table></div>
+<h3>Ranked</h3>
+<div class="table-wrap"><table>
+  <tr><th>Challenger</th><td>Finish a Ranked game</td></tr>
+  <tr><th>Ranked regular</th><td>Finish 10 Ranked games</td></tr>
+  <tr><th>Ranked master</th><td>Finish 50 Ranked games</td></tr>
+</table></div>
+<h3>Daily streaks</h3>
+<div class="table-wrap"><table>
+  <tr><th>3-day · 7-day streak</th><td>Visit that many days in a row</td></tr>
+  <tr><th>2-week streak</th><td>14 days in a row</td></tr>
+  <tr><th>30-day streak</th><td>30 days in a row</td></tr>
+</table></div>
+<h3>Group challenge</h3>
+<div class="table-wrap"><table>
+  <tr><th>Let's play</th><td>Save a record in a group challenge</td></tr>
+  <tr><th>Room champion</th><td>Be #1 in a group challenge</td></tr>
+</table></div>
+
+<h2>The fastest way to your first 8</h2>
+<ol>
+  <li>Play each of the six games once. That unlocks <b>First game</b> and <b>Explorer</b>.</li>
+  <li>Make one of those a Ranked game for <b>Challenger</b>.</li>
+  <li>Four more games gets you to 10 for <b>Regular</b>, and you will likely pass 100 correct answers for <b>100 solved</b> on the way.</li>
+  <li>In Practice, set Easy and addition only and play the 60-Question Race. It is the best place to go for <b>Streak 20</b> and <b>Flawless</b>. With no mistakes you also reach Streak 50.</li>
+  <li>Come back three days running for <b>3-day streak</b>. That puts you past 8.</li>
+</ol>
+
+<h2>The hardest ones</h2>
+<p><b>Streak 100</b> needs 100 correct answers in a row in a single game. You have to hold your accuracy all the way, so slow down and check each answer. <a href="/en/guide/speed-and-accuracy/">Speed vs accuracy</a> helps here. <b>30-day streak</b> is about habit, not skill: set a reminder and play one game a day.</p>
+
+<div class="tip"><p><b>Stored on your device</b> — badges and records live on the device where the app is installed. Deleting the app deletes them too.</p></div>
+'''},
+{
+'slug': 'app-launch-story', 'cat': 'story', 'mins': 7,
+'title': 'How I shipped a math game app on my own',
+'desc': 'A solo developer on building the arithmetic web game SumSum Playground and releasing it on the App Store: the idea, the redesign, getting ready for review, and why Android came later.',
+'body': '''
+<p class="lead">SumSum Playground is made by one person, under the name JHL STUDIO. It started as a website in the fall of 2026 and reached the App Store as an iPhone and iPad app on November 3. This is what happened along the way, written down in order, in case it helps someone preparing their own first release.</p>
+
+<h2>It began with a one-minute times table test</h2>
+<p>The first idea was simple: a website where you practice addition, subtraction, multiplication and division as games. One where problems fall and you answer before they land. One where you answer as many as you can before time runs out. One that times how long you take to get 60 right. Those became Falling Problems, Time Challenge and the 60-Question Race. Balloon Pop, Beat the Clock and True or False came later, making six.</p>
+<p>The code was written by talking with an AI, the approach people call vibe coding. My job was to keep saying how things should feel. Two buttons have different widths. That line breaks in an awkward place. The game resumes instantly after a pause and I miss the timing. Fixing small annoyances like those, one at a time, was most of the work.</p>
+
+<h2>Design before revenue</h2>
+<p>The first version looked clean and was easy to forget. I decided to redo the design before thinking about ads, and chose a retro arcade direction: a logo made of stacked blocks, pixel type, neon colors on a dark background. Arithmetic practice makes people think of worksheets. I wanted it to feel like standing in front of an arcade cabinet.</p>
+<p>I also set one rule then: <b>a game for everyone</b>. Kids play it, but it should not feel odd for an office worker on the subway or a grandparent keeping their mind active. So there are no mascots and no gold-star stickers.</p>
+
+<h2>What the Hall of Fame changed</h2>
+<p>A math game played alone gets old quickly. "One more game" only appeared after I added the Hall of Fame, where a nickname puts your score on the board. That is also when Ranked mode was split off: change the difficulty freely in Practice, but scores only count under identical conditions.</p>
+<p>The leaderboard brought new problems right away. How do you stop made-up scores? What about inappropriate nicknames? I added server rules that only accept scores that make sense, and limited nickname length and characters. These invisible parts took longer than the games.</p>
+
+<h2>From web to app</h2>
+<p>A web game's strength is that a link is all you need. Its weakness is getting people to come back. An icon on the home screen is what reminds you to play again, so I decided to make an app.</p>
+<p>I did not rebuild it from scratch. The web game is wrapped in an app shell, so one set of game code serves both. The app screens were designed separately, though: buttons repositioned for a tall screen with no address bar, and features that give you a reason to return every day, like records and badges, added only to the app.</p>
+
+<h2>Everything besides the game</h2>
+<p>Making a game and releasing an app turned out to be different jobs. The list looked like this.</p>
+<ul>
+  <li><b>Developer accounts</b>: I joined the Apple Developer Program and paid the annual fee. The Google Play account needed identity and device verification.</li>
+  <li><b>Business paperwork</b>: selling "Remove ads" inside the app requires business details, so I registered as a sole proprietor and filed the online sales registration required in Korea.</li>
+  <li><b>Store pages</b>: name, description, search keywords and screenshots, in Korean and English. The store name says what the game is, so people searching for an arithmetic game can find it.</li>
+  <li><b>Privacy policy</b>: required even with no sign-up, including what the ads use.</li>
+  <li><b>Ads and purchases</b>: ads never interrupt a game. They appear only after one ends, and only sometimes. Ads that give an extra heart are entirely optional.</li>
+</ul>
+
+<h2>Review, then release</h2>
+<p>Waiting for App Store review felt like the longest part. On November 3, 2026 the approval email arrived. I searched the store for the name of my own app, saw the icon appear, and stared at the screen for a while.</p>
+
+<h2>Why Android came later</h2>
+<p>The plan was to launch on Android first. But Google Play requires new personal developer accounts to run a closed test with at least 12 testers for 14 days before a public release. For someone working alone, finding 12 people is a bigger task than it sounds. So the iPhone app went out first while the testers were gathered. The Android app will be released once testing is done.</p>
+
+<h2>What I learned after launch</h2>
+<p>Launch was the start, not the end, because people who actually played it began sending ideas. "It would be fun if only people with a link competed" became the <a href="/en/guide/group-match/">group challenge</a>. Badges turned out to be too easy to collect, so 12 became 24. A 3-2-1 countdown now runs when you resume from pause.</p>
+<p>Working alone is slow because every decision is yours. But when someone says something is annoying, you can fix it that same day. That is the best part of doing it solo.</p>
+
+<h2>What's next</h2>
+<p>The Android release and new game modes. If something bothers you or you have an idea, write to <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>. Messages are read, and what can be fixed gets fixed.</p>
+
+<div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">SumSum Playground on the App Store</a>. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p></div>
+'''},
+{
+'slug': 'math-game-for-everyone', 'cat': 'story', 'mins': 4,
+'title': 'Why this is a math game for adults too',
+'desc': 'Why SumSum Playground is built as an arcade game for all ages instead of a learning program for one age group, and the design rules that follow from that.',
+'body': '''
+<p class="lead">"Math game" usually suggests homework for primary school. SumSum Playground was never built that way. A seven-year-old, a thirty-year-old and a seventy-year-old play on the same screen under the same rules.</p>
+
+<h2>You use arithmetic for life</h2>
+<p>Splitting a bill, working out a sale price, counting the time left. The math adults use most is still adding, subtracting, multiplying and dividing. With a calculator always nearby, plenty of adults hesitate at 7 × 8. That is not lack of ability, only lack of use, and it comes back after a few games.</p>
+
+<h2>The rules that follow</h2>
+<h3>Scores, not stickers</h3>
+<p>If "Great job!" pops up after every answer, adults close the tab. SumSum Playground speaks like an arcade game: score, record, rank. When you do well the number goes up, and that is enough.</p>
+<h3>No setup</h3>
+<p>No sign-up, no tutorial. Pick a game, tap, and it starts after 3, 2, 1. A game takes about a minute, short enough for an elevator wait.</p>
+<h3>You choose the difficulty</h3>
+<p>In Practice you pick the operations, the number range and the speed. Slow single-digit addition is fine. So is all four operations at top speed. Nothing is locked to an age.</p>
+<h3>Rankings under identical conditions</h3>
+<p>Ranked games are the same for everyone, so students and office workers sit side by side in the Hall of Fame. A child who just learned the times tables really can beat a parent.</p>
+
+<h2>Who it suits</h2>
+<ul>
+  <li><b>Commuters</b>: one game instead of the news. A minute is enough to wake your head up.</li>
+  <li><b>People studying for exams</b>: use it for <a href="/en/guide/speed-and-accuracy/">accuracy practice</a> to cut careless errors.</li>
+  <li><b>Parents and kids</b>: competing in the same game turns homework into play.</li>
+  <li><b>Older adults</b>: a little daily practice reading numbers and answering quickly.</li>
+  <li><b>Friends</b>: settle a bet with a <a href="/en/guide/group-match/">group challenge</a>.</li>
+</ul>
+
+<h2>If you are new, try this order</h2>
+<ol>
+  <li>Warm up with <b>True or False</b>. Two buttons only.</li>
+  <li>See how many you get in a minute in <b>Time Challenge</b>.</li>
+  <li>Get past level 3 in <b>Falling Problems</b>. That is where it becomes a real game.</li>
+  <li>Once it feels familiar, post a score in Ranked.</li>
+</ol>
+<p>If your mental math feels rusty, read <a href="/en/guide/mental-math-for-adults/">Mental math for adults</a> next.</p>
+'''},
+{
+'slug': 'mental-math-for-adults', 'cat': 'learn', 'mins': 5,
+'title': 'Mental math for adults — 7 everyday calculations',
+'desc': 'Seven mental math shortcuts for daily life, from splitting a bill and sale prices to tips, tax and change, plus a three-minute daily routine to get your speed back.',
+'body': '''
+<p class="lead">Even with a calculator in your pocket, it helps to estimate in your head first. You can tell at once whether a receipt is right or a discount is worth it. These are not school methods, only the shortcuts adults actually use.</p>
+
+<h2>1. Add from the left</h2>
+<p>Written addition starts from the ones, but in your head the big digits come first. If you stop halfway you already have a rough answer.</p>
+<div class="calc">4,800 + 3,700
+→ 4,000 + 3,000 = 7,000
+→ 800 + 700 = 1,500
+→ 8,500</div>
+
+<h2>2. Round, then adjust</h2>
+<p>Three items at 9.90 is three at 10.00 minus 0.30.</p>
+<div class="calc">9.90 × 3
+→ 10 × 3 = 30
+→ subtract 0.10 × 3 = 0.30
+→ 29.70</div>
+
+<h2>3. Sale prices: find what is left</h2>
+<p>For 30% off, do not work out 30% and subtract. Go straight to 70%: find 10% and multiply by 7.</p>
+<div class="calc">30% off 45
+→ 10% is 4.50
+→ 4.50 × 7 = 31.50</div>
+
+<h2>4. Start from 10%</h2>
+<p>10% is a shift of the decimal point. 5% is half of that, 15% is the two added together, 20% is double. That covers most tips and taxes.</p>
+
+<h2>5. Split a bill by halving</h2>
+<p>Four people means half of a half: 68 becomes 34, then 17. For three people, look for a nearby number that divides by 3. 68 is 66 + 2, so 22 each plus about 0.70.</p>
+
+<h2>6. Count up for change</h2>
+<p>100 − 63.50 involves a lot of borrowing. Count up from 63.50 instead: 0.50 to reach 64, 6 to reach 70, 30 to reach 100. That is 36.50.</p>
+
+<h2>7. Break multiplication apart</h2>
+<p>For two-digit multiplication, split one side into tens and ones.</p>
+<div class="calc">24 × 15
+→ 24 × 10 = 240
+→ 24 × 5 = 120 (half of 240)
+→ 360</div>
+<p>To multiply by 5, multiply by 10 and halve. There are more in <a href="/en/guide/mental-math-tips/">Mental math tips</a>.</p>
+
+<h2>Three minutes a day to get your speed back</h2>
+<p>Knowing a shortcut is different from having it ready. The basics, like the times tables, have to come without thinking before the shortcuts get fast.</p>
+<ol>
+  <li><b>1 minute</b>: True or False, to read expressions quickly.</li>
+  <li><b>1 minute</b>: Time Challenge with multiplication only, to bring the times tables back.</li>
+  <li><b>1 minute</b>: Falling Problems, typing answers to check your accuracy.</li>
+</ol>
+<p>After a week your count will be clearly higher than on day one, and because scores are saved you can see it in numbers. For keeping it going, see <a href="/en/guide/five-minute-habit/">The five-minute habit</a>.</p>
+
+<div class="tip"><p><b>Estimate first</b> — the most useful habit is thinking "roughly how much" before the exact answer. You will also notice straight away when you mistype a digit on a calculator.</p></div>
 '''},
 ]

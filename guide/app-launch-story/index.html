@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0a1c">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="alternate icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="/site.webmanifest">
+  <title>혼자서 수학 게임 앱을 출시한 이야기 · 셈셈 놀이터</title>
+  <meta name="description" content="1인 개발자가 사칙연산 웹게임 셈셈 놀이터를 만들고 App Store에 앱으로 출시하기까지. 아이디어, 디자인을 바꾼 이유, 심사 준비, 안드로이드가 늦어진 까닭을 솔직하게 적었어요.">
+  <link rel="canonical" href="https://sumsum.studiojhl.com/guide/app-launch-story/">
+  <link rel="alternate" hreflang="ko" href="https://sumsum.studiojhl.com/guide/app-launch-story/">
+  <link rel="alternate" hreflang="en" href="https://sumsum.studiojhl.com/en/guide/app-launch-story/">
+  <link rel="alternate" hreflang="x-default" href="https://sumsum.studiojhl.com/guide/app-launch-story/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="셈셈 놀이터">
+  <meta property="og:title" content="혼자서 수학 게임 앱을 출시한 이야기">
+  <meta property="og:description" content="1인 개발자가 사칙연산 웹게임 셈셈 놀이터를 만들고 App Store에 앱으로 출시하기까지. 아이디어, 디자인을 바꾼 이유, 심사 준비, 안드로이드가 늦어진 까닭을 솔직하게 적었어요.">
+  <meta property="og:url" content="https://sumsum.studiojhl.com/guide/app-launch-story/">
+  <meta property="og:image" content="https://sumsum.studiojhl.com/og.png?v=4">
+  <meta property="og:locale" content="ko_KR">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=Do+Hyeon&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+  <link rel="stylesheet" href="/css/theme.css?v=20261110a">
+  <link rel="stylesheet" href="/css/style.css?v=20261110a">
+  <link rel="stylesheet" href="/css/arcade.css?v=20261110a">
+  <link rel="stylesheet" href="/css/page.css?v=20261110a">
+  <link rel="stylesheet" href="/css/guide.css?v=20261110a">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "혼자서 수학 게임 앱을 출시한 이야기", "description": "1인 개발자가 사칙연산 웹게임 셈셈 놀이터를 만들고 App Store에 앱으로 출시하기까지. 아이디어, 디자인을 바꾼 이유, 심사 준비, 안드로이드가 늦어진 까닭을 솔직하게 적었어요.", "inLanguage": "ko", "datePublished": "2026-11-10", "dateModified": "2026-11-10", "author": {"@type": "Organization", "name": "JHL STUDIO"}, "publisher": {"@type": "Organization", "name": "JHL STUDIO"}, "mainEntityOfPage": "https://sumsum.studiojhl.com/guide/app-launch-story/"}</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6048734887508367" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="app">
+<main class="doc">
+  <div class="doc-top">
+    <a class="doc-back" href="/">← 게임으로 돌아가기</a>
+    <a class="chip lang-link" href="/en/guide/app-launch-story/" hreflang="en" lang="en">English</a>
+  </div>
+  <nav class="crumbs" aria-label="breadcrumb">
+    <a href="/">셈셈 놀이터</a><span class="sep">›</span>
+    <a href="/guide/">학습 가이드</a><span class="sep">›</span>
+    <span>만든 이야기</span>
+  </nav>
+
+  <article class="card">
+    <h1>혼자서 수학 게임 앱을 출시한 이야기</h1>
+    <p class="meta">만든 이야기 · 읽는 시간 7분 · 2026년 11월 10일</p>
+<p class="lead">셈셈 놀이터는 JHL STUDIO라는 이름으로 혼자 만드는 게임이에요. 2026년 가을에 웹사이트로 시작했고, 11월 3일에 아이폰·아이패드 앱으로 App Store에 나왔어요. 처음 앱을 내 보면서 겪은 일을 순서대로 적어 봤어요. 비슷한 걸 준비하는 분께 도움이 되면 좋겠어요.</p>
+
+<h2>시작은 "1분 구구단 테스트"</h2>
+<p>처음 생각한 건 단순했어요. 덧셈, 뺄셈, 곱셈, 나눗셈을 게임처럼 연습하는 웹사이트. 떨어지는 문제를 바닥에 닿기 전에 맞히는 게임, 제한 시간 안에 많이 맞히는 게임, 60문제를 다 맞힐 때까지 시간을 재는 게임. 이 세 가지가 지금의 문제 비, 시간 도전, 60문제 타임어택이 됐어요. 나중에 풍선 팡팡, 시간 버티기, 참 거짓 스피드가 더해져 6가지가 됐고요.</p>
+<p>코드는 AI와 대화하면서 만드는 방식, 흔히 바이브 코딩이라고 부르는 방법으로 썼어요. 제가 한 일은 "이건 이렇게 됐으면 좋겠다"를 끝없이 말하는 것이었어요. 버튼 두 개의 너비가 다르다, 줄바꿈이 어색하다, 일시정지를 풀면 바로 시작돼서 타이밍을 놓친다. 이런 작은 불편을 하나씩 고치는 일이 전체 작업의 대부분이었어요.</p>
+
+<h2>수익보다 디자인을 먼저 바꿨어요</h2>
+<p>처음 화면은 깔끔했지만 기억에 남지 않았어요. 광고를 붙이는 일보다 디자인을 먼저 바꾸기로 했고, 방향은 레트로 오락실로 정했어요. 블록이 쌓이는 느낌의 로고, 도트 글꼴, 어두운 배경에 네온 색. 계산 연습이라고 하면 문제집을 떠올리기 쉬운데, 오락실 게임기 앞에 선 기분을 주고 싶었어요.</p>
+<p>이때 정한 원칙이 하나 있어요. <b>누구나 하는 게임</b>으로 만들기. 초등학생도 하지만 직장인이 지하철에서 해도 어색하지 않고, 어르신이 두뇌 운동으로 해도 좋은 게임이요. 그래서 화면에 캐릭터나 칭찬 스티커 같은 건 넣지 않았어요.</p>
+
+<h2>명예의 전당을 만들자 달라진 것</h2>
+<p>혼자 하는 계산 게임은 금방 질려요. 닉네임을 입력하면 순위표에 올라가는 명예의 전당을 만들고 나서야 "한 판만 더"가 생겼어요. 모두 같은 조건으로 겨루는 랭킹전을 따로 만든 것도 이때예요. 연습에서는 난이도를 마음대로 바꾸되, 순위는 똑같은 조건에서만 올라가게 했어요.</p>
+<p>순위표를 열자마자 고민도 생겼어요. 점수를 속여서 올리는 걸 어떻게 막을지, 부적절한 닉네임은 어떻게 할지. 서버에서 말이 되는 점수만 받도록 규칙을 세우고, 닉네임은 글자 수와 쓸 수 있는 글자를 제한했어요. 게임보다 이런 보이지 않는 부분에 시간이 더 들었어요.</p>
+
+<h2>웹에서 앱으로</h2>
+<p>웹게임은 링크만 보내면 바로 할 수 있다는 게 장점이에요. 하지만 다시 찾아오게 하기가 어려워요. 홈 화면에 아이콘이 있어야 생각날 때 한 번 더 누르게 되니까요. 그래서 앱을 내기로 했어요.</p>
+<p>앱을 처음부터 새로 만들지는 않았어요. 웹으로 만든 게임을 앱 껍데기에 담는 방식을 써서, 게임 코드는 하나로 두고 웹과 앱에 같이 쓰고 있어요. 대신 앱 화면은 따로 디자인했어요. 주소창이 없는 세로 화면에 맞춰 버튼 위치를 다시 잡고, 기록실과 배지처럼 매일 들어올 이유가 되는 기능을 앱에만 넣었어요.</p>
+
+<h2>출시 전에 해야 했던 일들</h2>
+<p>게임을 만드는 일과 앱을 "출시"하는 일은 전혀 다른 일이었어요. 해야 할 일을 적어 보면 이래요.</p>
+<ul>
+  <li><b>개발자 계정</b>: Apple Developer Program에 가입하고 연회비를 냈어요. Google Play 개발자 계정은 본인 확인과 기기 인증을 거쳤어요.</li>
+  <li><b>사업자 준비</b>: 앱 안에서 "광고 없애기"를 팔려면 사업자 정보가 필요해요. 개인사업자로 등록하고 구청에 통신판매업 신고를 했어요.</li>
+  <li><b>스토어 페이지</b>: 앱 이름, 설명, 검색 키워드, 화면 캡처를 한국어와 영어로 준비했어요. 이름은 검색에 걸리도록 "셈셈 놀이터 - 사칙연산 게임"으로 정했어요.</li>
+  <li><b>개인정보 처리방침</b>: 회원가입이 없는 앱이어도 꼭 있어야 해요. 광고가 어떤 정보를 쓰는지까지 적어야 하고요.</li>
+  <li><b>광고와 결제</b>: 광고는 게임 중간이 아니라 끝난 뒤에만, 그것도 가끔만 나오게 했어요. 하트를 더 받는 광고는 보고 싶은 사람만 보게 했고요.</li>
+</ul>
+
+<h2>심사, 그리고 출시</h2>
+<p>App Store 심사에 앱을 내고 결과를 기다리는 동안이 제일 길게 느껴졌어요. 2026년 11월 3일, 심사를 통과했다는 메일을 받았어요. 스토어에서 제가 만든 앱 이름을 검색했을 때 아이콘이 뜨는 걸 보고 한참 화면을 들여다봤어요.</p>
+
+<h2>안드로이드가 늦어진 까닭</h2>
+<p>원래는 안드로이드부터 낼 생각이었어요. 그런데 Google Play는 새로 만든 개인 개발자 계정이면 정식 출시 전에 테스터 12명 이상이 14일 동안 비공개 테스트에 참여해야 해요. 혼자 만드는 사람에게 12명을 모으는 건 생각보다 큰 숙제였어요. 그래서 테스터를 모으는 동안 아이폰 앱을 먼저 냈어요. 안드로이드 앱은 테스트가 끝나는 대로 출시할 예정이에요.</p>
+
+<h2>출시하고 나서 알게 된 것</h2>
+<p>출시는 끝이 아니라 시작이었어요. 실제로 해 본 사람들이 의견을 줬거든요. "링크 받은 사람끼리만 순위를 겨루면 재미있겠다"는 말에서 <a href="/guide/group-match/">그룹 경쟁전</a>이 나왔어요. 배지가 너무 쉽게 모인다는 걸 알고 12개에서 24개로 늘렸고, 일시정지를 풀 때 3·2·1 준비 시간을 넣었어요.</p>
+<p>혼자 만들면 모든 결정을 직접 해야 해서 느려요. 대신 누군가 불편하다고 말한 걸 그날 바로 고칠 수 있어요. 그게 1인 개발의 가장 큰 재미예요.</p>
+
+<h2>앞으로</h2>
+<p>안드로이드 출시와 새로운 게임 모드를 준비하고 있어요. 해 보고 불편한 점이나 넣었으면 하는 기능이 있으면 <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>으로 알려 주세요. 정말로 읽고, 가능한 건 고쳐요.</p>
+
+<div class="tip"><p><b>앱 받기</b> — <a href="https://apps.apple.com/app/id6826497198">App Store에서 셈셈 놀이터 받기</a>. 앱에서만 되는 기능은 <a href="/guide/app-vs-web/">앱으로 하면 좋은 점</a>에 정리했어요.</p></div>
+  </article>
+
+  <section class="card cta">
+    <p>읽은 내용을 바로 게임으로 연습해 보세요.</p>
+    <a class="btn-go" href="/">게임하러 가기 ▶</a>
+  </section>
+
+  <section class="card">
+    <h2 class="rel-h">함께 읽으면 좋은 글</h2>
+    <ul class="post-list">
+      <li><a href="/guide/math-game-for-everyone/"><span class="t">왜 어른도 하는 계산 게임으로 만들었을까</span><span class="d">셈셈 놀이터를 특정 나이만을 위한 학습 프로그램이 아니라 남녀노소 누구나 즐기는 아케이드 게임으로 만든 이유와, 그래서 정한 규칙들을 소개해요.</span></a></li>
+      <li><a href="/guide/falling-problems/"><span class="t">문제 비 — 떨어지는 문제를 막는 법</span><span class="d">셈셈 놀이터 &quot;문제 비&quot; 게임의 규칙, 점수와 하트 계산, 레벨이 오르는 방식, 높은 점수를 내는 요령을 정리했어요.</span></a></li>
+    </ul>
+  </section>
+  <nav class="site-foot" aria-label="사이트 정보">
+    <a href="/about.html">소개</a><span class="dot">·</span>
+    <a href="/guide/">학습 가이드</a><span class="dot">·</span>
+    <a href="/privacy.html">개인정보처리방침</a><span class="dot">·</span>
+    <a href="mailto:jhl.studio.00@gmail.com">문의</a>
+  </nav>
+</main>
+</div>
+</body>
+</html>

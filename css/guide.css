@@ -116,3 +116,10 @@
   overflow-wrap: anywhere;
 }
 .doc h1 { text-wrap: balance; }
+
+/* 세 칸 비교표 (웹 vs 앱): 칸 너비를 고정해서 휴대폰에서도 글자가 세로로 쪼개지지 않게 */
+.doc table.cmp { table-layout: fixed; }
+.doc table.cmp th { white-space: normal; width: auto; word-break: keep-all; }
+.doc table.cmp tr > :nth-child(1) { width: 34%; }
+.doc table.cmp tr > :nth-child(2) { width: 28%; }
+.doc table.cmp tr > :nth-child(3) { width: 38%; }
