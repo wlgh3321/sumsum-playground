@@ -319,7 +319,7 @@ const App = (() => {
     if (kind && adBonus) parts.push({ key: 'bonAd', u: 2 });
     $('bonusRow').hidden = !parts.length;
     $('bonusList').innerHTML = parts.map(p => `<span class="bonus-tag">${t(p.key)} <b>${Bonus.label(id, p.u)}</b></span>`).join('');
-    $('adBtn').hidden = !kind || adBonus || !Bonus.canReward();
+    $('adBtn').hidden = !kind || adBonus || Bonus.noAds() || !Bonus.canReward();
     $('setupActions').classList.toggle('split', !$('adBtn').hidden);
     if (!kind) return;
     $('adTxt').textContent = t(Bonus.noAds() ? 'bonAdFree' : 'bonAdBtn', { v: Bonus.label(id, 2) });
@@ -548,7 +548,7 @@ const App = (() => {
   function startWithBonus(id, s, withAd) {
     const kind = Bonus.kindOf(id);
     const parts = kind ? Bonus.parts() : [];
-    if (kind && withAd) parts.push({ key: 'bonAd', u: 2 });
+    if (kind && withAd && !Bonus.noAds()) parts.push({ key: 'bonAd', u: 2 });
     const bonus = parts.reduce((a, p) => a + p.u, 0);
     Game.start(id, s, bonus);
     if (parts.length) setTimeout(() => toast(`${t('bonTitle')} · ` + parts.map(p => `${t(p.key)} ${Bonus.label(id, p.u)}`).join(' · ')), 200);
@@ -583,11 +583,6 @@ const App = (() => {
     const noShare = r.badge.kind === 'quit' || !(r.value > 0); // 그만한 판·0점은 공유 버튼을 숨겨요
     $('shareBtn').hidden = noShare;
     $('shareImgBtn').hidden = noShare;
-    // 광고 보고 하트(시간) 더 받고 다시 하기: 보너스가 붙는 게임만, 그룹 경쟁전·도전장 판은 빼요 (모두 같은 조건)
-    const adKind = Bonus.kindOf(r.mode);
-    const fairRun = !!r.room || !!(challenge && challenge.seed && r.seed === challenge.seed);
-    $('againAdBtn').hidden = !adKind || fairRun || !Bonus.canReward();
-    if (!$('againAdBtn').hidden) $('againAdTxt').textContent = t(Bonus.noAds() ? 'againAdFree' : 'againAd', { v: Bonus.label(r.mode, 2) });
     if (!noShare) {
       ShareCard.set({
         r,
@@ -889,16 +884,6 @@ const App = (() => {
       if (KakaoShare.sendImage({ title, desc, url: challengeUrl(r), exec: challengeQuery(r) })) return;
       ShareCard.share(() => toast(t('shareImgSaved')), { text: `${title}\n${desc}`, url: challengeUrl(r) }, () => toast(t('shareCopied')));
     });
-    // 결과 화면: 광고 보고 하트 더 받고 다시 하기
-    $('againAdBtn').addEventListener('click', async () => {
-      const btn = $('againAdBtn');
-      if (btn.disabled) return;
-      btn.disabled = true;
-      track(`again-ad-${lastMode}`, '광고 보고 다시 하기');
-      const ok = await Bonus.reward();
-      btn.disabled = false;
-      if (ok) { Sound.levelUp(); startWithBonus(lastMode, snapshot(lastMode), true); }
-    });
     $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
     $('saveBox').addEventListener('click', e => { if (e.target === $('saveBox')) $('saveBox').hidden = true; });
     // 결과 화면에서 넘어갈 때 가끔 전면 광고 (규칙은 bonus.js)
@@ -909,10 +894,33 @@ const App = (() => {
       try { await Bonus.maybeInterstitial(); } finally { leaving = false; }
       go();
     };
-    press($('againBtn'), () => leaveResult(() => {
+    // 다시 하기: 광고로 하트(시간)를 더 받을 수 있으면 먼저 물어봐요 (광고 없애기 산 사람·경쟁전·도전장 판은 바로 시작)
+    const againFair = () => !!(lastResult && (lastResult.room || (challenge && challenge.seed && lastResult.seed === challenge.seed)));
+    const againGo = withAd => {
       if (lastResult && lastResult.room && roomRun) playRoom(roomRun); // 그룹 경쟁전은 같은 방 문제로 다시
-      else startWithBonus(lastMode, snapshot(lastMode), false);
-    })); // 다시 하기: 배지·출석 보너스만 (광고 보상은 다시 안 붙어요)
+      else startWithBonus(lastMode, snapshot(lastMode), withAd);
+    };
+    press($('againBtn'), () => {
+      const ask = Bonus.kindOf(lastMode) && !againFair() && !Bonus.noAds() && Bonus.adReady();
+      if (!ask) { leaveResult(() => againGo(false)); return; }
+      $('againTitle').textContent = t('againAsk', { v: Bonus.label(lastMode, 2) });
+      $('againBox').hidden = false;
+    });
+    $('againWatch').addEventListener('click', async () => {
+      const btn = $('againWatch');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      track(`again-ad-${lastMode}`, '다시 하기 광고 보기');
+      const ok = await Bonus.reward();
+      btn.disabled = false;
+      $('againBox').hidden = true;
+      if (ok) Sound.levelUp();
+      againGo(ok);
+    });
+    $('againPass').addEventListener('click', () => {
+      $('againBox').hidden = true;
+      leaveResult(() => againGo(false));
+    });
     press($('homeBtn'), () => leaveResult(() => showHome()));
 
     document.addEventListener('keydown', e => {

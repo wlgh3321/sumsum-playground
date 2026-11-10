@@ -964,7 +964,6 @@ html.intro-on .intro {
 /* 설정: 언어 버튼 두 개 같은 폭 */
 .set-row .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .set-row .lang-switch .chip { min-width: 96px; justify-content: center; text-align: center; }
-/* 결과 화면: 광고 보고 다시 하기 (한 줄 전체) */
-#result .result-actions .btn-again-ad { grid-column: 1 / -1; }
-#result .result-actions .btn-again-ad, .save-actions .btn { white-space: nowrap; }
-#result .result-actions .btn-again-ad span { font-size: clamp(15px, 4.6vw, 19px); }
+.save-actions .btn { white-space: nowrap; }
+#againBox .again-title { font-family: var(--font-title); font-size: 24px; line-height: 1.35; letter-spacing: 0; word-break: keep-all; color: var(--sun); text-shadow: 2px 2px 0 var(--ink) !important; animation: none !important; }
+#againBox .again-title::before, #againBox .again-title::after { content: none !important; display: none !important; }

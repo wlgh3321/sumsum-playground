@@ -24,6 +24,8 @@ const Bonus = (() => {
     if (b >= 16) list.push({ key: 'bonB6', u: 2 });
     else if (b >= 8) list.push({ key: 'bonB3', u: 1 });
     if (streakToday()) list.push({ key: 'bonDays', u: 1 });
+    // 광고 없애기를 산 사람: 광고 보상만큼 늘 그냥 받아요 (광고 얘기 없이)
+    if (noAds()) list.push({ key: 'bonPlus', u: 2 });
     return list;
   }
   const units = () => parts().reduce((a, p) => a + p.u, 0);
