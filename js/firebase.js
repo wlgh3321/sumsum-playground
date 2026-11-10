@@ -58,7 +58,7 @@
     },
   };
 
-  // 단톡 경쟁전 방 (rooms/{방}): 7일 동안 링크 받은 사람끼리만 순위를 겨뤄요
+  // 단톡 경쟁전 방 (rooms/{방}): 3일 동안 링크 받은 사람끼리만 순위를 겨뤄요
   const rooms = db.collection('rooms');
   const roomKey = name => String(name || '').toLowerCase().replace(/ /g, ''); // 보안 규칙의 닉네임 열쇠와 똑같이
   const randId = n => {
@@ -69,7 +69,7 @@
     return s;
   };
   window.Rooms = {
-    WEEK: 7 * 24 * 3600 * 1000,
+    WEEK: 3 * 24 * 3600 * 1000, // 방이 열려 있는 시간 (3일)
     newId: randId,
     async create(mode, seed, host) {
       const id = randId(10);

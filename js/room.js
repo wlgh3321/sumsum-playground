@@ -2,7 +2,7 @@
  * 단톡 경쟁전
  * - 방을 만들면 링크(…/?room=방번호)가 생겨요. 단톡방에 올리면 그 링크로 들어온 사람끼리만 순위를 겨뤄요.
  * - 모두 🏆 랭킹전 조건 + 완전히 같은 문제(방의 씨앗)로 해요.
- * - 방은 1주일 동안 열려 있어요. 여러 번 해도 사람마다 최고 기록 한 줄만 남아요.
+ * - 방은 3일 동안 열려 있어요. 여러 번 해도 사람마다 최고 기록 한 줄만 남아요.
  * - 같은 방 안에서는 닉네임이 겹칠 수 없어요 (먼저 쓴 사람 것).
  */
 const Room = (() => {
@@ -128,6 +128,7 @@ const Room = (() => {
       rows = await R.players(id, r.mode);
       remember(id, { mode: r.mode, exp: r.exp });
       $('roomShare').hidden = false;
+      KakaoShare.prepare(); // 카톡 공유를 미리 불러 둬요 (안 하면 카톡 카드 대신 일반 공유로 나가요)
       render();
       renderMine();
     } catch (e) {
@@ -195,11 +196,12 @@ const Room = (() => {
       : t('roomCardDesc', { game });
     if (window.track) window.track(`room-share-${room.mode}`, '단톡 경쟁전 공유');
     if (KakaoShare.sendText({ title, desc, url, btn: t('roomJoin') })) return;
-    const text = `${title}\n${desc}`;
+    // 글과 링크를 한 덩어리로 (url을 따로 넘기면 카톡에서 사이에 빈 줄이 생겨요)
+    const text = `${title}\n${desc}\n${url}`;
     if (navigator.share) {
-      try { await navigator.share({ title: t('appName'), text, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      try { await navigator.share({ text }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
     }
-    try { await navigator.clipboard.writeText(`${text}\n${url}`); App.toast(t('shareCopied')); } catch (e) { App.toast(t('shareFail')); }
+    try { await navigator.clipboard.writeText(text); App.toast(t('shareCopied')); } catch (e) { App.toast(t('shareFail')); }
   }
 
   /* ---------- 홈: 참여 중인 경쟁전 ---------- */

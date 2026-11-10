@@ -221,7 +221,7 @@ const ShareCard = (() => {
     const tries = [];
     if (link) tries.push({ files: [f], text: `${link.text}\n${link.url}` });
     tries.push({ files: [f] });
-    if (link) tries.push({ text: link.text, url: link.url });
+    if (link) tries.push({ text: `${link.text}\n${link.url}` }); // url을 따로 넘기면 카톡에서 빈 줄이 생겨요
     for (const data of tries) {
       if (!navigator.share || (navigator.canShare && !navigator.canShare(data))) continue;
       if (data.files && !navigator.canShare) continue;

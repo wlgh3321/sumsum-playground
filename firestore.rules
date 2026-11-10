@@ -33,7 +33,7 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // 단톡 경쟁전: 링크를 받은 사람끼리만 겨루는 방. 만든 뒤 7일 동안 열려 있어요.
+    // 단톡 경쟁전: 링크를 받은 사람끼리만 겨루는 방. 만든 뒤 3일 동안 열려 있어요.
     // - 방: 게임 종류 + 문제 씨앗(모두 똑같은 문제) + 만든 사람 닉네임
     // - names/{닉네임}: 이 방에서 그 닉네임을 쓰는 기기 (먼저 쓴 사람 것, 바꿀 수 없음 → 같은 방 닉네임 중복 막기)
     // - players/{기기}: 기기마다 한 줄, 더 좋은 기록으로만 고칠 수 있어요
@@ -53,7 +53,7 @@ service cloud.firestore {
       allow update, delete: if false;
 
       function room() { return get(/databases/$(database)/documents/rooms/$(rid)).data; }
-      function isOpen() { return request.time < room().at + duration.value(7, 'd'); }
+      function isOpen() { return request.time < room().at + duration.value(3, 'd'); }
 
       match /names/{key} {
         allow read: if true;
