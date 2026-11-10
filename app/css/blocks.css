@@ -964,3 +964,7 @@ html.intro-on .intro {
 /* 설정: 언어 버튼 두 개 같은 폭 */
 .set-row .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .set-row .lang-switch .chip { min-width: 96px; justify-content: center; text-align: center; }
+/* 결과 화면: 광고 보고 다시 하기 (한 줄 전체) */
+#result .result-actions .btn-again-ad { grid-column: 1 / -1; }
+#result .result-actions .btn-again-ad, .save-actions .btn { white-space: nowrap; }
+#result .result-actions .btn-again-ad span { font-size: clamp(15px, 4.6vw, 19px); }

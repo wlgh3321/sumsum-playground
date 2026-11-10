@@ -6,23 +6,36 @@ const Stats = (() => {
   const KEY = 'sumsum.stats.v1';
   const MODES = ['fall', 'minute', 'race', 'balloon', 'beat', 'tf'];
   // 배지: id, 이름 키, 설명 키, 지금 몇까지 했는지(cur), 목표(goal)
+  // 24개: 쉬운 것부터 아주 어려운 것까지. 하트 보너스는 8개·16개부터 (bonus.js)
   const BADGES = [
     { id: 'first', name: 'bFirst', desc: 'bFirstD', ico: 'star', cur: s => s.plays, goal: 1 },
     { id: 'all6', name: 'bAll6', desc: 'bAll6D', ico: 'games', cur: s => MODES.filter(m => s.perMode[m]).length, goal: 6 },
     { id: 'p10', name: 'bP10', desc: 'bP10D', ico: 'games', cur: s => s.plays, goal: 10 },
     { id: 'p50', name: 'bP50', desc: 'bP50D', ico: 'trophy', cur: s => s.plays, goal: 50 },
+    { id: 'p100', name: 'bP100', desc: 'bP100D', ico: 'trophy', cur: s => s.plays, goal: 100 },
+    { id: 'p300', name: 'bP300', desc: 'bP300D', ico: 'trophy', cur: s => s.plays, goal: 300 },
     { id: 'c100', name: 'bC100', desc: 'bC100D', ico: 'check', cur: s => s.correct, goal: 100 },
     { id: 'c1000', name: 'bC1000', desc: 'bC1000D', ico: 'check', cur: s => s.correct, goal: 1000 },
+    { id: 'c5000', name: 'bC5000', desc: 'bC5000D', ico: 'check', cur: s => s.correct, goal: 5000 },
+    { id: 'c20000', name: 'bC20000', desc: 'bC20000D', ico: 'check', cur: s => s.correct, goal: 20000 },
     { id: 's20', name: 'bS20', desc: 'bS20D', ico: 'fire', cur: s => s.maxStreak, goal: 20 },
     { id: 's50', name: 'bS50', desc: 'bS50D', ico: 'fire', cur: s => s.maxStreak, goal: 50 },
+    { id: 's100', name: 'bS100', desc: 'bS100D', ico: 'fire', cur: s => s.maxStreak, goal: 100 },
     { id: 'perfect', name: 'bPerfect', desc: 'bPerfectD', ico: 'star', cur: s => s.perfect, goal: 1 },
-    { id: 'ranked', name: 'bRanked', desc: 'bRankedD', ico: 'trophy', cur: s => s.ranked, goal: 1 },
+    { id: 'perfect10', name: 'bPerfect10', desc: 'bPerfect10D', ico: 'star', cur: s => s.perfect, goal: 10 },
+    { id: 'ranked', name: 'bRanked', desc: 'bRankedD', ico: 'medal', cur: s => s.ranked, goal: 1 },
+    { id: 'ranked10', name: 'bRanked10', desc: 'bRanked10D', ico: 'medal', cur: s => s.ranked, goal: 10 },
+    { id: 'ranked50', name: 'bRanked50', desc: 'bRanked50D', ico: 'medal', cur: s => s.ranked, goal: 50 },
     { id: 'd3', name: 'bD3', desc: 'bD3D', ico: 'calendar', cur: s => s.bestDays, goal: 3 },
     { id: 'd7', name: 'bD7', desc: 'bD7D', ico: 'calendar', cur: s => s.bestDays, goal: 7 },
+    { id: 'd14', name: 'bD14', desc: 'bD14D', ico: 'calendar', cur: s => s.bestDays, goal: 14 },
+    { id: 'd30', name: 'bD30', desc: 'bD30D', ico: 'calendar', cur: s => s.bestDays, goal: 30 },
+    { id: 'room', name: 'bRoom', desc: 'bRoomD', ico: 'send', cur: s => s.roomPlays, goal: 1 },
+    { id: 'roomWin', name: 'bRoomWin', desc: 'bRoomWinD', ico: 'trophy', cur: s => s.roomWins, goal: 1 },
   ];
 
   function blank() {
-    return { plays: 0, perMode: {}, correct: 0, maxStreak: 0, perfect: 0, ranked: 0, lastDay: '', days: 0, bestDays: 0, got: {} };
+    return { plays: 0, perMode: {}, correct: 0, maxStreak: 0, perfect: 0, ranked: 0, lastDay: '', days: 0, bestDays: 0, roomPlays: 0, roomWins: 0, got: {} };
   }
 
   function load() {
@@ -81,5 +94,14 @@ const Stats = (() => {
     return fresh;
   }
 
-  return { visit, record, data: () => S, BADGES, MODES };
+  // 그룹 경쟁전에 기록을 남겼을 때 (place: 그 방에서 몇 위)
+  function room(place) {
+    S.roomPlays++;
+    if (place === 1) S.roomWins++;
+    const fresh = unlock();
+    save();
+    return fresh;
+  }
+
+  return { visit, record, room, data: () => S, BADGES, MODES };
 })();

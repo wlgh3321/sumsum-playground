@@ -1,10 +1,10 @@
 /*
  * 보너스 (연습·랭킹전 모두)
- * - 배지 3개: 하트 +½ · 배지 6개: 하트 +1 · 7일 연속 출석한 날: 하트 +½
+ * - 배지 8개: 하트 +½ · 배지 16개: 하트 +1 · 7일 연속 출석한 날: 하트 +½ (배지는 24개)
  * - 시간 게임(1분 도전·참 거짓·시간 버티기)은 하트 반 칸 = +3초로 바꿔 줘요. 60문제는 보너스 없음.
  * - 광고 보고 하트 +1 (판마다 한 번), 게임 오버 때 광고 보고 한 번 이어하기.
  * - "광고 없애기"를 산 사람은 광고 없이 바로 받아요.
- * - 배지 12개를 다 모으면 황금 블록 테마.
+ * - 배지 24개를 다 모으면 황금 블록 테마.
  * 광고·결제는 앱(네이티브)에서 window.SumsumNative 로 연결해요. 웹에서는 광고 버튼이 숨어요.
  */
 const Bonus = (() => {
@@ -21,8 +21,8 @@ const Bonus = (() => {
   function parts() {
     const list = [];
     const b = got();
-    if (b >= 6) list.push({ key: 'bonB6', u: 2 });
-    else if (b >= 3) list.push({ key: 'bonB3', u: 1 });
+    if (b >= 16) list.push({ key: 'bonB6', u: 2 });
+    else if (b >= 8) list.push({ key: 'bonB3', u: 1 });
     if (streakToday()) list.push({ key: 'bonDays', u: 1 });
     return list;
   }

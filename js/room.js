@@ -470,6 +470,8 @@ const Room = (() => {
       rows = await R.players(room.id, mode, ssn);
       tab = mode;
       showPlaced(box, mode, me);
+      // 배지: 같이 놀자 · 우리 방 1등 (앱)
+      if (typeof Stats !== 'undefined' && Stats.room && App.celebrate) App.celebrate(Stats.room(rows.findIndex(x => x.id === me) + 1));
     }
 
     try { rows = await R.players(room.id, mode, ssn); } catch (e) { note(box, t('roomOffline')); return; }

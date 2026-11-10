@@ -583,6 +583,11 @@ const App = (() => {
     const noShare = r.badge.kind === 'quit' || !(r.value > 0); // 그만한 판·0점은 공유 버튼을 숨겨요
     $('shareBtn').hidden = noShare;
     $('shareImgBtn').hidden = noShare;
+    // 광고 보고 하트(시간) 더 받고 다시 하기: 보너스가 붙는 게임만, 그룹 경쟁전·도전장 판은 빼요 (모두 같은 조건)
+    const adKind = Bonus.kindOf(r.mode);
+    const fairRun = !!r.room || !!(challenge && challenge.seed && r.seed === challenge.seed);
+    $('againAdBtn').hidden = !adKind || fairRun || !Bonus.canReward();
+    if (!$('againAdBtn').hidden) $('againAdTxt').textContent = t(Bonus.noAds() ? 'againAdFree' : 'againAd', { v: Bonus.label(r.mode, 2) });
     if (!noShare) {
       ShareCard.set({
         r,
@@ -859,7 +864,41 @@ const App = (() => {
     $('nickBox').addEventListener('click', e => { if (e.target === $('nickBox')) $('nickBox').hidden = true; });
     $('nickSave').addEventListener('click', saveNick);
     $('nickInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); saveNick(); } });
-    $('saveDl').addEventListener('click', () => ShareCard.save(() => toast(t('shareImgSaved'))));
+    // 이미지 창의 '공유하기': 카톡으로 점수 이미지 카드 ("○○ 62.9초!" + "나보다 잘할 수 있어?")
+    $('saveDl').addEventListener('click', async () => {
+      const r = lastResult;
+      if (!r) return;
+      track(`share-score-${lastMode}`, '점수 이미지 공유');
+      const title = `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`;
+      const desc = t('shareInvite');
+      const N = window.SumsumNative;
+      if (N && N.kakao && LANG === 'ko') {
+        try {
+          const f = await ShareCard.ready();
+          const SITE = 'https://sumsum.studiojhl.com/';
+          await N.kakaoImage(f, {
+            title, desc, url: challengeUrl(r),
+            buttons: [
+              { title: '앱으로 도전', url: SITE + 'get/?' + challengeQuery(r), exec: challengeQuery(r) },
+              { title: '웹으로 도전', url: challengeUrl(r) },
+            ],
+          });
+          return;
+        } catch (e) { /* 카톡이 없거나 실패하면 아래로 */ }
+      }
+      if (KakaoShare.sendImage({ title, desc, url: challengeUrl(r), exec: challengeQuery(r) })) return;
+      ShareCard.share(() => toast(t('shareImgSaved')), { text: `${title}\n${desc}`, url: challengeUrl(r) }, () => toast(t('shareCopied')));
+    });
+    // 결과 화면: 광고 보고 하트 더 받고 다시 하기
+    $('againAdBtn').addEventListener('click', async () => {
+      const btn = $('againAdBtn');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      track(`again-ad-${lastMode}`, '광고 보고 다시 하기');
+      const ok = await Bonus.reward();
+      btn.disabled = false;
+      if (ok) { Sound.levelUp(); startWithBonus(lastMode, snapshot(lastMode), true); }
+    });
     $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
     $('saveBox').addEventListener('click', e => { if (e.target === $('saveBox')) $('saveBox').hidden = true; });
     // 결과 화면에서 넘어갈 때 가끔 전면 광고 (규칙은 bonus.js)
@@ -954,7 +993,7 @@ const App = (() => {
     refreshStore();
   }
 
-  return { show, showHome, showResult, init, refreshStore, buyNoAds, restoreNoAds, openChallenge, toast, playRoom };
+  return { show, showHome, showResult, init, refreshStore, buyNoAds, restoreNoAds, openChallenge, toast, playRoom, celebrate };
 })();
 
 App.init();
