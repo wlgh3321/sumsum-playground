@@ -327,17 +327,29 @@ const Room = (() => {
     for (let i = 0; i <= 630; i += 40) { x.beginPath(); x.moveTo(0, i); x.lineTo(1200, i); x.stroke(); }
     x.strokeStyle = '#6a4dff'; x.lineWidth = 10; x.strokeRect(40, 40, 1120, 550);
     x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillStyle = '#4de1ff'; x.font = '40px "Do Hyeon", sans-serif';
-    x.fillText(t('roomKicker'), 600, 150);
+    // 맨 위: 셈셈 로고
+    try {
+      const logo = new Image();
+      logo.src = 'img/intro-logo.png';
+      await logo.decode();
+      const w = 520, h = Math.round(w * logo.naturalHeight / logo.naturalWidth);
+      x.imageSmoothingEnabled = false; // 도트 그대로
+      x.drawImage(logo, 600 - w / 2, 78, w, h);
+    } catch (e) {
+      x.fillStyle = '#ffe14d'; x.font = '64px "Press Start 2P", monospace';
+      x.fillText('SUMSUM', 600, 130);
+    }
+    x.fillStyle = '#4de1ff'; x.font = '36px "Do Hyeon", sans-serif';
+    x.fillText(t('roomKicker'), 600, 250);
     x.fillStyle = '#ffe14d';
-    let size = 130;
+    let size = 104;
     x.font = `${size}px "Do Hyeon", sans-serif`;
-    while (x.measureText(title).width > 1000 && size > 60) { size -= 6; x.font = `${size}px "Do Hyeon", sans-serif`; }
-    x.fillText(title, 600, 290);
-    x.fillStyle = '#f2eeff'; x.font = '48px "Do Hyeon", sans-serif';
-    x.fillText(sub, 600, 420);
+    while (x.measureText(title).width > 1000 && size > 56) { size -= 6; x.font = `${size}px "Do Hyeon", sans-serif`; }
+    x.fillText(title, 600, 335);
+    x.fillStyle = '#f2eeff'; x.font = '46px "Do Hyeon", sans-serif';
+    x.fillText(sub, 600, 438);
     x.fillStyle = '#9d93c9'; x.font = '38px "Do Hyeon", sans-serif';
-    x.fillText(t('roomCardSub'), 600, 495);
+    x.fillText(t('roomCardSub'), 600, 508);
     const blob = await new Promise(res => c.toBlob(res, 'image/png'));
     return new File([blob], 'sumsum-room.png', { type: 'image/png' });
   }

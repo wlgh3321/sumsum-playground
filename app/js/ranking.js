@@ -303,7 +303,6 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
 
     if (!ranked) {
       note(box, 'rankPracAll', { n: place }, 'rank-hi');
-      note(box, 'rankTotal', { total });
       renderPreview(box, r.mode, r.value, others, place);
       note(box, 'rankPracNote');
       return;
@@ -313,7 +312,6 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     if (!improved) {
       // 내 최고 기록이 그대로예요
       note(box, 'rankKeep', { v: fmt(r.mode, myRow.score), n: myIdx + 1 }, 'rank-hi');
-      note(box, 'rankTotal', { total: rows.length });
       const list = document.createElement('ol');
       list.className = 'rank-list';
       renderRows(list, r.mode, rows);
@@ -332,7 +330,6 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       if (typeof ShareCard !== 'undefined') ShareCard.refresh();
       box.textContent = '';
       note(box, myRow ? 'rankUpdated' : 'rankFirst', { n }, 'rank-hi');
-      note(box, 'rankTotal', { total: fresh.length });
       const list = document.createElement('ol');
       list.className = 'rank-list';
       renderRows(list, r.mode, fresh);
@@ -350,7 +347,6 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
 
     // 처음이면 이름 정하기
     note(box, 'rankNowAll', { n: place }, 'rank-hi');
-    note(box, 'rankTotal', { total });
     renderPreview(box, r.mode, r.value, others, place);
     const title = document.createElement('div');
     title.className = 'rank-hi';

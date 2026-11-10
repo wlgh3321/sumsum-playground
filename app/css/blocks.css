@@ -961,3 +961,6 @@ html.intro-on .intro {
 /* 설정: 닉네임 버튼도 효과음·배경음악 버튼과 같은 폭 */
 #nickBtn, #soundBtn, #musicBtn { min-width: 96px; justify-content: center; }
 #nickTxt { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 설정: 언어 버튼 두 개 같은 폭 */
+.set-row .lang-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.set-row .lang-switch .chip { min-width: 96px; justify-content: center; text-align: center; }
