@@ -213,18 +213,33 @@ const ShareCard = (() => {
   }
 
   // 버튼을 누르면 바로 불러요 (그림이 이미 준비돼 있어야 아이폰 공유 창이 떠요).
-  async function share(onSaved) {
+  // link = { text, url } 를 넘기면 도전장: 이미지와 함께 문구·링크도 보내요.
+  // 이미지 공유가 안 되는 곳(컴퓨터 등)은 문구·링크만 공유하거나 복사해요 (onCopied).
+  async function share(onSaved, link, onCopied) {
     if (!info) return;
     if (!file) await render();
     if (!file) return;
     const f = file;
-    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+    const tries = [];
+    if (link) tries.push({ files: [f], text: `${link.text}\n${link.url}` });
+    tries.push({ files: [f] });
+    if (link) tries.push({ text: link.text, url: link.url });
+    for (const data of tries) {
+      if (!navigator.share || (navigator.canShare && !navigator.canShare(data))) continue;
+      if (data.files && !navigator.canShare) continue;
       try {
-        await navigator.share({ files: [f] });
+        await navigator.share(data);
         return;
       } catch (e) {
         if (e && e.name === 'AbortError') return; // 사용자가 공유 창을 닫았어요
       }
+    }
+    if (link) {
+      try {
+        await navigator.clipboard.writeText(`${link.text}\n${link.url}`);
+        if (onCopied) onCopied();
+        return;
+      } catch (e) { /* 복사도 안 되면 이미지 저장으로 */ }
     }
     download(f);
     if (onSaved) onSaved();

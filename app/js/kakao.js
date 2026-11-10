@@ -21,17 +21,17 @@ const KakaoShare = (() => {
   const on = () => !!KEY && !isIOSApp() && typeof LANG !== 'undefined' && LANG === 'ko';
   // 버튼 두 개: '앱으로 도전'(앱이 있으면 앱이 바로 열리고, 없으면 스토어로) + '웹으로 도전'(브라우저에서 바로)
   // exec = 도전장 정보(cn=&cs=&cg=&cz=). 카톡이 앱을 열면서 이걸 그대로 넘겨줘요.
-  // 웹사이트에서 보낸 카드는 '나도 도전하기'(웹)가 먼저예요.
+  // 웹사이트에서 보낸 카드는 '도전 받기'(웹)가 먼저예요.
   // ★ 웹(PWA)에서 보낼 때 '앱으로 도전' 버튼: 앱 업데이트가 스토어에 나온 뒤 true 로 (js/kakao.js 와 같이)
   const APP_VS = false;
   const btns = (url, exec) => {
     const link = url || SITE;
     const web = { mobileWebUrl: link, webUrl: link };
-    if (!exec || (!isNative() && !APP_VS)) return [{ title: isNative() ? '웹에서 하기' : '나도 도전하기', link: web }];
+    if (!exec || (!isNative() && !APP_VS)) return [{ title: isNative() ? '웹에서 하기' : '도전 받기', link: web }];
     const app = { ...web, androidExecutionParams: exec, iosExecutionParams: exec };
     return isNative()
       ? [{ title: '앱으로 도전', link: app }, { title: '웹으로 도전', link: web }]
-      : [{ title: '나도 도전하기', link: web }, { title: '앱으로 도전', link: app }];
+      : [{ title: '도전 받기', link: web }, { title: '앱으로 도전', link: app }];
   };
 
   function load() {

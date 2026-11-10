@@ -114,6 +114,18 @@ const App = (() => {
   }
   function challengeUrl(r) { return `${siteBase()}?${challengeQuery(r)}`; }
 
+  // 카톡 도전장 카드 문구: "🔥 지홍님에게서 도전장이 왔어요!" + "[게임] 기록 — 완전히 같은 문제로 이겨 보세요!"
+  function challengeMsg(r) {
+    const name = savedPlayerName();
+    const game = modeName(r.mode, r.settings);
+    const v = fmtValue(r.mode, r.value);
+    const seeded = !!(r.settings && r.settings.ranked && r.seed);
+    return {
+      title: name ? t('vsCardTitle', { name }) : t('vsCardTitleAnon'),
+      desc: t(seeded ? 'vsCardDescSeed' : 'vsCardDesc', { game, v }),
+    };
+  }
+
   // 주소에 도전장 정보(?cn=이름&cs=점수&cg=게임&cz=씨앗)가 있으면 읽어서 challenge에 저장하고, 주소는 깨끗하게 되돌려요
   function readChallenge() {
     try {
@@ -560,12 +572,14 @@ const App = (() => {
     $('restartBtn').addEventListener('click', () => Game.restart());
     $('quitBtn').addEventListener('click', () => Game.quit());
     // 공유 창은 브라우저 정책상 터치를 뗄 때(click) 열어야 아이폰에서도 떠요.
-    // 결과 공유하기: 한국어는 카톡으로 점수 이미지 카드, 아니면 휴대폰 공유 창으로 점수 이미지
+    // 친구에게 도전장 보내기: 한국어는 카톡 도전장 카드(점수 이미지 + "OO님에게서 도전장이 왔어요!"), 아니면 공유 창으로 이미지·문구·링크
     $('shareImgBtn').addEventListener('click', () => {
-      track(`share-img-${lastMode}`, '결과 공유');
+      track(`share-img-${lastMode}`, '도전장 보내기');
       const r = lastResult;
-      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite'), url: r ? challengeUrl(r) : undefined, exec: r ? challengeQuery(r) : undefined })) return;
-      ShareCard.share(() => toast(t('shareImgSaved')));
+      if (r && KakaoShare.sendImage({ ...challengeMsg(r), url: challengeUrl(r), exec: challengeQuery(r) })) return;
+      if (!r) return;
+      const m = challengeMsg(r);
+      ShareCard.share(() => toast(t('shareImgSaved')), { text: `${m.title}\n${m.desc}`, url: challengeUrl(r) }, () => toast(t('shareCopied')));
     });
     // 결과 이미지 저장: 이미지를 크게 보여 주고 저장 버튼
     $('shareBtn').addEventListener('click', async () => {

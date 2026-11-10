@@ -117,6 +117,18 @@ const App = (() => {
   }
   function challengeUrl(r) { return `${siteBase()}?${challengeQuery(r)}`; }
 
+  // 카톡 도전장 카드 문구: "🔥 지홍님에게서 도전장이 왔어요!" + "[게임] 기록 — 완전히 같은 문제로 이겨 보세요!"
+  function challengeMsg(r) {
+    const name = savedPlayerName();
+    const game = modeName(r.mode, r.settings);
+    const v = fmtValue(r.mode, r.value);
+    const seeded = !!(r.settings && r.settings.ranked && r.seed);
+    return {
+      title: name ? t('vsCardTitle', { name }) : t('vsCardTitleAnon'),
+      desc: t(seeded ? 'vsCardDescSeed' : 'vsCardDesc', { game, v }),
+    };
+  }
+
   // 주소에 도전장 정보(?cn=이름&cs=점수&cg=게임&cz=씨앗)가 있으면 읽어서 challenge에 저장하고, 주소는 깨끗하게 되돌려요
   // (앱은 보통 주소로 안 열리지만, PWA로 설치해서 쓰는 경우엔 이 주소를 그대로 받아요)
   function parseChallenge(query) {
@@ -769,9 +781,9 @@ const App = (() => {
     $('restartBtn').addEventListener('click', () => Game.restart());
     $('quitBtn').addEventListener('click', () => Game.quit());
     // 공유 창은 브라우저 정책상 터치를 뗄 때(click) 열어야 아이폰에서도 떠요.
-    // 결과 공유하기: 한국어는 카톡으로 점수 이미지 카드, 아니면 휴대폰 공유 창으로 점수 이미지
+    // 친구에게 도전장 보내기: 한국어는 카톡 도전장 카드(점수 이미지 + "OO님에게서 도전장이 왔어요!"), 아니면 공유 창으로 이미지·문구·링크
     $('shareImgBtn').addEventListener('click', async () => {
-      track(`share-img-${lastMode}`, '결과 공유');
+      track(`share-img-${lastMode}`, '도전장 보내기');
       const r = lastResult;
       // 앱(한국어): 카카오톡으로 점수 이미지 + 도전장 버튼(앱으로·웹으로) 카드를 바로 보내요
       const N = window.SumsumNative;
@@ -781,8 +793,7 @@ const App = (() => {
           const SITE = 'https://sumsum.studiojhl.com/';
           // '앱으로 도전': 친구 폰에 앱이 있으면 앱이 바로 열려요(exec), 없으면 스토어로 / '웹으로 도전': 브라우저에서 바로
           await N.kakaoImage(f, {
-            title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`,
-            desc: t('shareInvite'),
+            ...challengeMsg(r),
             url: challengeUrl(r),
             buttons: [
               { title: '앱으로 도전', url: SITE + 'get/?' + challengeQuery(r), exec: challengeQuery(r) },
@@ -792,8 +803,10 @@ const App = (() => {
           return;
         } catch (e) { /* 카톡이 없거나 실패하면 아래 공유 창으로 */ }
       }
-      if (r && KakaoShare.sendImage({ title: `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`, desc: t('shareInvite'), url: r ? challengeUrl(r) : undefined, exec: r ? challengeQuery(r) : undefined })) return;
-      ShareCard.share(() => toast(t('shareImgSaved')));
+      if (r && KakaoShare.sendImage({ ...challengeMsg(r), url: challengeUrl(r), exec: challengeQuery(r) })) return;
+      if (!r) return;
+      const m = challengeMsg(r);
+      ShareCard.share(() => toast(t('shareImgSaved')), { text: `${m.title}\n${m.desc}`, url: challengeUrl(r) }, () => toast(t('shareCopied')));
     });
     // 결과 이미지 저장: 이미지를 크게 보여 주고 저장 버튼
     $('shareBtn').addEventListener('click', async () => {
