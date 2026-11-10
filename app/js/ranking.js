@@ -118,14 +118,25 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
     } catch (e) {}
     return null;
   }
-  function flagEmoji(cc) {
-    if (!cc || !/^[A-Za-z]{2}$/.test(cc)) return '';
-    return String.fromCodePoint(...[...cc.toUpperCase()].map(c => 127397 + c.charCodeAt(0)));
+  // 도트 국기: img/flags.png 한 장에 16×12 도트 국기가 16개씩 줄지어 있어요 (나라 코드 알파벳 순)
+  const FLAGS = 'ADAEAFAGAIALAMAOAQARASATAUAWAXAZBABBBDBEBFBGBHBIBJBLBMBNBOBQBRBSBTBVBWBYBZCACCCDCFCGCHCICKCLCMCNCOCPCRCUCVCWCXCYCZDEDGDJDKDMDODZECEEEGEHERESETEUFIFJFKFMFOFRGAGBGDGEGFGGGHGIGLGMGNGPGQGRGSGTGUGWGYHKHMHNHRHTHUICIDIEILIMINIOIQIRISITJEJMJOJPKEKGKHKIKMKNKPKRKWKYKZLALBLCLILKLRLSLTLULVLYMAMCMDMEMFMGMHMKMLMMMNMOMPMQMRMSMTMUMVMWMXMYMZNANCNENFNGNINLNONPNRNUNZOMPAPCPEPFPGPHPKPLPMPNPRPSPTPWPYQARERORSRURWSASBSCSDSESGSHSISJSKSLSMSNSOSRSSSTSVSXSYSZTCTDTFTGTHTJTKTLTMTNTOTRTTTVTWTZUAUGUMUNUSUYUZVAVCVEVGVIVNVUWFWSXKXXYEYTZAZMZW';
+  function flagEl(cc) {
+    if (!cc || !/^[A-Za-z]{2}$/.test(cc)) return null;
+    const n = FLAGS.match(/../g).indexOf(cc.toUpperCase());
+    if (n < 0) return null;
+    const f = document.createElement('span');
+    f.className = 'flag';
+    f.style.backgroundPosition = `${-(n % 16) * 24}px ${-Math.floor(n / 16) * 18}px`;
+    f.title = cc.toUpperCase();
+    return f;
   }
-  const nameWithFlag = r => {
-    const f = flagEmoji(r.country);
-    return f ? `${f} ${r.name}` : r.name;
-  };
+  // 이름 칸 채우기: [도트 국기] 닉네임
+  function setName(el, r) {
+    el.textContent = r.name;
+    const f = flagEl(r.country);
+    if (f) el.prepend(f);
+    return el;
+  }
 
   /* ---------- 목록 그리기 ---------- */
   function renderRows(list, mode, all, highlightId) {
@@ -143,7 +154,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = `rank-row r${i + 1}${r.id === highlightId || i === me ? ' me' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(i);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = nameWithFlag(r); Glyph.fit(b, r.name);
+      const b = document.createElement('span'); b.className = 'rank-name'; setName(b, r); Glyph.fit(b, r.name);
       if (i === 0) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
       li.append(a, b, c);
@@ -157,7 +168,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = 'rank-row me';
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(me);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = nameWithFlag(all[me]); Glyph.fit(b, all[me].name);
+      const b = document.createElement('span'); b.className = 'rank-name'; setName(b, all[me]); Glyph.fit(b, all[me].name);
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, all[me].score);
       li.append(a, b, c);
       list.append(dots, li);
@@ -244,7 +255,7 @@ const CROWN = '<svg class="crown" viewBox="0 0 12 9" aria-hidden="true" shape-re
       const li = document.createElement('li');
       li.className = `rank-row r${n}${r.me ? ' ghost' : ''}`;
       const a = document.createElement('span'); a.className = 'rank-no'; a.textContent = ordinal(n - 1);
-      const b = document.createElement('span'); b.className = 'rank-name'; b.textContent = nameWithFlag(r); Glyph.fit(b, r.name);
+      const b = document.createElement('span'); b.className = 'rank-name'; setName(b, r); Glyph.fit(b, r.name);
       if (n === 1) b.insertAdjacentHTML('afterbegin', CROWN); // 1등 왕관
       const c = document.createElement('span'); c.className = 'rank-score'; c.textContent = fmt(mode, r.score);
       li.append(a, b, c);
