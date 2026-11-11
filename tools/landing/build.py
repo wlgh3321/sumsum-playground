@@ -1,7 +1,7 @@
 """소개(랜딩) 페이지 만들기 (실행: python3 tools/landing/build.py) → /about.html"""
 import os
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-V = '20261111c'
+V = '20261111d'
 STORE = 'https://apps.apple.com/app/id6826497198'
 
 T = {
@@ -9,7 +9,7 @@ T = {
   g='guide/', home='./',
   hero_k='ARCADE MATH GAME',
   h1='사칙연산을<em>오락실 게임처럼</em>',
-  hero_p='덧셈, 뺄셈, 곱셈, 나눗셈으로 겨루는 아케이드 게임 6가지. 회원가입도 설치도 없이, 누르면 3초 뒤에 시작해요.',
+  hero_p='덧셈, 뺄셈, 곱셈, 나눗셈으로 겨루는 아케이드 게임 6가지.<br>회원가입도 설치도 없이, 누르면 3초 뒤에 시작해요.',
   play='웹에서 바로 하기', get='앱 받기',
   hero_note='무료 · 휴대폰, 태블릿, 컴퓨터 · 한국어 / English',
   shot_alt='셈셈 놀이터 앱 화면',
@@ -57,7 +57,7 @@ T = {
   g='en/guide/', home='./?lang=en',
   hero_k='ARCADE MATH GAME',
   h1='Arithmetic,<em>arcade style</em>',
-  hero_p='Six arcade games built on addition, subtraction, multiplication and division. No sign-up, nothing to install. Tap and it starts in three seconds.',
+  hero_p='Six arcade games built on addition, subtraction, multiplication and division.<br>No sign-up, nothing to install. Tap and it starts in three seconds.',
   play='Play on the web', get='Get the app',
   hero_note='Free · phone, tablet, computer · 한국어 / English',
   shot_alt='SumSum Playground app screen',
