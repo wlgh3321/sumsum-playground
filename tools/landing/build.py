@@ -1,7 +1,7 @@
 """소개(랜딩) 페이지 만들기 (실행: python3 tools/landing/build.py) → /about.html"""
 import os
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-V = '20261111e'
+V = '20261111f'
 STORE = 'https://apps.apple.com/app/id6826497198'
 
 T = {
@@ -42,7 +42,7 @@ T = {
        ('내 순위 보기', '명예의 전당 10위 밖이어도 내 자리 확인')],
   app_more='앱이 더 좋은 점', app_note='안드로이드 앱은 준비하고 있어요.',
   story_k='MAKER', story_h='혼자 만드는 <em>게임</em>이에요',
-  story=['셈셈 놀이터는 JHL STUDIO라는 이름으로 한 사람이 만들어요. "1분 구구단 테스트 같은 걸 게임으로 만들면 어떨까"에서 시작해 게임 6가지가 됐고, 2026년 11월 3일에 App Store에 나왔어요.',
+  story=['셈셈 놀이터는 JHL STUDIO라는 이름으로 한 사람이 만들어요. "1분 구구단 테스트 같은 걸 게임으로 만들면 어떨까"에서 시작해 게임 6가지가 됐고, 2026년 11월에 App Store에 나왔어요.',
          '버튼 두 개의 너비가 다르다, 일시정지를 풀면 타이밍을 놓친다. 이런 작은 불편을 하나씩 고치는 게 일의 대부분이에요. 의견을 보내 주시면 정말로 읽고 고쳐요.'],
   story_more='앱을 출시한 이야기 읽기 →',
   read_k='GUIDE', read_h='더 <em>읽을거리</em>',
@@ -90,7 +90,7 @@ T = {
        ('Your own rank', 'See where you stand outside the top 10')],
   app_more='Why the app?', app_note='An Android app is on the way.',
   story_k='MAKER', story_h='Made by <em>one person</em>',
-  story=['SumSum Playground is made by one person under the name JHL STUDIO. It began with "what if a one-minute times table test were a game", grew to six games, and reached the App Store on November 3, 2026.',
+  story=['SumSum Playground is made by one person under the name JHL STUDIO. It began with "what if a one-minute times table test were a game", grew to six games, and reached the App Store in November 2026.',
          'Two buttons with different widths. A pause that resumes too abruptly. Fixing small annoyances like these is most of the work. Send feedback and it will be read and acted on.'],
   story_more='Read how it was shipped →',
   read_k='GUIDE', read_h='More to <em>read</em>',

@@ -565,7 +565,7 @@ PAGES += [
 'title': 'SumSum Playground is now an app — 7 things the app adds',
 'desc': 'SumSum Playground is out on iPhone and iPad. Here is what the app adds over the website: creating group challenge rooms, badges and records, bonus hearts, continues and more.',
 'body': '''
-<p class="lead">SumSum Playground is now an app. It passed App Store review on November 3, 2026 and is free on iPhone and iPad. The six games are the same as on the website, and the app adds several features on top.</p>
+<p class="lead">SumSum Playground is now an app. It came out on the App Store in November 2026 and is free on iPhone and iPad. The six games are the same as on the website, and the app adds several features on top.</p>
 
 <div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">Download SumSum Playground on the App Store</a> (iPhone and iPad, free). The Android version will follow once testing is finished.</p></div>
 
@@ -731,7 +731,7 @@ PAGES += [
 'title': 'How I shipped a math game app on my own',
 'desc': 'A solo developer on building the arithmetic web game SumSum Playground and releasing it on the App Store: the idea, the redesign, getting ready for review, and why Android came later.',
 'body': '''
-<p class="lead">SumSum Playground is made by one person, under the name JHL STUDIO. It started as a website in the fall of 2026 and reached the App Store as an iPhone and iPad app on November 3. This is what happened along the way, written down in order, in case it helps someone preparing their own first release.</p>
+<p class="lead">SumSum Playground is made by one person, under the name JHL STUDIO. It started as a website in the fall of 2026 and reached the App Store as an iPhone and iPad app that November. This is what happened along the way, written down in order, in case it helps someone preparing their own first release.</p>
 
 <h2>It began with a one-minute times table test</h2>
 <p>The first idea was simple: a website where you practice addition, subtraction, multiplication and division as games. One where problems fall and you answer before they land. One where you answer as many as you can before time runs out. One that times how long you take to get 60 right. Those became Falling Problems, Time Challenge and the 60-Question Race. Balloon Pop, Beat the Clock and True or False came later, making six.</p>
@@ -760,7 +760,7 @@ PAGES += [
 </ul>
 
 <h2>Review, then release</h2>
-<p>Waiting for App Store review felt like the longest part. On November 3, 2026 the approval email arrived. I searched the store for the name of my own app, saw the icon appear, and stared at the screen for a while.</p>
+<p>Waiting for App Store review felt like the longest part. In November 2026 the approval email arrived. I searched the store for the name of my own app, saw the icon appear, and stared at the screen for a while.</p>
 
 <h2>Why Android came later</h2>
 <p>The plan was to launch on Android first. But Google Play requires new personal developer accounts to run a closed test with at least 12 testers for 14 days before a public release. For someone working alone, finding 12 people is a bigger task than it sounds. So the iPhone app went out first while the testers were gathered. The Android app will be released once testing is done.</p>
