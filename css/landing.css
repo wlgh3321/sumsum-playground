@@ -45,7 +45,8 @@
   text-shadow: 3px 3px 0 var(--pink);
 }
 .lp-hero h1 em { font-style: normal; color: var(--sun); display: block; }
-.lp-hero .lp-lead { font-size: 18px !important; text-wrap: balance; }
+.lp-hero .lp-lead { font-size: 18px !important; }
+.lp-hero .lp-lead span { display: block; text-wrap: balance; }
 .lp-note { margin: 14px 0 0; font-size: 14px !important; color: var(--text-dim) !important; }
 .lp-shot { display: block; width: 100%; height: auto; }
 .lp-hero-shot { max-width: 300px; margin: 0 auto; }
