@@ -6,7 +6,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = sys.argv[1] if len(sys.argv) > 1 else os.path.abspath(os.path.join(HERE, '..', '..'))
 SITE = 'https://sumsum.studiojhl.com'
 DATE = '2026-11-11'
-V = '20261111a'
+V = '20261111b'
 ADS = '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6048734887508367" crossorigin="anonymous"></script>'
 
 
@@ -19,12 +19,12 @@ KO, EN = load('content_ko'), load('content_en')
 L = {
     'ko': dict(mod=KO, base='/guide/', home='/', name='셈셈 놀이터', back='← 게임으로 돌아가기', other='English', other_lang='en',
                crumb_home='셈셈 놀이터', mins='읽는 시간 {n}분', date='2026년 11월 11일',
-               cta='읽은 내용을 바로 게임으로 연습해 보세요.', go='게임하러 가기 ▶', related='함께 읽으면 좋은 글',
+               cta='읽은 내용을 바로 게임으로 연습해 보세요.', go='웹에서 하기', app='앱으로 받기 ▶', related='함께 읽으면 좋은 글',
                foot=[('/about.html', '소개'), ('/guide/', '학습 가이드'), ('/privacy.html', '개인정보처리방침'), ('mailto:jhl.studio.00@gmail.com', '문의')],
                foot_label='사이트 정보', og='/og.png?v=4', locale='ko_KR', hub_count='글 {n}편'),
     'en': dict(mod=EN, base='/en/guide/', home='/?lang=en', name='SumSum Playground', back='← Back to the games', other='한국어', other_lang='ko',
                crumb_home='SumSum Playground', mins='{n} min read', date='November 11, 2026',
-               cta='Put what you just read into practice.', go='Play now ▶', related='Keep reading',
+               cta='Put what you just read into practice.', go='Play on the web', app='Get the app ▶', related='Keep reading',
                foot=[('/about.html', 'About'), ('/en/guide/', 'Learning Guide'), ('/privacy.html', 'Privacy'), ('mailto:jhl.studio.00@gmail.com', 'Contact')],
                foot_label='Site', og='/og-en.png?v=4', locale='en_US', hub_count='{n} articles'),
 }
@@ -93,6 +93,15 @@ def foot(lang):
   </nav>
 </main>
 </div>
+<script>
+/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {{
+  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
+  if (!a || !w) return;
+  var c = a.className; a.className = w.className; w.className = c;
+  g.insertBefore(w, a);
+}});
+</script>
 </body>
 </html>
 '''
@@ -143,7 +152,10 @@ for lang in ('ko', 'en'):
 
   <section class="card cta">
     <p>{c['cta']}</p>
-    <a class="btn-go" href="{c['home']}">{c['go']}</a>
+    <div class="cta-btns" data-cta-pair>
+      <a class="btn-go" data-cta="app" href="https://apps.apple.com/app/id6826497198" rel="noopener">{c['app']}</a>
+      <a class="btn-go alt" data-cta="web" href="{c['home']}">{c['go']}</a>
+    </div>
   </section>
 
   <section class="card">
@@ -180,7 +192,10 @@ for lang in ('ko', 'en'):
     hub += f'''
   <section class="card cta">
     <p>{c['cta']}</p>
-    <a class="btn-go" href="{c['home']}">{c['go']}</a>
+    <div class="cta-btns" data-cta-pair>
+      <a class="btn-go" data-cta="app" href="https://apps.apple.com/app/id6826497198" rel="noopener">{c['app']}</a>
+      <a class="btn-go alt" data-cta="web" href="{c['home']}">{c['go']}</a>
+    </div>
   </section>
 '''
     hub += foot(lang)

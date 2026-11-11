@@ -27,11 +27,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=Do+Hyeon&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
-  <link rel="stylesheet" href="/css/theme.css?v=20261111a">
-  <link rel="stylesheet" href="/css/style.css?v=20261111a">
-  <link rel="stylesheet" href="/css/arcade.css?v=20261111a">
-  <link rel="stylesheet" href="/css/page.css?v=20261111a">
-  <link rel="stylesheet" href="/css/guide.css?v=20261111a">
+  <link rel="stylesheet" href="/css/theme.css?v=20261111b">
+  <link rel="stylesheet" href="/css/style.css?v=20261111b">
+  <link rel="stylesheet" href="/css/arcade.css?v=20261111b">
+  <link rel="stylesheet" href="/css/page.css?v=20261111b">
+  <link rel="stylesheet" href="/css/guide.css?v=20261111b">
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "받아올림·받아내림, 헷갈리지 않게 익히기", "description": "받아올림이 있는 덧셈과 받아내림이 있는 뺄셈을 아이가 어려워하는 이유와, 10 가르기·모으기부터 차근차근 익히는 단계별 연습법을 소개해요.", "inLanguage": "ko", "datePublished": "2026-11-11", "dateModified": "2026-11-11", "author": {"@type": "Organization", "name": "JHL STUDIO"}, "publisher": {"@type": "Organization", "name": "JHL STUDIO"}, "mainEntityOfPage": "https://sumsum.studiojhl.com/guide/carrying-and-borrowing/"}</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6048734887508367" crossorigin="anonymous"></script>
 </head>
@@ -92,7 +92,10 @@
 
   <section class="card cta">
     <p>읽은 내용을 바로 게임으로 연습해 보세요.</p>
-    <a class="btn-go" href="/">게임하러 가기 ▶</a>
+    <div class="cta-btns" data-cta-pair>
+      <a class="btn-go" data-cta="app" href="https://apps.apple.com/app/id6826497198" rel="noopener">앱으로 받기 ▶</a>
+      <a class="btn-go alt" data-cta="web" href="/">웹에서 하기</a>
+    </div>
   </section>
 
   <section class="card">
@@ -111,5 +114,14 @@
   </nav>
 </main>
 </div>
+<script>
+/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
+  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
+  if (!a || !w) return;
+  var c = a.className; a.className = w.className; w.className = c;
+  g.insertBefore(w, a);
+});
+</script>
 </body>
 </html>

@@ -123,3 +123,7 @@
 .doc table.cmp tr > :nth-child(1) { width: 34%; }
 .doc table.cmp tr > :nth-child(2) { width: 28%; }
 .doc table.cmp tr > :nth-child(3) { width: 38%; }
+
+/* 글 아래 버튼 두 개: 앱(강조) + 웹 */
+.cta-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.cta .btn-go.alt { background: transparent; color: var(--text, #f2eeff); border: 2px solid var(--line, #6a4dff); padding: 10px 18px; }

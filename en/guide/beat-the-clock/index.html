@@ -27,11 +27,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=Do+Hyeon&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
-  <link rel="stylesheet" href="/css/theme.css?v=20261111a">
-  <link rel="stylesheet" href="/css/style.css?v=20261111a">
-  <link rel="stylesheet" href="/css/arcade.css?v=20261111a">
-  <link rel="stylesheet" href="/css/page.css?v=20261111a">
-  <link rel="stylesheet" href="/css/guide.css?v=20261111a">
+  <link rel="stylesheet" href="/css/theme.css?v=20261111b">
+  <link rel="stylesheet" href="/css/style.css?v=20261111b">
+  <link rel="stylesheet" href="/css/arcade.css?v=20261111b">
+  <link rel="stylesheet" href="/css/page.css?v=20261111b">
+  <link rel="stylesheet" href="/css/guide.css?v=20261111b">
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Beat the Clock — keep the timer alive", "description": "How time is added and removed in the SumSum Playground game \"Beat the Clock\", and the accuracy-first strategy for lasting longer.", "inLanguage": "en", "datePublished": "2026-11-11", "dateModified": "2026-11-11", "author": {"@type": "Organization", "name": "JHL STUDIO"}, "publisher": {"@type": "Organization", "name": "JHL STUDIO"}, "mainEntityOfPage": "https://sumsum.studiojhl.com/en/guide/beat-the-clock/"}</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6048734887508367" crossorigin="anonymous"></script>
 </head>
@@ -82,7 +82,10 @@
 
   <section class="card cta">
     <p>Put what you just read into practice.</p>
-    <a class="btn-go" href="/?lang=en">Play now ▶</a>
+    <div class="cta-btns" data-cta-pair>
+      <a class="btn-go" data-cta="app" href="https://apps.apple.com/app/id6826497198" rel="noopener">Get the app ▶</a>
+      <a class="btn-go alt" data-cta="web" href="/?lang=en">Play on the web</a>
+    </div>
   </section>
 
   <section class="card">
@@ -101,5 +104,14 @@
   </nav>
 </main>
 </div>
+<script>
+/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
+  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
+  if (!a || !w) return;
+  var c = a.className; a.className = w.className; w.className = c;
+  g.insertBefore(w, a);
+});
+</script>
 </body>
 </html>

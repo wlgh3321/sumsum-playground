@@ -1,7 +1,7 @@
 """소개(랜딩) 페이지 만들기 (실행: python3 tools/landing/build.py) → /about.html"""
 import os
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-V = '20261111f'
+V = '20261111g'
 STORE = 'https://apps.apple.com/app/id6826497198'
 
 T = {
@@ -10,8 +10,8 @@ T = {
   hero_k='ARCADE MATH GAME',
   h1='사칙연산을<em>오락실 게임처럼</em>',
   hero_p='<span>덧셈, 뺄셈, 곱셈, 나눗셈으로 겨루는 아케이드 게임 6가지.</span><span>회원가입도 설치도 없이, 누르면 3초 뒤에 시작해요.</span>',
-  play='웹에서 바로 하기', get='앱 받기',
-  hero_note='무료 · 휴대폰, 태블릿, 컴퓨터 · 한국어 / English',
+  play='웹에서 해 보기', get='앱으로 받기',
+  hero_note='무료 · iPhone · iPad · 웹 · 한국어 / English',
   shot_alt='셈셈 놀이터 앱 화면',
   why_k='WHY SUMSUM', why_h='계산 연습이 아니라 <em>게임</em>이에요',
   why_p='문제집 대신 오락실. 점수와 기록, 순위로 말하는 계산 게임을 만들었어요.',
@@ -50,7 +50,7 @@ T = {
         ('mental-math-game', '암산 게임 — 하루 3분 암산 연습 루틴'), ('mental-math-for-adults', '어른을 위한 암산 되살리기'),
         ('group-match', '그룹 경쟁전 — 친구·가족끼리만 겨루는 방 만들기'), ('faq', '자주 묻는 질문')],
   read_all='학습 가이드 전체 보기 →',
-  fin_h='지금 <em>한 판</em> 해 볼까요?', fin_p='1분이면 충분해요. 마음에 들면 앱으로 이어서 해 보세요.',
+  fin_h='지금 <em>한 판</em> 해 볼까요?', fin_p='앱으로 받아 두면 홈 화면에서 바로 시작해요. 배지와 그룹 경쟁전도 앱에 있어요.',
   contact='버그 제보, 게임 아이디어, 기록 삭제 요청: ',
 ),
 'en': dict(
@@ -58,8 +58,8 @@ T = {
   hero_k='ARCADE MATH GAME',
   h1='Arithmetic,<em>arcade style</em>',
   hero_p='<span>Six arcade games built on addition, subtraction, multiplication and division.</span><span>No sign-up, nothing to install. Tap and it starts in three seconds.</span>',
-  play='Play on the web', get='Get the app',
-  hero_note='Free · phone, tablet, computer · 한국어 / English',
+  play='Try it on the web', get='Get the app',
+  hero_note='Free · iPhone · iPad · web · 한국어 / English',
   shot_alt='SumSum Playground app screen',
   why_k='WHY SUMSUM', why_h='A <em>game</em>, not a worksheet',
   why_p='An arcade instead of a workbook. A calculation game that speaks in scores, records and ranks.',
@@ -98,7 +98,7 @@ T = {
         ('mental-math-game', 'Mental math game — a three-minute daily routine'), ('mental-math-for-adults', 'Mental math for adults'),
         ('group-match', 'Group challenge — a private leaderboard'), ('faq', 'FAQ')],
   read_all='See the whole Learning Guide →',
-  fin_h='Ready for <em>one game</em>?', fin_p='A minute is enough. If you like it, keep going in the app.',
+  fin_h='Ready for <em>one game</em>?', fin_p='Get the app and start from your home screen. Badges and group challenges live there too.',
   contact='Bug reports, ideas or record removal: ',
 ),
 }
@@ -106,9 +106,9 @@ T = {
 
 def body(l):
     c = T[l]; g = c['g']
-    btns = f'''<div class="lp-btns">
-        <a class="lp-btn primary" href="{c['home']}">{c['play']}</a>
-        <a class="lp-btn" href="{STORE}" target="_blank" rel="noopener">{c['get']}</a>
+    btns = f'''<div class="lp-btns" data-cta-pair>
+        <a class="lp-btn primary" data-cta="app" href="{STORE}" target="_blank" rel="noopener">{c['get']}</a>
+        <a class="lp-btn" data-cta="web" href="{c['home']}">{c['play']}</a>
       </div>'''
     why = '\n'.join(f'      <div class="lp-box"><h3>{a}</h3><p>{b}</p></div>' for a, b in c['why'])
     games = '\n'.join(f'      <a class="lp-game" href="{g}{s}/" style="--c: var(--{col})"><i aria-hidden="true">{ic}</i><b>{n}</b><span>{d}</span></a>'
@@ -272,6 +272,15 @@ page = f'''<!doctype html>
 </main>
 </div>
 <script src="js/page.js?v={V}"></script>
+<script>
+/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {{
+  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
+  if (!a || !w) return;
+  var c = a.className; a.className = w.className; w.className = c;
+  g.insertBefore(w, a);
+}});
+</script>
 </body>
 </html>
 '''
