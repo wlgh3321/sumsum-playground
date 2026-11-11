@@ -51,11 +51,28 @@ const Bonus = (() => {
   const canReward = () => noAds() || adReady();
   // 보상 받기: 광고 없애기를 샀으면 바로, 아니면 보상형 광고를 끝까지 보면 true
   // times: 광고를 몇 개 이어서 봐야 하는지 (두 번째 이어하기는 2개). 하나라도 끝까지 안 보면 false
+  // 다음 광고가 준비될 때까지 잠깐 기다려요 (광고 하나를 보고 나면 다음 광고를 새로 불러와야 해요)
+  function waitAd(ms) {
+    return new Promise(res => {
+      const t0 = Date.now();
+      const tick = () => {
+        if (adReady()) return res(true);
+        if (Date.now() - t0 >= ms) return res(false);
+        setTimeout(tick, 250);
+      };
+      tick();
+    });
+  }
   async function reward(times = 1) {
     if (noAds()) return true;
     markRewarded();
     for (let i = 0; i < times; i++) {
-      if (!adReady()) return false;
+      if (i === 0) {
+        if (!adReady()) return false;
+      } else if (!(await waitAd(12000))) {
+        // 두 번째 광고를 못 불러왔으면, 이미 하나를 끝까지 봤으니 보상은 그대로 줘요
+        return true;
+      }
       try { if (!(await N().showReward())) return false; } catch (e) { return false; }
     }
     return true;
