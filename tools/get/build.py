@@ -14,7 +14,7 @@ PAGES = {
                            og_desc='사칙연산을 오락실 게임처럼. 무료로 받아서 바로 한 판!', og_img='og.png?v=4',
                            msg='셈셈 놀이터로 이동하는 중…', ios='App Store에서 받기', android='Google Play에서 받기', web='웹에서 바로 하기'),
     'get/en/index.html': dict(lang='en', title='Get SumSum Playground', og_title='Can you beat my score? · SumSum Playground',
-                              og_desc='A free arcade math game. Get the app and play the same challenge.', og_img='og.png?v=4',
+                              og_desc='A free arcade math game. Get the app and play the same challenge.', og_img='og-score.png?v=1',
                               msg='Opening SumSum Playground…', ios='Get it on the App Store', android='Get it on Google Play', web='Play on the web'),
     'join/index.html': dict(lang='en', title='SumSum Playground · Group challenge invite', og_title="You're invited to a group challenge!",
                             og_desc='Same problems for everyone. Who will be #1? · SumSum Playground', og_img='og-join.png?v=1',

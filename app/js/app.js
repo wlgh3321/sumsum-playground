@@ -881,6 +881,10 @@ const App = (() => {
         } catch (e) { /* 카톡이 없거나 실패하면 아래로 */ }
       }
       if (KakaoShare.sendImage({ title, desc, url: challengeUrl(r), exec: challengeQuery(r) })) return;
+      // 앱(영어): 그림을 같이 넘기면 메시지 앱이 링크를 버려요 → 글과 링크만 한 덩어리로 보내요 (그림은 링크 미리보기 카드로 떠요)
+      if (N && LANG !== 'ko' && navigator.share) {
+        try { await navigator.share({ text: `${title}\n${desc}\n${link}` }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
       ShareCard.share(() => toast(t('shareImgSaved')), { text: `${title}\n${desc}`, url: link }, () => toast(t('shareCopied')));
     });
     $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
