@@ -378,12 +378,14 @@ const Room = (() => {
     const desc = t('roomCardDesc');
     if (window.track) window.track('room-share', '그룹 경쟁전 공유');
     const N = window.SumsumNative;
+    // 앱에서 보낸 초대는 링크를 누르면 스토어로 가요 (/get/ 이 아이폰은 App Store로, 앱이 없는 기기는 웹 방으로 보내요)
+    const link = N ? SITE + 'get/?' + exec : url;
     // 아이폰 앱: 언어와 상관없이 카톡으로 그림 카드 + [앱으로 참가][웹으로 참가] (카톡이 없으면 아래 공유 창으로)
     if (N && N.kakao) {
       try {
         const f = await cardImage(nm, room.host ? t('roomInvBy', { name: room.host }) : t('roomCardSubAnon'));
         await N.kakaoImage(f, {
-          title, desc, url,
+          title, desc, url: link,
           buttons: [
             { title: t('roomJoinApp'), url: SITE + 'get/?' + exec, exec },
             { title: t('roomJoinWeb'), url },
@@ -397,7 +399,7 @@ const Room = (() => {
     // 안드로이드 앱·웹(한국어): 카카오 SDK 카드
     if (KakaoShare.sendText({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoinWeb')], btn: t('roomJoin') })) return;
     // 그 밖: 글과 링크를 한 덩어리로 (url을 따로 넘기면 카톡에서 사이에 빈 줄이 생겨요)
-    const text = `${title}\n${desc}\n${url}`;
+    const text = `${title}\n${desc}\n${link}`;
     if (navigator.share) {
       try { await navigator.share({ text }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
     }
