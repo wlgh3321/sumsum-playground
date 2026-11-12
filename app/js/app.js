@@ -867,22 +867,21 @@ const App = (() => {
       const title = `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`;
       const desc = t('shareInvite');
       const N = window.SumsumNative;
-      if (N && N.kakao) {
+      // 앱에서 보낸 링크는 스토어로 가요 (/get/ 이 아이폰은 App Store로, 앱이 없는 기기는 웹 도전으로 보내요)
+      const appLink = 'https://sumsum.studiojhl.com/get/?' + challengeQuery(r);
+      const link = N ? appLink : challengeUrl(r);
+      if (N && N.kakao && LANG === 'ko') {
         try {
           const f = await ShareCard.ready();
-          const SITE = 'https://sumsum.studiojhl.com/';
           await N.kakaoImage(f, {
-            title, desc, url: challengeUrl(r),
-            buttons: [
-              { title: '앱으로 도전', url: SITE + 'get/?' + challengeQuery(r), exec: challengeQuery(r) },
-              { title: '웹으로 도전', url: challengeUrl(r) },
-            ],
+            title, desc, url: link,
+            buttons: [{ title: '앱으로 도전', url: appLink, exec: challengeQuery(r) }],
           });
           return;
         } catch (e) { /* 카톡이 없거나 실패하면 아래로 */ }
       }
       if (KakaoShare.sendImage({ title, desc, url: challengeUrl(r), exec: challengeQuery(r) })) return;
-      ShareCard.share(() => toast(t('shareImgSaved')), { text: `${title}\n${desc}`, url: challengeUrl(r) }, () => toast(t('shareCopied')));
+      ShareCard.share(() => toast(t('shareImgSaved')), { text: `${title}\n${desc}`, url: link }, () => toast(t('shareCopied')));
     });
     $('saveClose').addEventListener('click', () => { $('saveBox').hidden = true; });
     $('saveBox').addEventListener('click', e => { if (e.target === $('saveBox')) $('saveBox').hidden = true; });

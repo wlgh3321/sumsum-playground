@@ -378,26 +378,25 @@ const Room = (() => {
     const desc = t('roomCardDesc');
     if (window.track) window.track('room-share', '그룹 경쟁전 공유');
     const N = window.SumsumNative;
-    // 앱에서 보낸 초대는 링크를 누르면 스토어로 가요 (/get/ 이 아이폰은 App Store로, 앱이 없는 기기는 웹 방으로 보내요)
-    const link = N ? SITE + 'get/?' + exec : url;
-    // 아이폰 앱: 언어와 상관없이 카톡으로 그림 카드 + [앱으로 참가][웹으로 참가] (카톡이 없으면 아래 공유 창으로)
-    if (N && N.kakao) {
+    // 앱에서 보낸 초대는 링크를 누르면 스토어로 가요 (아이폰은 App Store로, 앱이 없는 기기는 웹 방으로 보내요)
+    // 영어는 /join/ (영어 미리보기 카드), 한국어는 /get/
+    const en = typeof LANG !== 'undefined' && LANG !== 'ko';
+    const link = N ? SITE + (en ? 'join/?' : 'get/?') + exec : url;
+    // 아이폰 앱(한국어): 카톡으로 그림 카드 + [앱으로 참가]. 영어는 카톡 대신 공유 창으로 링크를 보내요.
+    if (N && N.kakao && !en) {
       try {
         const f = await cardImage(nm, room.host ? t('roomInvBy', { name: room.host }) : t('roomCardSubAnon'));
         await N.kakaoImage(f, {
           title, desc, url: link,
-          buttons: [
-            { title: t('roomJoinApp'), url: SITE + 'get/?' + exec, exec },
-            { title: t('roomJoinWeb'), url },
-          ],
+          buttons: [{ title: t('roomJoinApp'), url: link, exec }],
         });
         return;
       } catch (e) { /* 카톡이 없거나 실패하면 아래로 */ }
     }
     // 안드로이드 앱(한국어): 로고 카드 그림이 올라가 있으면 그걸로
-    if (cardFile && KakaoShare.sendImage({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoinWeb')], forFile: cardFile, w: 1200, h: 630 })) return;
+    if (cardFile && KakaoShare.sendImage({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoin')], forFile: cardFile, w: 1200, h: 630 })) return;
     // 안드로이드 앱·웹(한국어): 카카오 SDK 카드
-    if (KakaoShare.sendText({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoinWeb')], btn: t('roomJoin') })) return;
+    if (KakaoShare.sendText({ title, desc, url, exec, labels: [t('roomJoinApp'), t('roomJoin')], btn: t('roomJoin') })) return;
     // 그 밖: 글과 링크를 한 덩어리로 (url을 따로 넘기면 카톡에서 사이에 빈 줄이 생겨요)
     const text = `${title}\n${desc}\n${link}`;
     if (navigator.share) {

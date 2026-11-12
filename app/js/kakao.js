@@ -30,9 +30,13 @@ const KakaoShare = (() => {
     const web = { mobileWebUrl: link, webUrl: link };
     const L = labels || ['앱으로 도전', '웹으로 도전'];
     if (!exec || (!isNative() && !APP_VS)) return [{ title: isNative() ? '웹에서 하기' : (labels ? L[1] : '도전 받기'), link: web }];
-    const app = { ...web, androidExecutionParams: exec, iosExecutionParams: exec };
+    // 앱에서 보낸 카드: 버튼은 '앱으로' 하나만. 앱이 없으면 /get/ 이 스토어(또는 웹)로 보내요.
+    const get = SITE + 'get/?' + exec;
+    const app = isNative()
+      ? { mobileWebUrl: get, webUrl: get, androidExecutionParams: exec, iosExecutionParams: exec }
+      : { ...web, androidExecutionParams: exec, iosExecutionParams: exec };
     return isNative()
-      ? [{ title: L[0], link: app }, { title: L[1], link: web }]
+      ? [{ title: L[0], link: app }]
       : [{ title: labels ? L[1] : '도전 받기', link: web }, { title: L[0], link: app }];
   };
 
