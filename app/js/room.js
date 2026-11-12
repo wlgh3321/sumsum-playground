@@ -378,8 +378,8 @@ const Room = (() => {
     const desc = t('roomCardDesc');
     if (window.track) window.track('room-share', '그룹 경쟁전 공유');
     const N = window.SumsumNative;
-    // 아이폰 앱(한국어): 카톡으로 그림 카드 + [앱으로 참가][웹으로 참가]
-    if (N && N.kakao && typeof LANG !== 'undefined' && LANG === 'ko') {
+    // 아이폰 앱: 언어와 상관없이 카톡으로 그림 카드 + [앱으로 참가][웹으로 참가] (카톡이 없으면 아래 공유 창으로)
+    if (N && N.kakao) {
       try {
         const f = await cardImage(nm, room.host ? t('roomInvBy', { name: room.host }) : t('roomCardSubAnon'));
         await N.kakaoImage(f, {

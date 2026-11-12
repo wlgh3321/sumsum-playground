@@ -867,7 +867,7 @@ const App = (() => {
       const title = `${modeName(r.mode, r.settings)} ${fmtValue(r.mode, r.value)}!`;
       const desc = t('shareInvite');
       const N = window.SumsumNative;
-      if (N && N.kakao && LANG === 'ko') {
+      if (N && N.kakao) {
         try {
           const f = await ShareCard.ready();
           const SITE = 'https://sumsum.studiojhl.com/';

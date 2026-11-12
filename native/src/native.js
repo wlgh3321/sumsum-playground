@@ -77,17 +77,25 @@
   //   테스터들의 광고 클릭을 애드몹이 무효 트래픽으로 볼 수 있어요. 테스트 트랙용 빌드가 필요하면 다시 true 로.
   const ADS_TEST = false;
   const AD = IOS
-    ? { reward: 'ca-app-pub-6048734887508367/9403873330', inter: 'ca-app-pub-6048734887508367/6662159922' }
-    : { reward: 'ca-app-pub-6048734887508367/9657530916', inter: 'ca-app-pub-6048734887508367/1298152605' };
+    ? { reward: ['ca-app-pub-6048734887508367/9403873330', 'ca-app-pub-6048734887508367/4338875182'], inter: 'ca-app-pub-6048734887508367/6662159922' }
+    : { reward: ['ca-app-pub-6048734887508367/9657530916', 'ca-app-pub-6048734887508367/8333447169'], inter: 'ca-app-pub-6048734887508367/1298152605' };
   const NOADS_ID = 'com.studiojhl.sumsum.noads';
   const OWNED_KEY = 'sumsum.noads.owned';
   const A = P.AdMob;
   const IAP = P.NativePurchases;
-  let rewardLoaded = false, interLoaded = false, adsReady = false;
+  let interLoaded = false, adsReady = false;
+  // 보상형 광고 자리 두 개: 둘 다 미리 불러 둬서, 광고 2개를 연달아 볼 때 기다리지 않아요
+  const slots = AD.reward.map(id => ({ id, loaded: false, loading: false }));
   const owned = () => { try { return localStorage.getItem(OWNED_KEY) === '1'; } catch (e) { return false; } };
   const setOwned = on => { try { localStorage.setItem(OWNED_KEY, on ? '1' : '0'); } catch (e) {} };
   const opts = id => ({ adId: id, isTesting: ADS_TEST, npa: true });
-  const loadReward = () => { if (!A || !adsReady || owned()) return; A.prepareRewardVideoAd(opts(AD.reward)).then(() => { rewardLoaded = true; }).catch(() => { rewardLoaded = false; setTimeout(loadReward, 30000); }); };
+  const loadSlot = s => {
+    if (!A || !adsReady || owned() || s.loaded || s.loading) return;
+    s.loading = true;
+    A.prepareRewardVideoAd(opts(s.id)).then(() => { s.loaded = true; s.loading = false; })
+      .catch(() => { s.loaded = false; s.loading = false; setTimeout(() => loadSlot(s), 30000); });
+  };
+  const loadReward = () => slots.forEach(loadSlot);
   const loadInter = () => { if (!A || !adsReady || owned()) return; A.prepareInterstitial(opts(AD.inter)).then(() => { interLoaded = true; }).catch(() => { interLoaded = false; setTimeout(loadInter, 30000); }); };
 
   async function startAds() {
@@ -108,14 +116,15 @@
   // 보상형 광고 하나 보기 → 끝까지 봐서 보상을 받았으면 true
   function showReward() {
     return new Promise(resolve => {
-      if (!A || !rewardLoaded) { resolve(false); return; }
-      rewardLoaded = false;
+      const slot = slots.find(s => s.loaded);
+      if (!A || !slot) { resolve(false); return; }
+      slot.loaded = false;
       let got = false, done = false, subs = [];
       const finish = ok => {
         if (done) return; done = true;
         subs.forEach(h => { try { h.remove(); } catch (e) {} });
         if (typeof Music !== 'undefined' && Music.isWanted && Music.isWanted()) Music.start();
-        setTimeout(loadReward, 500);
+        setTimeout(() => loadSlot(slot), 500);
         resolve(ok);
       };
       Promise.all([
@@ -123,7 +132,7 @@
         A.addListener('onRewardedVideoAdDismissed', () => finish(got)),
         A.addListener('onRewardedVideoAdFailedToShow', () => finish(false)),
       ]).then(h => { subs = h; if (done) h.forEach(x => x.remove()); });
-      A.showRewardVideoAd().catch(() => finish(false));
+      A.showRewardVideoAd({ adId: slot.id }).catch(() => finish(false));
     });
   }
 
@@ -185,7 +194,7 @@
 
   window.SumsumNative = {
     noAds: owned,
-    rewardReady: () => !!rewardLoaded,
+    rewardReady: () => slots.some(s => s.loaded),
     showReward,
     interReady: () => !!interLoaded,
     showInterstitial,
