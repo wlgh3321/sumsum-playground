@@ -2,42 +2,72 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0a1c">
 <title>SumSum Playground · Group challenge invite</title>
 <meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SumSum Playground">
 <meta property="og:title" content="You're invited to a group challenge!">
 <meta property="og:description" content="Same problems for everyone. Who will be #1? · SumSum Playground">
-<meta property="og:site_name" content="SumSum Playground">
-<meta name="twitter:card" content="summary_large_image">
 <meta property="og:image" content="https://sumsum.studiojhl.com/og-join.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
 <style>
-  html, body { margin: 0; height: 100%; background: #0f0b1f; color: #fff; font-family: -apple-system, "Apple SD Gothic Neo", sans-serif; }
-  main { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px 16px; box-sizing: border-box; text-align: center; }
-  img { width: 88px; height: 88px; border-radius: 20px; }
-  a { display: block; width: 100%; max-width: 280px; padding: 14px 0; border-radius: 10px; background: #ffe14d; color: #0f0b1f; font-weight: 700; text-decoration: none; }
-  a.sub { background: #2c2366; color: #fff; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: #0d0a1c;
+    background-image: linear-gradient(rgba(106, 77, 255, 0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(106, 77, 255, 0.14) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: #f2eeff;
+    font-family: "Galmuri11", -apple-system, "Apple SD Gothic Neo", sans-serif;
+  }
+  main {
+    min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 16px; padding: 32px 24px calc(32px + env(safe-area-inset-bottom)); text-align: center;
+  }
+  .logo { width: min(300px, 78vw); height: auto; image-rendering: pixelated; }
+  p { margin: 6px 0 10px; font-size: 16px; color: #b9b0e6; }
+  a {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; max-width: 300px; min-height: 56px; padding: 12px 14px;
+    font-family: inherit; font-weight: 700; font-size: 17px; text-decoration: none; word-break: keep-all;
+    color: #0d0a1c; background: #ffe14d;
+    border: 3px solid #0d0a1c; outline: 3px solid #ffe14d;
+    box-shadow: 6px 6px 0 #ff4da6;
+  }
+  a:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0 #ff4da6; }
+  a.sub { color: #f2eeff; background: #1a1438; border-color: #1a1438; outline-color: #6a4dff; box-shadow: 6px 6px 0 #3d2f86; margin-top: 6px; }
+  a.sub:active { box-shadow: 3px 3px 0 #3d2f86; }
 </style>
 </head>
 <body>
 <main>
-  <img src="/icon-192.png" alt="">
+  <img class="logo" src="/app/img/intro-logo.png" alt="SumSum Playground" width="1888" height="424">
   <p>Opening SumSum Playground…</p>
   <a id="ios" href="https://apps.apple.com/app/id6826497198" hidden>Get it on the App Store</a>
   <a id="android" href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum" hidden>Get it on Google Play</a>
   <a class="sub" id="web" href="/">Play on the web</a>
 </main>
 <script>
-  // 스토어에 정식으로 나오면 true 로 바꿔요. 그전에는 웹 게임으로 보내요.
   var LIVE = { ios: true, android: false };
   var ua = navigator.userAgent;
   var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
   var android = /Android/.test(ua);
   var go = ios && LIVE.ios ? 'ios' : android && LIVE.android ? 'android' : null;
-  if (LIVE.ios) document.getElementById('ios').hidden = false;
-  if (LIVE.android) document.getElementById('android').hidden = false;
-  // 도전장 정보(?cn=&cs=&cg=)가 있으면 "웹에서 바로 하기" 링크도 그대로 들고 가요
+  // 내 기기에 맞는 스토어 버튼만 보여요 (컴퓨터는 나온 스토어 전부)
+  if (LIVE.ios && (ios || !android)) document.getElementById('ios').hidden = false;
+  if (LIVE.android && (android || !ios)) document.getElementById('android').hidden = false;
+  // 아이폰은 스토어 버튼 하나만 (앱이 있으면 스토어의 '열기'로 들어가요)
+  if (go === 'ios') document.getElementById('web').hidden = true;
+  // 도전장·방 정보(?cn=… / ?room=…)가 있으면 "웹에서 하기" 링크도 그대로 들고 가요
   document.getElementById('web').href = '/' + location.search;
-  // 앱이 없어서 웹으로 보낼 때도 도전장 정보를 그대로 들고 가요
+  // 앱이 없어서 웹으로 보낼 때도 그 정보를 그대로 들고 가요
   location.replace(go ? document.getElementById(go).href : '/' + location.search);
 </script>
 </body>

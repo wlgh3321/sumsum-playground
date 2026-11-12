@@ -868,7 +868,7 @@ const App = (() => {
       const desc = t('shareInvite');
       const N = window.SumsumNative;
       // 앱에서 보낸 링크는 스토어로 가요 (/get/ 이 아이폰은 App Store로, 앱이 없는 기기는 웹 도전으로 보내요)
-      const appLink = 'https://sumsum.studiojhl.com/get/?' + challengeQuery(r);
+      const appLink = 'https://sumsum.studiojhl.com/get/' + (LANG === 'ko' ? '' : 'en/') + '?' + challengeQuery(r);
       const link = N ? appLink : challengeUrl(r);
       if (N && N.kakao && LANG === 'ko') {
         try {

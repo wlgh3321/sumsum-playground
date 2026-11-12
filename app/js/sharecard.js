@@ -221,6 +221,8 @@ const ShareCard = (() => {
     if (!file) return;
     const f = file;
     const tries = [];
+    // 그림 + 글 + 링크를 같이 (링크를 따로 넘겨야 메시지 앱에서 그림 옆에 링크가 붙어요)
+    if (link) tries.push({ files: [f], text: link.text, url: link.url });
     if (link) tries.push({ files: [f], text: `${link.text}\n${link.url}` });
     tries.push({ files: [f] });
     if (link) tries.push({ text: link.text, url: link.url });
