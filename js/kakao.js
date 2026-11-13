@@ -14,7 +14,7 @@ const KakaoShare = (() => {
   // exec = 도전장 정보(cn=&cs=&cg=&cz=). 카톡이 앱을 열면서 이걸 그대로 넘겨줘요.
   // ★ 앱 업데이트(카톡 도전장으로 앱 열기)가 스토어에 나온 뒤 true 로 바꿔요.
   //   그 전에 켜면 친구의 옛날 앱이 열리기만 하고 도전장은 안 떠요.
-  const APP_VS = false;
+  const APP_VS = true;
   const btns = (link, exec, label) => {
     const web = { mobileWebUrl: link, webUrl: link };
     const out = [{ title: label || '도전 받기', link: web }];

@@ -23,7 +23,7 @@ const KakaoShare = (() => {
   // exec = 도전장 정보(cn=&cs=&cg=&cz=). 카톡이 앱을 열면서 이걸 그대로 넘겨줘요.
   // 웹사이트에서 보낸 카드는 '도전 받기'(웹)가 먼저예요.
   // ★ 웹(PWA)에서 보낼 때 '앱으로 도전' 버튼: 앱 업데이트가 스토어에 나온 뒤 true 로 (js/kakao.js 와 같이)
-  const APP_VS = false;
+  const APP_VS = true;
   // labels = [앱 버튼, 웹 버튼] 글자를 바꿀 때 (그룹 경쟁전: '앱으로 참가', '웹으로 참가')
   const btns = (url, exec, labels) => {
     const link = url || SITE;
