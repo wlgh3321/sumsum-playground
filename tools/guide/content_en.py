@@ -635,7 +635,7 @@ PAGES += [
 <p>You can also create a room from the result screen after a Ranked game. In that case the score you just made becomes the first record in the room.</p>
 
 <h2>When you are invited</h2>
-<p>Tap the link to open the room. You can join in the app if you have it, or on the web if you do not. Pick a game at the top, tap <b>Play</b>, and you get that room's problems. When you finish, enter a nickname to save your record. Rooms you have joined are listed in the app, most recent first.</p>
+<p>Tap the link and the app opens straight into the room. If you do not have the app yet, the link takes you to the download page. Pick a game at the top, tap <b>Play</b>, and you get that room's problems. When you finish, enter a nickname to save your record. Rooms you have joined are listed in the app, most recent first.</p>
 
 <h2>Why do the problems change every day?</h2>
 <p>Everyone needs the same problems for it to be fair, but if they never changed, people could memorize them. So problems stay the same for a day and are replaced the next. A game started just before the change and finished after it is not recorded.</p>
@@ -1091,7 +1091,7 @@ PAGES += [
   <li>One room covers all six games.</li>
   <li>Everyone gets the same problems for the day, so it is fair.</li>
   <li>The ranking restarts every 3 days, so anyone can take first place again.</li>
-  <li>Invited players can join on the web without the app.</li>
+  <li>Tapping the link opens the room right in the app.</li>
 </ul>
 <p>Post the link in a group chat and people will play a game when it suits them and check the standings. Details are in the <a href="/en/guide/group-match/">group challenge guide</a>.</p>
 
