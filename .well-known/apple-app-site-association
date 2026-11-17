@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["RM2UUQMU8F.com.studiojhl.sumsum"],
+        "components": [
+          { "/": "/get/*", "comment": "도전장 링크" },
+          { "/": "/join/*", "comment": "그룹 경쟁전 초대 링크" }
+        ]
+      }
+    ]
+  }
+}
