@@ -33,7 +33,7 @@
 
 ■ 랭킹전과 명예의 전당
 모두 같은 조건으로 겨루는 랭킹전에서 내 최고 기록을 명예의 전당에 올려요.
-10위 밖이어도 지금 내가 몇 등인지 바로 보여 줘요.
+20위 밖이어도 지금 내가 몇 등인지 바로 보여 줘요.
 
 ■ 내 맞춤 연습
 원하는 연산과 숫자 범위, 속도를 골라 연습할 수 있어요.
@@ -82,7 +82,7 @@ Settle a bet with family, friends or coworkers.
 
 ■ Ranked and Hall of Fame
 Compete under identical conditions and put your best score in the Hall of Fame.
-Even outside the top 10, you can see exactly where you stand.
+Even outside the top 20, you can see exactly where you stand.
 
 ■ Practice your way
 Choose the operations, number range and speed.
