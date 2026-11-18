@@ -93,7 +93,7 @@
     if (!A || !adsReady || owned() || s.loaded || s.loading) return;
     s.loading = true;
     A.prepareRewardVideoAd(opts(s.id)).then(() => { s.loaded = true; s.loading = false; })
-      .catch(() => { s.loaded = false; s.loading = false; setTimeout(() => loadSlot(s), 30000); });
+      .catch(() => { s.loaded = false; s.loading = false; setTimeout(() => loadSlot(s), 8000); });
   };
   const loadReward = () => slots.forEach(loadSlot);
   const loadInter = () => { if (!A || !adsReady || owned()) return; A.prepareInterstitial(opts(AD.inter)).then(() => { interLoaded = true; }).catch(() => { interLoaded = false; setTimeout(loadInter, 30000); }); };
@@ -197,6 +197,8 @@
   window.SumsumNative = {
     noAds: owned,
     rewardReady: () => slots.some(s => s.loaded),
+    // 광고를 볼 수 있는 상태인지 (지금 불러오는 중이어도 true). 부를 때마다 빈 자리를 다시 채워요
+    rewardPossible: () => { if (!A || !adsReady || owned()) return false; loadReward(); return true; },
     showReward,
     interReady: () => !!interLoaded,
     showInterstitial,

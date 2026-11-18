@@ -18,6 +18,14 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(IntentLinkPlugin.class); // 카카오톡 공유(intent:// 주소) 열기
         super.onCreate(savedInstanceState);
         applyOrientation(getResources().getConfiguration());
+        // 휴대폰 설정의 '글자 크기'를 키워 둬도 게임 화면이 깨지지 않게, 아이폰처럼 글자 크기를 고정해요
+        try {
+            android.webkit.WebSettings ws = getBridge().getWebView().getSettings();
+            ws.setTextZoom(100);
+            // 화면 폭 설정(viewport)을 크롬처럼 그대로 따르게 → 폴드 바깥 화면처럼 좁은 폰에서 화면에 맞게 줄여 그려요
+            ws.setUseWideViewPort(true);
+            ws.setLoadWithOverviewMode(true);
+        } catch (Exception ignored) {}
     }
 
     @Override

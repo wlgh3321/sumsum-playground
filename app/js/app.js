@@ -279,12 +279,13 @@ const App = (() => {
     window.scrollTo(0, 0);
   }
 
-  function toast(msg) {
+  function toast(msg, ms = 1600) {
     const node = $('toast');
+    clearTimeout(toastTimer);
+    if (!msg) { node.hidden = true; return; }
     node.textContent = msg;
     node.hidden = false;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { node.hidden = true; }, 1600);
+    toastTimer = setTimeout(() => { node.hidden = true; }, ms);
   }
 
   /* ---------- 그리기 ---------- */
@@ -498,7 +499,7 @@ const App = (() => {
   }
 
   function celebrate(list) {
-    list.forEach((b, i) => setTimeout(() => { Sound.badge(); toast(t('badgeGot', { name: t(b.name) })); }, 400 + i * 1800));
+    list.forEach((b, i) => setTimeout(() => { Sound.badge(); toast(t('badgeGot', { name: t(b.name) }), 2600); }, 400 + i * 2800));
   }
 
   function renderAll() {
@@ -907,7 +908,7 @@ const App = (() => {
       else startWithBonus(lastMode, snapshot(lastMode), withAd);
     };
     press($('againBtn'), () => {
-      const ask = Bonus.kindOf(lastMode) && !againFair() && !Bonus.noAds() && Bonus.adReady();
+      const ask = Bonus.kindOf(lastMode) && !againFair() && !Bonus.noAds() && Bonus.canReward();
       if (!ask) { leaveResult(() => againGo(false)); return; }
       $('againTitle').textContent = t('againAsk', { v: Bonus.label(lastMode, 2) });
       $('againBox').hidden = false;

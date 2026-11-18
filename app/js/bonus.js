@@ -48,7 +48,11 @@ const Bonus = (() => {
   function adReady() {
     try { return !!(N() && N().rewardReady && N().rewardReady()); } catch (e) { return false; }
   }
-  const canReward = () => noAds() || adReady();
+  // 광고를 지금 바로는 못 보여도(방금 본 광고 다음 것을 불러오는 중) 곧 볼 수 있으면 true
+  function adPossible() {
+    try { return !!(N() && N().rewardPossible && N().rewardPossible()); } catch (e) { return false; }
+  }
+  const canReward = () => noAds() || adReady() || adPossible();
   // 보상 받기: 광고 없애기를 샀으면 바로, 아니면 보상형 광고를 끝까지 보면 true
   // times: 광고를 몇 개 이어서 봐야 하는지 (두 번째 이어하기는 2개). 하나라도 끝까지 안 보면 false
   // 다음 광고가 준비될 때까지 잠깐 기다려요 (광고 하나를 보고 나면 다음 광고를 새로 불러와야 해요)
@@ -68,7 +72,13 @@ const Bonus = (() => {
     markRewarded();
     for (let i = 0; i < times; i++) {
       if (i === 0) {
-        if (!adReady()) return false;
+        // 아직 불러오는 중이면 조금 기다려요 (안드로이드는 광고 준비가 아이폰보다 늦을 때가 있어요)
+        if (!adReady()) {
+          try { if (typeof App !== 'undefined' && App.toast) App.toast(t('adLoading'), 10000); } catch (e) {}
+          const ok = await waitAd(10000);
+          try { if (typeof App !== 'undefined' && App.toast) App.toast(ok ? '' : t('adNone'), ok ? 0 : 2200); } catch (e) {}
+          if (!ok) return false;
+        }
       } else if (!(await waitAd(12000))) {
         // 두 번째 광고를 못 불러왔으면, 이미 하나를 끝까지 봤으니 보상은 그대로 줘요
         return true;
@@ -133,6 +143,6 @@ const Bonus = (() => {
     } catch (e) {}
   }
 
-  return { parts, units, kindOf, label, SEC_PER_UNIT, noAds, adReady, canReward, reward, goldUnlocked, goldOn, setGold, applyGold,
+  return { parts, units, kindOf, label, SEC_PER_UNIT, noAds, adReady, adPossible, canReward, reward, goldUnlocked, goldOn, setGold, applyGold,
     gameDone, markRewarded, newGame, maybeInterstitial };
 })();
