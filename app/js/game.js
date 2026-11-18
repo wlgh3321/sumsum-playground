@@ -251,10 +251,11 @@ const Game = (() => {
       } else {
         G.timeLeft = 10;
       }
-      Sound.resume();
-      lastTs = performance.now();
-      G.running = true;
+      // 광고가 끝나자마자 움직이면 받은 하트·시간을 바로 날려요 → 3·2·1 세고 다시 시작
       refresh();
+      G.running = false;
+      G.paused = true;
+      resume();
       return;
     }
     G.askCont = false;
