@@ -223,7 +223,10 @@ const App = (() => {
   async function shareResult() {
     const r = lastResult;
     if (!r) return;
-    const url = challengeUrl(r);
+    // 앱에서 보낸 링크는 /get/ 으로: 앱이 있으면 앱이 바로 열리고, 없으면 스토어로 가요
+    const url = window.SumsumNative
+      ? `https://sumsum.studiojhl.com/get/${lang === 'ko' ? '' : 'en/'}?${challengeQuery(r)}`
+      : challengeUrl(r);
     const game = modeName(r.mode, r.settings);
     const v = fmtValue(r.mode, r.value);
     const n = Ranking.placeFor(r);

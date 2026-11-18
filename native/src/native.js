@@ -132,6 +132,7 @@
         A.addListener('onRewardedVideoAdDismissed', () => finish(got)),
         A.addListener('onRewardedVideoAdFailedToShow', () => finish(false)),
       ]).then(h => { subs = h; if (done) h.forEach(x => x.remove()); });
+      if (typeof Music !== 'undefined' && Music.pause) Music.pause(); // 광고 소리와 배경음악이 겹치지 않게
       A.showRewardVideoAd({ adId: slot.id }).catch(() => finish(false));
     });
   }
@@ -153,6 +154,7 @@
         A.addListener('interstitialAdDismissed', () => finish(true)),
         A.addListener('interstitialAdFailedToShow', () => finish(false)),
       ]).then(h => { subs = h; if (done) h.forEach(x => x.remove()); });
+      if (typeof Music !== 'undefined' && Music.pause) Music.pause(); // 광고 소리와 배경음악이 겹치지 않게
       A.showInterstitial().catch(() => finish(false));
       setTimeout(() => finish(false), 90000); // 혹시 닫힘 신호가 안 오면
     });

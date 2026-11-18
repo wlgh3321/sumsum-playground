@@ -14,11 +14,11 @@ const KakaoShare = (() => {
   let imgUrl = null;   // 미리 올려 둔 자랑 이미지 주소
   let imgFor = null;   // 어떤 파일을 올렸는지
 
-  // 아이폰 앱은 카카오 공식 SDK(native.js)로 보내요. 안드로이드 앱은 이 웹 공유가 그대로 돼요
-  // (https://localhost 를 카카오 JavaScript 키 사이트 도메인에 등록해야 해요).
+  // 아이폰 앱은 카카오 공식 SDK(native.js)로 보내요. 안드로이드 앱은 앱 속 화면에서 카카오 웹 공유가 열리지 않아서
+  // 휴대폰 공유 창(카톡 선택)으로 링크를 보내요. 링크를 누르면 앱이 바로 열려요(App Links).
   const isNative = () => !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   const isIOSApp = () => isNative() && window.Capacitor.getPlatform && window.Capacitor.getPlatform() === 'ios';
-  const on = () => !!KEY && !isIOSApp() && typeof LANG !== 'undefined' && LANG === 'ko';
+  const on = () => !!KEY && !isNative() && typeof LANG !== 'undefined' && LANG === 'ko';
   // 버튼 두 개: '앱으로 도전'(앱이 있으면 앱이 바로 열리고, 없으면 스토어로) + '웹으로 도전'(브라우저에서 바로)
   // exec = 도전장 정보(cn=&cs=&cg=&cz=). 카톡이 앱을 열면서 이걸 그대로 넘겨줘요.
   // 웹사이트에서 보낸 카드는 '도전 받기'(웹)가 먼저예요.

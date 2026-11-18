@@ -195,5 +195,5 @@ const Music = (() => {
   // 전화·알림 등으로 끊겼다가 돌아오면 다시 깨워요
   window.addEventListener('pointerdown', () => { if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {}); }, true);
 
-  return { start, stop, setSong, isWanted: () => wanted };
+  return { start, stop, pause: halt, setSong, isWanted: () => wanted };
 })();
