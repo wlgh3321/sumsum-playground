@@ -1,6 +1,6 @@
 # 셈셈 놀이터 아이폰 앱: 깃허브의 맥 서버에서 빌드해서 App Store Connect(TestFlight)에 올려요.
 # 실행: 깃허브 → Actions → "iOS 빌드·업로드" → Run workflow (빌드 번호를 넣으면 그 번호로)
-# 필요한 비밀값(Settings → Secrets): ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 (App Store Connect API 키, 관리자 권한)
+# 필요한 비밀값(Settings → Secrets): ASC_KEY_P8 = App Store Connect API 키 파일(AuthKey_JVMJJ7V7TL.p8) 내용. 키 ID·발급자 ID는 비밀이 아니라 아래에 적어 둠
 name: iOS 빌드·업로드
 on:
   workflow_dispatch:
@@ -37,8 +37,8 @@ jobs:
       - name: 아카이브
         working-directory: native/ios/App
         env:
-          KID: ${{ secrets.ASC_KEY_ID }}
-          ISS: ${{ secrets.ASC_ISSUER_ID }}
+          KID: JVMJJ7V7TL
+          ISS: 0b4cc03f-6a1c-42b1-9ec0-9d9dff5e1fcb
           BUILD: ${{ github.event.inputs.build }}
         run: |
           EXTRA=""
@@ -52,8 +52,8 @@ jobs:
       - name: App Store Connect에 올리기
         working-directory: native/ios/App
         env:
-          KID: ${{ secrets.ASC_KEY_ID }}
-          ISS: ${{ secrets.ASC_ISSUER_ID }}
+          KID: JVMJJ7V7TL
+          ISS: 0b4cc03f-6a1c-42b1-9ec0-9d9dff5e1fcb
         run: |
           cat > "$RUNNER_TEMP/export.plist" <<PL
           <?xml version="1.0" encoding="UTF-8"?>
