@@ -528,7 +528,7 @@ Answer: 25</div>
 <p>It is free and there is no sign-up. Open the site and start playing.</p>
 
 <h2>Which devices does it work on?</h2>
-<p>Any phone, tablet or computer browser. On a computer you can type answers with the number keys. The iPhone and iPad app is on the <a href="https://apps.apple.com/app/id6826497198">App Store</a>, and the Android app is on the way. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p>
+<p>Any phone, tablet or computer browser. On a computer you can type answers with the number keys. The iPhone and iPad app is on the <a href="https://apps.apple.com/app/id6826497198">App Store</a>, and the Android app is on <a href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum">Google Play</a>. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p>
 
 <h2>Where are my records saved?</h2>
 <p>Best records, badges and missed problems are saved in your browser on this device, so each device has its own records. Clearing your browser's site data also clears them.</p>
@@ -567,7 +567,7 @@ PAGES += [
 'body': '''
 <p class="lead">SumSum Playground is now an app. It came out on the App Store in November 2026 and is free on iPhone and iPad. The six games are the same as on the website, and the app adds several features on top.</p>
 
-<div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">Download SumSum Playground on the App Store</a> (iPhone and iPad, free). The Android version will follow once testing is finished.</p></div>
+<div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">Download SumSum Playground on the App Store</a> (iPhone and iPad, free) · <a href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum">Get it on Google Play</a> (Android, free)</p></div>
 
 <h2>Side by side</h2>
 <div class="table-wrap"><table class="cmp">
@@ -763,14 +763,14 @@ PAGES += [
 <p>Waiting for App Store review felt like the longest part. In November 2026 the approval email arrived. I searched the store for the name of my own app, saw the icon appear, and stared at the screen for a while.</p>
 
 <h2>Why Android came later</h2>
-<p>The plan was to launch on Android first. But Google Play requires new personal developer accounts to run a closed test with at least 12 testers for 14 days before a public release. For someone working alone, finding 12 people is a bigger task than it sounds. So the iPhone app went out first while the testers were gathered. The Android app will be released once testing is done.</p>
+<p>The plan was to launch on Android first. But Google Play requires new personal developer accounts to run a closed test with at least 12 testers for 14 days before a public release. For someone working alone, finding 12 people is a bigger task than it sounds. So the iPhone app went out first while the testers were gathered. After testing, the Android app came out on Google Play in November too.</p>
 
 <h2>What I learned after launch</h2>
 <p>Launch was the start, not the end, because people who actually played it began sending ideas. "It would be fun if only people with a link competed" became the <a href="/en/guide/group-match/">group challenge</a>. Badges turned out to be too easy to collect, so 12 became 24. A 3-2-1 countdown now runs when you resume from pause.</p>
 <p>Working alone is slow because every decision is yours. But when someone says something is annoying, you can fix it that same day. That is the best part of doing it solo.</p>
 
 <h2>What's next</h2>
-<p>The Android release and new game modes. If something bothers you or you have an idea, write to <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>. Messages are read, and what can be fixed gets fixed.</p>
+<p>New game modes. If something bothers you or you have an idea, write to <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>. Messages are read, and what can be fixed gets fixed.</p>
 
 <div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">SumSum Playground on the App Store</a>. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p></div>
 '''},

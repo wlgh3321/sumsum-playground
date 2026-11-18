@@ -53,7 +53,7 @@
     <p class="meta">The app · 4 min read · November 11, 2026</p>
 <p class="lead">SumSum Playground is now an app. It came out on the App Store in November 2026 and is free on iPhone and iPad. The six games are the same as on the website, and the app adds several features on top.</p>
 
-<div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">Download SumSum Playground on the App Store</a> (iPhone and iPad, free). The Android version will follow once testing is finished.</p></div>
+<div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">Download SumSum Playground on the App Store</a> (iPhone and iPad, free) · <a href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum">Get it on Google Play</a> (Android, free)</p></div>
 
 <h2>Side by side</h2>
 <div class="table-wrap"><table class="cmp">
@@ -122,12 +122,11 @@
 </main>
 </div>
 <script>
-/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
-if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
-  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
-  if (!a || !w) return;
-  var c = a.className; a.className = w.className; w.className = c;
-  g.insertBefore(w, a);
+/* 안드로이드에서는 앱 받기 버튼이 모두 Google Play로 가요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('a[href*="apps.apple.com/app/id6826497198"]').forEach(function (a) {
+  a.href = 'https://play.google.com/store/apps/details?id=com.studiojhl.sumsum';
+  a.querySelectorAll('*').forEach(function (n) { if (!n.children.length) n.textContent = n.textContent.replace('App Store', 'Google Play'); });
+  if (!a.children.length) a.textContent = a.textContent.replace('App Store', 'Google Play');
 });
 </script>
 </body>

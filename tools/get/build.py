@@ -7,7 +7,7 @@
 import os
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
 # 스토어에 정식으로 나오면 true 로 바꿔요. 그전에는 웹 게임으로 보내요.
-LIVE = "{ ios: true, android: false }"
+LIVE = "{ ios: true, android: true }"
 
 PAGES = {
     'get/index.html': dict(lang='ko', title='셈셈 놀이터 앱 받기', og_title='셈셈 놀이터 앱 받기',

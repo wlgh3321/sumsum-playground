@@ -53,7 +53,7 @@
     <p class="meta">앱 안내 · 읽는 시간 4분 · 2026년 11월 11일</p>
 <p class="lead">셈셈 놀이터가 앱으로 나왔어요. 2026년 11월 App Store에 출시해서, 지금 아이폰과 아이패드에서 무료로 받을 수 있어요. 웹에서 하던 게임 6가지는 그대로이고, 앱에서만 되는 기능이 여러 가지 더해졌어요.</p>
 
-<div class="tip"><p><b>앱 받기</b> — <a href="https://apps.apple.com/app/id6826497198">App Store에서 "셈셈 놀이터" 받기</a> (아이폰·아이패드, 무료). 안드로이드(Google Play) 앱은 테스트를 마치는 대로 출시할 예정이에요.</p></div>
+<div class="tip"><p><b>앱 받기</b> — <a href="https://apps.apple.com/app/id6826497198">App Store에서 "셈셈 놀이터" 받기</a> (아이폰·아이패드, 무료) · <a href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum">Google Play에서 받기</a> (안드로이드, 무료)</p></div>
 
 <h2>한눈에 비교</h2>
 <div class="table-wrap"><table class="cmp">
@@ -122,12 +122,11 @@
 </main>
 </div>
 <script>
-/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
-if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
-  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
-  if (!a || !w) return;
-  var c = a.className; a.className = w.className; w.className = c;
-  g.insertBefore(w, a);
+/* 안드로이드에서는 앱 받기 버튼이 모두 Google Play로 가요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('a[href*="apps.apple.com/app/id6826497198"]').forEach(function (a) {
+  a.href = 'https://play.google.com/store/apps/details?id=com.studiojhl.sumsum';
+  a.querySelectorAll('*').forEach(function (n) { if (!n.children.length) n.textContent = n.textContent.replace('App Store', 'Google Play'); });
+  if (!a.children.length) a.textContent = a.textContent.replace('App Store', 'Google Play');
 });
 </script>
 </body>

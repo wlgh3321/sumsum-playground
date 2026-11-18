@@ -83,14 +83,14 @@
 <p>App Store 심사에 앱을 내고 결과를 기다리는 동안이 제일 길게 느껴졌어요. 2026년 11월, 심사를 통과했다는 메일을 받았어요. 스토어에서 제가 만든 앱 이름을 검색했을 때 아이콘이 뜨는 걸 보고 한참 화면을 들여다봤어요.</p>
 
 <h2>안드로이드가 늦어진 까닭</h2>
-<p>원래는 안드로이드부터 낼 생각이었어요. 그런데 Google Play는 새로 만든 개인 개발자 계정이면 정식 출시 전에 테스터 12명 이상이 14일 동안 비공개 테스트에 참여해야 해요. 혼자 만드는 사람에게 12명을 모으는 건 생각보다 큰 숙제였어요. 그래서 테스터를 모으는 동안 아이폰 앱을 먼저 냈어요. 안드로이드 앱은 테스트가 끝나는 대로 출시할 예정이에요.</p>
+<p>원래는 안드로이드부터 낼 생각이었어요. 그런데 Google Play는 새로 만든 개인 개발자 계정이면 정식 출시 전에 테스터 12명 이상이 14일 동안 비공개 테스트에 참여해야 해요. 혼자 만드는 사람에게 12명을 모으는 건 생각보다 큰 숙제였어요. 그래서 테스터를 모으는 동안 아이폰 앱을 먼저 냈어요. 테스트를 마치고 안드로이드 앱도 11월에 Google Play에 나왔어요.</p>
 
 <h2>출시하고 나서 알게 된 것</h2>
 <p>출시는 끝이 아니라 시작이었어요. 실제로 해 본 사람들이 의견을 줬거든요. "링크 받은 사람끼리만 순위를 겨루면 재미있겠다"는 말에서 <a href="/guide/group-match/">그룹 경쟁전</a>이 나왔어요. 배지가 너무 쉽게 모인다는 걸 알고 12개에서 24개로 늘렸고, 일시정지를 풀 때 3·2·1 준비 시간을 넣었어요.</p>
 <p>혼자 만들면 모든 결정을 직접 해야 해서 느려요. 대신 누군가 불편하다고 말한 걸 그날 바로 고칠 수 있어요. 그게 1인 개발의 가장 큰 재미예요.</p>
 
 <h2>앞으로</h2>
-<p>안드로이드 출시와 새로운 게임 모드를 준비하고 있어요. 해 보고 불편한 점이나 넣었으면 하는 기능이 있으면 <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>으로 알려 주세요. 정말로 읽고, 가능한 건 고쳐요.</p>
+<p>새로운 게임 모드를 준비하고 있어요. 해 보고 불편한 점이나 넣었으면 하는 기능이 있으면 <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>으로 알려 주세요. 정말로 읽고, 가능한 건 고쳐요.</p>
 
 <div class="tip"><p><b>앱 받기</b> — <a href="https://apps.apple.com/app/id6826497198">App Store에서 셈셈 놀이터 받기</a>. 앱에서만 되는 기능은 <a href="/guide/app-vs-web/">앱으로 하면 좋은 점</a>에 정리했어요.</p></div>
   </article>
@@ -119,12 +119,11 @@
 </main>
 </div>
 <script>
-/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
-if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
-  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
-  if (!a || !w) return;
-  var c = a.className; a.className = w.className; w.className = c;
-  g.insertBefore(w, a);
+/* 안드로이드에서는 앱 받기 버튼이 모두 Google Play로 가요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('a[href*="apps.apple.com/app/id6826497198"]').forEach(function (a) {
+  a.href = 'https://play.google.com/store/apps/details?id=com.studiojhl.sumsum';
+  a.querySelectorAll('*').forEach(function (n) { if (!n.children.length) n.textContent = n.textContent.replace('App Store', 'Google Play'); });
+  if (!a.children.length) a.textContent = a.textContent.replace('App Store', 'Google Play');
 });
 </script>
 </body>

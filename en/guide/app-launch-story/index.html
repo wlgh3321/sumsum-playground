@@ -83,14 +83,14 @@
 <p>Waiting for App Store review felt like the longest part. In November 2026 the approval email arrived. I searched the store for the name of my own app, saw the icon appear, and stared at the screen for a while.</p>
 
 <h2>Why Android came later</h2>
-<p>The plan was to launch on Android first. But Google Play requires new personal developer accounts to run a closed test with at least 12 testers for 14 days before a public release. For someone working alone, finding 12 people is a bigger task than it sounds. So the iPhone app went out first while the testers were gathered. The Android app will be released once testing is done.</p>
+<p>The plan was to launch on Android first. But Google Play requires new personal developer accounts to run a closed test with at least 12 testers for 14 days before a public release. For someone working alone, finding 12 people is a bigger task than it sounds. So the iPhone app went out first while the testers were gathered. After testing, the Android app came out on Google Play in November too.</p>
 
 <h2>What I learned after launch</h2>
 <p>Launch was the start, not the end, because people who actually played it began sending ideas. "It would be fun if only people with a link competed" became the <a href="/en/guide/group-match/">group challenge</a>. Badges turned out to be too easy to collect, so 12 became 24. A 3-2-1 countdown now runs when you resume from pause.</p>
 <p>Working alone is slow because every decision is yours. But when someone says something is annoying, you can fix it that same day. That is the best part of doing it solo.</p>
 
 <h2>What's next</h2>
-<p>The Android release and new game modes. If something bothers you or you have an idea, write to <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>. Messages are read, and what can be fixed gets fixed.</p>
+<p>New game modes. If something bothers you or you have an idea, write to <a href="mailto:jhl.studio.00@gmail.com">jhl.studio.00@gmail.com</a>. Messages are read, and what can be fixed gets fixed.</p>
 
 <div class="tip"><p><b>Get the app</b> — <a href="https://apps.apple.com/app/id6826497198">SumSum Playground on the App Store</a>. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p></div>
   </article>
@@ -119,12 +119,11 @@
 </main>
 </div>
 <script>
-/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
-if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
-  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
-  if (!a || !w) return;
-  var c = a.className; a.className = w.className; w.className = c;
-  g.insertBefore(w, a);
+/* 안드로이드에서는 앱 받기 버튼이 모두 Google Play로 가요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('a[href*="apps.apple.com/app/id6826497198"]').forEach(function (a) {
+  a.href = 'https://play.google.com/store/apps/details?id=com.studiojhl.sumsum';
+  a.querySelectorAll('*').forEach(function (n) { if (!n.children.length) n.textContent = n.textContent.replace('App Store', 'Google Play'); });
+  if (!a.children.length) a.textContent = a.textContent.replace('App Store', 'Google Play');
 });
 </script>
 </body>

@@ -124,7 +124,7 @@
           <a class="lp-btn primary" href="https://apps.apple.com/app/id6826497198" target="_blank" rel="noopener">앱으로 받기</a>
           <a class="lp-btn" href="guide/app-vs-web/">앱이 더 좋은 점</a>
         </div>
-        <p class="lp-note">안드로이드 앱은 준비하고 있어요.</p>
+        <p class="lp-note">안드로이드는 Google Play에서 받을 수 있어요.</p>
       </div>
       <img class="lp-shot lp-app-shot" src="img/shots/ko-5.jpg?v=1" alt="명예의 전당" width="560" height="1151" loading="lazy">
     </div>
@@ -243,7 +243,7 @@
           <a class="lp-btn primary" href="https://apps.apple.com/app/id6826497198" target="_blank" rel="noopener">Get the app</a>
           <a class="lp-btn" href="en/guide/app-vs-web/">Why the app?</a>
         </div>
-        <p class="lp-note">An Android app is on the way.</p>
+        <p class="lp-note">Android users can get it on Google Play.</p>
       </div>
       <img class="lp-shot lp-app-shot" src="img/shots/en-5.jpg?v=1" alt="Hall of Fame" width="560" height="1151" loading="lazy">
     </div>
@@ -294,12 +294,11 @@
 </div>
 <script src="js/page.js?v=20261111g"></script>
 <script>
-/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
-if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
-  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
-  if (!a || !w) return;
-  var c = a.className; a.className = w.className; w.className = c;
-  g.insertBefore(w, a);
+/* 안드로이드에서는 앱 받기 버튼이 모두 Google Play로 가요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('a[href*="apps.apple.com/app/id6826497198"]').forEach(function (a) {
+  a.href = 'https://play.google.com/store/apps/details?id=com.studiojhl.sumsum';
+  a.querySelectorAll('*').forEach(function (n) { if (!n.children.length) n.textContent = n.textContent.replace('App Store', 'Google Play'); });
+  if (!a.children.length) a.textContent = a.textContent.replace('App Store', 'Google Play');
 });
 </script>
 </body>

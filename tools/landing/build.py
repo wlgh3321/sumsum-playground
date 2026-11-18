@@ -40,7 +40,7 @@ T = {
        ('배지 24개와 기록실', '몇 판 했는지, 며칠 연속 들어왔는지'),
        ('보너스 하트', '배지를 모으면 하트를 더 가지고 시작'),
        ('내 순위 보기', '명예의 전당 TOP 20, 20위 밖이어도 내 자리 확인')],
-  app_more='앱이 더 좋은 점', app_note='안드로이드 앱은 준비하고 있어요.',
+  app_more='앱이 더 좋은 점', app_note='안드로이드는 Google Play에서 받을 수 있어요.',
   story_k='MAKER', story_h='혼자 만드는 <em>게임</em>이에요',
   story=['셈셈 놀이터는 JHL STUDIO라는 이름으로 한 사람이 만들어요. "1분 구구단 테스트 같은 걸 게임으로 만들면 어떨까"에서 시작해 게임 6가지가 됐고, 2026년 11월에 App Store에 나왔어요.',
          '버튼 두 개의 너비가 다르다, 일시정지를 풀면 타이밍을 놓친다. 이런 작은 불편을 하나씩 고치는 게 일의 대부분이에요. 의견을 보내 주시면 정말로 읽고 고쳐요.'],
@@ -88,7 +88,7 @@ T = {
        ('24 badges and records', 'Games played and days in a row'),
        ('Bonus hearts', 'Collect badges to start with extra hearts'),
        ('Your own rank', 'Top 20, plus your rank outside it')],
-  app_more='Why the app?', app_note='An Android app is on the way.',
+  app_more='Why the app?', app_note='Android users can get it on Google Play.',
   story_k='MAKER', story_h='Made by <em>one person</em>',
   story=['SumSum Playground is made by one person under the name JHL STUDIO. It began with "what if a one-minute times table test were a game", grew to six games, and reached the App Store in November 2026.',
          'Two buttons with different widths. A pause that resumes too abruptly. Fixing small annoyances like these is most of the work. Send feedback and it will be read and acted on.'],
@@ -273,12 +273,11 @@ page = f'''<!doctype html>
 </div>
 <script src="js/page.js?v={V}"></script>
 <script>
-/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
-if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {{
-  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
-  if (!a || !w) return;
-  var c = a.className; a.className = w.className; w.className = c;
-  g.insertBefore(w, a);
+/* 안드로이드에서는 앱 받기 버튼이 모두 Google Play로 가요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('a[href*="apps.apple.com/app/id6826497198"]').forEach(function (a) {{
+  a.href = 'https://play.google.com/store/apps/details?id=com.studiojhl.sumsum';
+  a.querySelectorAll('*').forEach(function (n) {{ if (!n.children.length) n.textContent = n.textContent.replace('App Store', 'Google Play'); }});
+  if (!a.children.length) a.textContent = a.textContent.replace('App Store', 'Google Play');
 }});
 </script>
 </body>

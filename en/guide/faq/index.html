@@ -55,7 +55,7 @@
 <p>It is free and there is no sign-up. Open the site and start playing.</p>
 
 <h2>Which devices does it work on?</h2>
-<p>Any phone, tablet or computer browser. On a computer you can type answers with the number keys. The iPhone and iPad app is on the <a href="https://apps.apple.com/app/id6826497198">App Store</a>, and the Android app is on the way. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p>
+<p>Any phone, tablet or computer browser. On a computer you can type answers with the number keys. The iPhone and iPad app is on the <a href="https://apps.apple.com/app/id6826497198">App Store</a>, and the Android app is on <a href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum">Google Play</a>. See <a href="/en/guide/app-vs-web/">what the app adds</a>.</p>
 
 <h2>Where are my records saved?</h2>
 <p>Best records, badges and missed problems are saved in your browser on this device, so each device has its own records. Clearing your browser's site data also clears them.</p>
@@ -109,12 +109,11 @@
 </main>
 </div>
 <script>
-/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
-if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
-  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
-  if (!a || !w) return;
-  var c = a.className; a.className = w.className; w.className = c;
-  g.insertBefore(w, a);
+/* 안드로이드에서는 앱 받기 버튼이 모두 Google Play로 가요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('a[href*="apps.apple.com/app/id6826497198"]').forEach(function (a) {
+  a.href = 'https://play.google.com/store/apps/details?id=com.studiojhl.sumsum';
+  a.querySelectorAll('*').forEach(function (n) { if (!n.children.length) n.textContent = n.textContent.replace('App Store', 'Google Play'); });
+  if (!a.children.length) a.textContent = a.textContent.replace('App Store', 'Google Play');
 });
 </script>
 </body>

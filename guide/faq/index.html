@@ -55,7 +55,7 @@
 <p>네, 무료이고 회원가입도 필요 없어요. 사이트에 들어오면 바로 게임을 할 수 있어요.</p>
 
 <h2>어떤 기기에서 할 수 있나요?</h2>
-<p>휴대폰, 태블릿, 컴퓨터 브라우저 어디서든 돼요. 컴퓨터에서는 키보드 숫자 키로 답을 입력할 수 있어요. 아이폰·아이패드는 <a href="https://apps.apple.com/app/id6826497198">App Store</a>에서 앱을 받을 수 있고, 안드로이드 앱은 준비하고 있어요. 앱에서만 되는 기능은 <a href="/guide/app-vs-web/">앱으로 하면 좋은 점</a>에 정리했어요.</p>
+<p>휴대폰, 태블릿, 컴퓨터 브라우저 어디서든 돼요. 컴퓨터에서는 키보드 숫자 키로 답을 입력할 수 있어요. 아이폰·아이패드는 <a href="https://apps.apple.com/app/id6826497198">App Store</a>에서 앱을 받을 수 있고, 안드로이드는 <a href="https://play.google.com/store/apps/details?id=com.studiojhl.sumsum">Google Play</a>에서 받을 수 있어요. 앱에서만 되는 기능은 <a href="/guide/app-vs-web/">앱으로 하면 좋은 점</a>에 정리했어요.</p>
 
 <h2>기록은 어디에 저장되나요?</h2>
 <p>게임마다 최고 기록과 배지, 틀린 문제 목록은 지금 쓰는 기기의 브라우저에 저장돼요. 그래서 다른 기기에서는 기록이 따로예요. 브라우저의 방문 기록·사이트 데이터를 지우면 기록도 함께 지워져요.</p>
@@ -109,12 +109,11 @@
 </main>
 </div>
 <script>
-/* 안드로이드는 아직 앱이 없어서, 강조 버튼을 "웹에서 하기"로 바꿔요 */
-if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('[data-cta-pair]').forEach(function (g) {
-  var a = g.querySelector('[data-cta="app"]'), w = g.querySelector('[data-cta="web"]');
-  if (!a || !w) return;
-  var c = a.className; a.className = w.className; w.className = c;
-  g.insertBefore(w, a);
+/* 안드로이드에서는 앱 받기 버튼이 모두 Google Play로 가요 */
+if (/Android/i.test(navigator.userAgent)) document.querySelectorAll('a[href*="apps.apple.com/app/id6826497198"]').forEach(function (a) {
+  a.href = 'https://play.google.com/store/apps/details?id=com.studiojhl.sumsum';
+  a.querySelectorAll('*').forEach(function (n) { if (!n.children.length) n.textContent = n.textContent.replace('App Store', 'Google Play'); });
+  if (!a.children.length) a.textContent = a.textContent.replace('App Store', 'Google Play');
 });
 </script>
 </body>
