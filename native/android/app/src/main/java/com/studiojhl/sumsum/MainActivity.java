@@ -16,6 +16,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(IntentLinkPlugin.class); // 카카오톡 공유(intent:// 주소) 열기
+        registerPlugin(KakaoSharePlugin.class); // 카카오톡으로 점수 이미지 카드 바로 보내기 (아이폰과 같게)
         super.onCreate(savedInstanceState);
         applyOrientation(getResources().getConfiguration());
         // 휴대폰 설정의 '글자 크기'를 키워 둬도 게임 화면이 깨지지 않게, 아이폰처럼 글자 크기를 고정해요
