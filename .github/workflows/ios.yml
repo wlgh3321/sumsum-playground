@@ -1,0 +1,76 @@
+# 셈셈 놀이터 아이폰 앱: 깃허브의 맥 서버에서 빌드해서 App Store Connect(TestFlight)에 올려요.
+# 실행: 깃허브 → Actions → "iOS 빌드·업로드" → Run workflow (빌드 번호를 넣으면 그 번호로)
+# 필요한 비밀값(Settings → Secrets): ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 (App Store Connect API 키, 관리자 권한)
+name: iOS 빌드·업로드
+on:
+  workflow_dispatch:
+    inputs:
+      build:
+        description: '빌드 번호 (비우면 프로젝트에 적힌 번호)'
+        required: false
+        default: ''
+jobs:
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: 가장 새 Xcode 고르기
+        run: |
+          X=$(ls -d /Applications/Xcode_*.app | grep -v beta | sort -V | tail -1)
+          echo "Xcode: $X"; sudo xcode-select -s "$X"; xcodebuild -version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 앱 파일 만들기 (npm + capacitor sync)
+        working-directory: native
+        run: |
+          npm ci
+          node build.mjs
+          npx cap sync ios
+      - name: API 키 준비
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/keys"
+          printf '%s' "$ASC_KEY_P8" > "$RUNNER_TEMP/keys/AuthKey.p8"
+      - name: 아카이브
+        working-directory: native/ios/App
+        env:
+          KID: ${{ secrets.ASC_KEY_ID }}
+          ISS: ${{ secrets.ASC_ISSUER_ID }}
+          BUILD: ${{ github.event.inputs.build }}
+        run: |
+          EXTRA=""
+          if [ -n "$BUILD" ]; then EXTRA="CURRENT_PROJECT_VERSION=$BUILD"; fi
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey.p8" -authenticationKeyID "$KID" -authenticationKeyIssuerID "$ISS" \
+            $EXTRA archive | tail -80
+          test -d "$RUNNER_TEMP/App.xcarchive"
+      - name: App Store Connect에 올리기
+        working-directory: native/ios/App
+        env:
+          KID: ${{ secrets.ASC_KEY_ID }}
+          ISS: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          cat > "$RUNNER_TEMP/export.plist" <<PL
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>RM2UUQMU8F</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PL
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/out" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey.p8" -authenticationKeyID "$KID" -authenticationKeyIssuerID "$ISS"
+      - name: 키 지우기
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/keys"
