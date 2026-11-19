@@ -1116,3 +1116,61 @@ PAGES += [
 <div class="tip"><p><b>Share a result</b> — after a Ranked game you can send a challenge with your score and ask a friend to beat it.</p></div>
 '''},
 ]
+
+PAGES += [
+# ---------------------------------------------------------------- learn (added)
+{
+'slug': 'gugudan-fast', 'cat': 'learn', 'mins': 5,
+'title': 'How to memorize times tables fast — why the 7s and 8s are hardest',
+'desc': 'Memorize the times tables faster by focusing on the 15 facts that are actually left. Why the 7s and 8s feel hardest, tricks to separate look-alike answers, and how to practice out of order.',
+'body': '''
+<p class="lead">The quickest way to learn the times tables is to shrink the job first. Once you set aside what you already know, there are only about 15 multiplication facts left to learn. Most people get stuck on the 7s and 8s, and there are good reasons for that.</p>
+
+<h2>Not 81 facts, just 15</h2>
+<p>The 1s and 10s need no memorizing. The 2s are doubling, the 5s end in 0 or 5, and the digits of every answer in the 9s add up to 9. Add the fact that 3 × 7 is the same as 7 × 3, and all that remains are the products of 3, 4, 6, 7 and 8 with each other.</p>
+<div class="calc">3×3 3×4 3×6 3×7 3×8
+4×4 4×6 4×7 4×8
+6×6 6×7 6×8
+7×7 7×8
+8×8</div>
+<p>Write this list down and tick off each fact you can answer instantly. Seeing a short list of gaps feels very different from facing "the whole times table". If you want to build the understanding first, start with <a href="/en/guide/times-tables/">learning times tables by understanding</a>.</p>
+
+<h2>Why the 7s and 8s feel so hard</h2>
+<ul>
+  <li><b>There are fewer obvious patterns.</b> Unlike the 5s or the 9s, the last digits don't repeat in a way you can see at a glance.</li>
+  <li><b>The answers are bigger.</b> Many of them sit in the 40s and 50s, so similar numbers blur together.</li>
+  <li><b>They were learned as a chant.</b> If you have to count up from 7 × 1 to reach 7 × 8, every question takes a while.</li>
+  <li><b>They come last.</b> Often there's simply been less practice time before moving on.</li>
+</ul>
+
+<h2>Tricks for the look-alike facts</h2>
+<h3>Times 8 is doubling three times</h3>
+<p>Multiplying by 8 is the same as doubling, doubling and doubling again. If 8 × 7 won't come, go 7 → 14 → 28 → 56.</p>
+<h3>Build the 7s from the 5s and 2s</h3>
+<p>7 × 6 is 5 × 6 = 30 plus 2 × 6 = 12, which makes 42. Splitting an unfamiliar fact into two familiar ones gets you there fast.</p>
+<h3>6 times an even number keeps the last digit</h3>
+<p>6 × 4 = 24, 6 × 6 = 36, 6 × 8 = 48. When you multiply 6 by an even number, the answer ends in that same even number. That settles 48 versus 42 straight away.</p>
+<h3>Give the numbers a story</h3>
+<p>7 × 8 = 56 is "5, 6, 7, 8" in a row. 7 × 7 = 49 is "one short of 50". And 6 × 8 = 48 sits right next to 7 × 7 = 49, so learning them as a pair keeps them from swapping places.</p>
+
+<h2>Practice out of order</h2>
+<p>Reciting a table in sequence and answering a random question are two different skills. To know you've really learned the facts, you have to be asked them shuffled.</p>
+<ol>
+  <li>Write the 15 facts on cards, shuffle them, and say each answer as you flip it.</li>
+  <li>Put aside any card that takes more than two or three seconds.</li>
+  <li>Rebuild those with the tricks above, then shuffle and try again the next day.</li>
+</ol>
+<p>A few minutes on several days tends to stick better than one long session. For ways to keep it going, see <a href="/en/guide/five-minute-habit/">building a five-minute daily math habit</a>.</p>
+
+<h2>Finish with a game</h2>
+<p>SumSum Playground can stand in for the cards. In <b>Practice</b>, switch on <b>Multiply</b> only and drag the number range slider up to the 9s, and you'll get a steady mix of 7s and 8s. Problems you miss come back more often in later games, so your weak facts get repeated without you having to pick them out.</p>
+<ul>
+  <li><a href="/en/guide/true-or-false/">True or False</a>: trains your eye to catch near-misses like "7 × 8 = 54".</li>
+  <li><b>1 min Challenge</b>: count how many you get in a minute and compare day to day.</li>
+  <li><b>60-Question Race</b>: you type every answer, which is the real test of whether the facts are automatic.</li>
+</ul>
+<p>The full settings for multiplication practice are in the <a href="/en/guide/times-table-game/">times tables game guide</a>. Adults who haven't done this in years tend to pause at the 7s and 8s too, so a round on the same settings can make for a surprisingly close family match.</p>
+
+<div class="tip"><p><b>In the app</b> — the SumSum Playground app lets you set up a group challenge room where family or friends compete on the same problems. Anyone you send the link to just taps it and the room opens in the app. Badges unlock as your games add up, which makes a one-game-a-day habit easier to keep.</p></div>
+'''},
+]

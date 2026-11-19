@@ -2,7 +2,7 @@
 
 쓰고 나면 `- [x]`로 바꾸고 날짜를 붙여요. 목록이 3개 이하로 남으면 새 주제를 아래에 더해요.
 
-- [ ] gugudan-fast | learn | 구구단 빨리 외우는 법 — 7단·8단이 어려운 이유와 순서
+- [x] gugudan-fast | learn | 구구단 빨리 외우는 법 — 7단·8단이 어려운 이유와 순서 (2026-11-19)
 - [ ] aptitude-test-math | learn | 인적성 수리 영역 계산 속도 올리는 법 (어른 대상)
 - [ ] mental-math-shopping | learn | 계산기 없이 할인·팁·더치페이 계산하기
 - [ ] fewer-calculation-mistakes | learn | 계산 실수 줄이는 법 — 자주 틀리는 5가지 유형
